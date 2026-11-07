@@ -1,0 +1,1265 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>굴삭기 3D 분해도 · 정비 매뉴얼판</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* 정비 매뉴얼 스타일: 종이 바탕 · 잉크 외곽선 · 주황 인출선 */
+:root{
+  --paper:#F2EEE4; --sheet:#FBF9F4; --ink:#1C1B19; --mut:#5E584D; --rule:#D9D2C2;
+  --acc:#C2410C; --acc-d:#9A3412; --blue:#1D4ED8;
+  --sans:'IBM Plex Sans KR',system-ui,-apple-system,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%;margin:0}
+body{
+  background:var(--paper);color:var(--ink);font:14px/1.55 var(--sans);overflow:hidden;
+  padding-left:max(14px,env(safe-area-inset-left,0px));
+  padding-right:max(14px,env(safe-area-inset-right,0px));
+  padding-top:max(10px,env(safe-area-inset-top,0px));
+  padding-bottom:max(10px,env(safe-area-inset-bottom,0px));
+  display:grid;gap:10px;grid-template-rows:auto minmax(0,1fr) auto;
+  grid-template-areas:"top" "stage" "dock";
+}
+.top{grid-area:top;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;min-width:0;padding-bottom:8px;border-bottom:1.5px solid var(--ink)}
+.top .fig{display:block;font:500 11px var(--mono);letter-spacing:.08em;color:var(--mut)}
+.top h1{margin:0;font-size:20px;font-weight:700;letter-spacing:-.01em;line-height:1.25}
+.top .sub{margin:0;font:500 11px var(--mono);color:var(--mut);white-space:nowrap;padding-bottom:3px}
+
+.stage{grid-area:stage;position:relative;min-height:0;border:1.5px solid var(--ink);overflow:hidden;background:var(--sheet)}
+#gl{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;outline:none}
+.vtag{position:absolute;left:10px;top:8px;margin:0;font:500 11px var(--mono);color:var(--mut);pointer-events:none;background:rgba(251,249,244,.85);padding:1px 4px}
+#pins{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+#leaders{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.pin{position:absolute;left:0;top:0;width:24px;height:24px;margin:-12px 0 0 -12px;border-radius:50%;pointer-events:auto;cursor:pointer;
+  display:grid;place-items:center;padding:0;background:var(--acc);border:1.5px solid var(--sheet);color:#fff;
+  font:600 11px/1 var(--mono);font-variant-numeric:tabular-nums;will-change:transform}
+.pin.on{background:var(--ink);color:var(--sheet)}
+.pin::after{content:attr(data-name);display:none;position:absolute;left:30px;top:50%;transform:translateY(-50%);white-space:nowrap;
+  background:var(--ink);border-radius:0;padding:3px 8px;font:500 12px/1.3 var(--sans);color:var(--sheet);pointer-events:none}
+.pin.flip::after{left:auto;right:30px}
+.pin:hover::after,.pin:focus-visible::after,.pin.on::after{display:block}
+.pin:hover,.pin.on,.pin:focus-visible{z-index:5}
+.hint{position:absolute;left:12px;right:12px;bottom:10px;margin:0;font:500 12px var(--sans);color:var(--mut);pointer-events:none;transition:opacity .4s}
+.hint.off{opacity:0}
+.nogl{position:absolute;inset:0;margin:0;display:grid;place-items:center;text-align:center;padding:24px;color:var(--mut)}
+
+/* 가상 조이스틱 */
+.joy{position:absolute;left:12px;right:12px;bottom:12px;display:flex;justify-content:space-between;align-items:flex-end;pointer-events:none}
+.stick{pointer-events:auto;position:relative;width:104px;height:104px;border-radius:50%;border:1.5px solid var(--ink);background:rgba(251,249,244,.88);touch-action:none;cursor:grab}
+.stick::before,.stick::after{content:'';position:absolute;background:transparent;pointer-events:none}
+.stick::before{left:50%;top:8px;bottom:8px;border-left:1px dashed #B9B2A3}
+.stick::after{top:50%;left:8px;right:8px;border-top:1px dashed #B9B2A3}
+.knob{position:absolute;left:50%;top:50%;width:38px;height:38px;margin:-19px 0 0 -19px;border-radius:50%;background:var(--ink);z-index:1;will-change:transform}
+.knob::after{content:'';position:absolute;inset:12px;border-radius:50%;background:var(--acc)}
+.stick .lab{position:absolute;left:50%;bottom:calc(100% + 4px);transform:translateX(-50%);white-space:nowrap;font:500 11px var(--mono);color:var(--ink);background:rgba(251,249,244,.9);padding:0 4px}
+.stick .ax{position:absolute;font:500 10px var(--sans);color:var(--mut);white-space:nowrap;pointer-events:none}
+.ax.n{top:2px;left:50%;transform:translateX(-50%)}.ax.s{bottom:2px;left:50%;transform:translateX(-50%)}
+.ax.w{left:-2px;top:50%;transform:translate(-100%,-50%)}.ax.e{right:-2px;top:50%;transform:translate(100%,-50%)}
+.stick.drag{cursor:grabbing}
+
+/* 제어 패널 */
+.dock{grid-area:dock;display:flex;flex-direction:column;gap:10px;min-height:0;max-height:46vh;overflow-y:auto;overscroll-behavior:contain;padding-right:2px}
+.tabs{flex:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-bottom:1.5px solid var(--ink);position:sticky;top:0;background:var(--paper);z-index:2}
+.tab{height:44px;background:none;border:none;font:500 14px var(--sans);color:var(--mut);cursor:pointer;padding:0}
+.tab[aria-selected=true]{color:var(--ink);font-weight:700;box-shadow:inset 0 -3px 0 var(--acc)}
+.panel{display:flex;flex-direction:column;gap:10px;flex:none}
+.row{display:flex;align-items:center;gap:10px;min-width:0}
+.row label{flex:none;font-size:13px;color:var(--mut);min-width:3.6em}
+.row output{flex:none;width:3.4em;text-align:right;font:500 12px var(--mono);font-variant-numeric:tabular-nums;color:var(--ink)}
+input[type=range]{flex:1;min-width:0;height:28px;margin:0;accent-color:var(--acc);background:transparent}
+.btns{display:flex;flex-wrap:wrap;gap:6px}
+.btn,.chip{font:500 13px/1 var(--sans);color:var(--ink);background:var(--sheet);border:1.5px solid var(--ink);border-radius:0;padding:10px 12px;cursor:pointer}
+.btn[aria-pressed=true]{background:var(--ink);color:var(--sheet)}
+.btn:disabled{opacity:.4;cursor:default}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#fff}
+.btn.pri[aria-pressed=true]{background:var(--ink);border-color:var(--ink)}
+.seg{flex:1 1 0;min-width:0}
+.btns.one{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.btns.one .btn{padding:10px 2px;font-size:12.5px;white-space:nowrap;min-width:0}
+.pin:focus-visible,.chip:focus-visible,.btn:focus-visible,.tab:focus-visible,#gl:focus-visible,.stick:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.card{background:var(--sheet);border:1.5px solid var(--ink);padding:12px 14px}
+.card h2{margin:0;font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.num{display:inline-grid;place-items:center;min-width:24px;height:24px;border-radius:50%;background:var(--acc);color:#fff;font:600 12px var(--mono)}
+.tag{font:500 11px var(--mono);letter-spacing:.06em;color:var(--mut);border:1px solid var(--ink);padding:2px 6px}
+.card p{margin:8px 0 0;max-width:62ch}
+.card dl{margin:10px 0 0;display:grid;gap:8px}
+.card dt{font:500 11px var(--mono);letter-spacing:.06em;color:var(--mut)}
+.card dd{margin:2px 0 0;max-width:62ch}
+.rel{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.grp{font:500 11px var(--mono);letter-spacing:.08em;color:var(--mut);margin:0 0 6px;padding-bottom:3px;border-bottom:1px solid var(--rule)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.chip{padding:8px 10px;font-size:12.5px;border-width:1px}
+.chip b{font:600 11px var(--mono);color:var(--acc);margin-right:5px}
+.chip.on{background:var(--ink);border-color:var(--ink);color:var(--sheet)}
+.chip.on b{color:#F6B48E}
+details summary{cursor:pointer;font-size:13px;color:var(--mut);padding:4px 0}
+.note{margin:0;font-size:12px;color:var(--mut)}
+.pairs{margin:0;padding-left:18px;display:grid;gap:8px}
+.pairs strong{font-weight:600}
+.pairs span{color:var(--mut)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin:0;font-size:12px;color:var(--mut)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+
+/* 실시간 계기 */
+.ghead{display:flex;justify-content:space-between;align-items:baseline;margin:0}
+.ghead h2{margin:0;font-size:15px;font-weight:700}
+.ghead span{font:500 11px var(--mono);color:var(--mut)}
+.gtab{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border:1.5px solid var(--ink);background:var(--sheet)}
+.gtab>div{padding:8px 12px;display:flex;flex-direction:column;gap:1px;min-width:0}
+.gtab>div:nth-child(odd){border-right:1px solid var(--ink)}
+.gtab>div:nth-child(n+3){border-top:1px solid var(--ink)}
+.gl{font-size:11.5px;color:var(--mut)}
+.gv{font:600 21px/1.2 var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.gv small{font-size:12px;font-weight:500}
+.gv.hot{color:var(--acc)}
+.pbar{height:6px;border:1px solid var(--ink);margin-top:4px;background:var(--sheet)}
+.pbar i{display:block;height:100%;width:0;background:var(--ink)}
+.pbar i.hot{background:var(--acc)}
+.bars{display:flex;flex-direction:column;gap:9px}
+.bar{display:grid;grid-template-columns:78px minmax(0,1fr) 54px;align-items:center;gap:10px}
+.bar span{font-size:12.5px}
+.bar .trk{height:10px;border:1.5px solid var(--ink);background:var(--sheet)}
+.bar .trk i{display:block;height:100%;width:0;background:var(--ink)}
+.bar.ext .trk i{background:var(--acc)}
+.bar.ret .trk i{background:var(--blue)}
+.bar output{font:500 12px var(--mono);font-variant-numeric:tabular-nums;text-align:right}
+.bar.ext output{color:var(--acc)}
+.bar.ret output{color:var(--blue)}
+.steps{margin:0;padding:0;list-style:none;display:grid;gap:0;border:1.5px solid var(--ink);background:var(--sheet)}
+.steps li{display:grid;grid-template-columns:26px minmax(0,1fr);gap:8px;padding:8px 10px;border-top:1px solid var(--rule)}
+.steps li:first-child{border-top:none}
+.steps .sn{font:600 12px var(--mono);color:var(--acc)}
+.steps .chips{margin:6px 0 0}
+.kbd{font:500 11px var(--mono);border:1px solid var(--ink);padding:0 4px;background:var(--sheet)}
+
+@media (min-width:900px){
+  body{grid-template-columns:minmax(0,1fr) 400px;grid-template-rows:auto minmax(0,1fr);grid-template-areas:"top top" "stage dock"}
+  .dock{max-height:none}
+}
+@media (min-width:640px) and (max-width:899px) and (orientation:portrait){.dock{max-height:42vh}}
+@media (orientation:landscape) and (max-height:560px) and (min-width:560px) and (max-width:899px){
+  body{grid-template-columns:minmax(0,1fr) 320px;grid-template-rows:auto minmax(0,1fr);grid-template-areas:"top top" "stage dock"}
+  .dock{max-height:none}
+  .stick{width:88px;height:88px}
+}
+@media (max-width:380px){.stick{width:92px;height:92px}}
+@media (prefers-reduced-motion:reduce){.hint{transition:none}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div><span class="fig">FIG. 01 · 크롤러 굴삭기</span><h1>굴삭기 3D 분해도</h1></div>
+  <p class="sub" id="sub">부품 23 · REV.2</p>
+</header>
+
+<main class="stage" id="stage">
+  <canvas id="gl" tabindex="0" aria-label="굴삭기 3D 모델. 드래그로 회전, 두 손가락으로 확대, 부품을 탭하면 설명이 표시됩니다."></canvas>
+  <div id="pins" hidden><svg id="leaders" width="100%" height="100%" aria-hidden="true"></svg></div>
+  <p class="vtag" id="vtag">VIEW A · 선회 0°</p>
+  <p class="hint" id="hint">드래그로 회전 · 두 손가락으로 확대 · 부품을 탭하면 설명</p>
+  <div class="joy" id="joy" hidden>
+    <div class="stick" id="stL" data-s="L" tabindex="0" role="group" aria-label="왼쪽 레버: 앞뒤 암, 좌우 선회">
+      <span class="lab">L · 암 / 선회</span>
+      <span class="ax n">펴기</span><span class="ax s">당기기</span>
+      <div class="knob"></div>
+    </div>
+    <div class="stick" id="stR" data-s="R" tabindex="0" role="group" aria-label="오른쪽 레버: 앞뒤 붐, 좌우 버킷">
+      <span class="lab">R · 붐 / 버킷</span>
+      <span class="ax n">내림</span><span class="ax s">올림</span>
+      <div class="knob"></div>
+    </div>
+  </div>
+  <p class="nogl" id="nogl" hidden>이 기기에서는 3D 화면을 표시할 수 없습니다. 다른 브라우저로 열어보세요.</p>
+</main>
+
+<aside class="dock" id="dock">
+  <div class="tabs" role="tablist" aria-label="모드">
+    <button class="tab" role="tab" id="t-explore" aria-selected="true" aria-controls="p-explore" type="button">탐색</button>
+    <button class="tab" role="tab" id="t-explode" aria-selected="false" aria-controls="p-explode" type="button">분해</button>
+    <button class="tab" role="tab" id="t-motion" aria-selected="false" aria-controls="p-motion" type="button">동작</button>
+    <button class="tab" role="tab" id="t-hydro" aria-selected="false" aria-controls="p-hydro" type="button">유압</button>
+  </div>
+
+  <section class="panel" id="p-explore" role="tabpanel" aria-labelledby="t-explore">
+    <div class="btns" role="group" aria-label="보기 방식">
+      <button class="btn seg" id="m-fade" type="button" aria-pressed="true">흐리게</button>
+      <button class="btn seg" id="m-xray" type="button" aria-pressed="false">투시</button>
+      <button class="btn seg" id="m-cut" type="button" aria-pressed="false">단면</button>
+    </div>
+    <div class="row" id="cutrow" hidden><label for="cutz">단면 위치</label><input id="cutz" type="range" min="-30" max="30" value="0"><output id="cutv">0.0</output></div>
+    <div class="btns one">
+      <button class="btn" id="b-multi" type="button" aria-pressed="false">다중 선택</button>
+      <button class="btn" id="b-pin" type="button" aria-pressed="false">번호 표시</button>
+      <button class="btn" id="b-spin" type="button" aria-pressed="false">자동 회전</button>
+      <button class="btn" id="b-cam" type="button">시점 초기화</button>
+    </div>
+  </section>
+
+  <section class="panel" id="p-explode" role="tabpanel" aria-labelledby="t-explode" hidden>
+    <div class="row"><label for="ex">분해 정도</label><input id="ex" type="range" min="0" max="100" value="0"><output id="exv">0%</output></div>
+    <div class="btns">
+      <button class="btn pri" id="b-guide" type="button" aria-pressed="false">분해 가이드</button>
+      <button class="btn" id="b-asm" type="button">완전 분해</button>
+      <button class="btn" id="b-all" type="button">전체 보기</button>
+    </div>
+  </section>
+
+  <section class="panel" id="p-motion" role="tabpanel" aria-labelledby="t-motion" hidden>
+    <div class="btns" role="group" aria-label="동작">
+      <button class="btn pri" id="b-joy" type="button" aria-pressed="false">직접 조작</button>
+      <button class="btn" id="b-dig" type="button" aria-pressed="false">굴착 자동</button>
+      <button class="btn" id="b-swing" type="button" aria-pressed="false">선회 자동</button>
+      <button class="btn" id="b-trav" type="button" aria-pressed="false">주행</button>
+    </div>
+    <p class="note" id="joyhelp" hidden>ISO 조작 방식입니다. 왼쪽 레버는 앞뒤로 암을 펴고 당기며 좌우로 선회합니다. 오른쪽 레버는 앞뒤로 붐을 내리고 올리며, 왼쪽으로 버킷을 오므리고 오른쪽으로 폅니다. 키보드: <span class="kbd">W</span><span class="kbd">S</span><span class="kbd">A</span><span class="kbd">D</span> 왼쪽, <span class="kbd">I</span><span class="kbd">K</span><span class="kbd">J</span><span class="kbd">L</span> 오른쪽. 버킷을 땅에 대고 오므리면 흙이 담기고, 펴면 쏟아집니다.</p>
+    <div class="ghead"><h2>실시간 계기</h2><span id="gstate">정지</span></div>
+    <div class="gtab">
+      <div><span class="gl">펌프 압력</span><span class="gv" id="g-p">0.0<small> MPa</small></span><div class="pbar"><i id="g-pb"></i></div></div>
+      <div><span class="gl">선회각</span><span class="gv" id="g-sw">0<small>°</small></span></div>
+      <div><span class="gl">엔진 회전수</span><span class="gv" id="g-rpm">1000<small> rpm</small></span></div>
+      <div><span class="gl">버킷 적재 · 주행</span><span class="gv" id="g-ld">0<small>% · 0.0 km/h</small></span></div>
+    </div>
+    <div class="bars">
+      <div class="bar" id="gb-b"><span>붐 실린더</span><div class="trk"><i></i></div><output>0%</output></div>
+      <div class="bar" id="gb-a"><span>암 실린더</span><div class="trk"><i></i></div><output>0%</output></div>
+      <div class="bar" id="gb-k"><span>버킷 실린더</span><div class="trk"><i></i></div><output>0%</output></div>
+    </div>
+    <p class="note">막대는 실린더가 늘어난 정도(스트로크)입니다. 주황 ▲ = 늘어나는 중, 파랑 ▼ = 줄어드는 중. 압력과 회전수는 교육용으로 단순화한 모델 값입니다.</p>
+    <details>
+      <summary>작업장치 각도 직접 입력</summary>
+      <div class="panel">
+        <div class="row"><label for="ps-b">붐</label><input id="ps-b" type="range" min="-25" max="28" value="0"><output id="pv-b">0°</output></div>
+        <div class="row"><label for="ps-a">암</label><input id="ps-a" type="range" min="-57" max="43" value="0"><output id="pv-a">0°</output></div>
+        <div class="row"><label for="ps-k">버킷</label><input id="ps-k" type="range" min="-57" max="40" value="0"><output id="pv-k">0°</output></div>
+      </div>
+    </details>
+  </section>
+
+  <section class="panel" id="p-hydro" role="tabpanel" aria-labelledby="t-hydro" hidden>
+    <div class="btns">
+      <button class="btn" id="b-flow" type="button" aria-pressed="true">흐름 표시</button>
+      <button class="btn" id="b-hdig" type="button" aria-pressed="false">굴착하며 보기</button>
+    </div>
+    <p class="legend"><span><i style="background:#C2410C"></i>장치로 가는 고압 유압유</span><span><i style="background:#1D4ED8"></i>탱크로 돌아오는 유압유</span></p>
+    <div class="gtab">
+      <div><span class="gl">펌프 압력</span><span class="gv" id="h-p">0.0<small> MPa</small></span></div>
+      <div><span class="gl">작동 중</span><span class="gv" id="h-act" style="font-size:15px;white-space:normal">없음</span></div>
+    </div>
+    <ol class="steps" id="hsteps"></ol>
+  </section>
+
+  <section class="card" id="info"></section>
+  <div id="list"></div>
+  <p class="note">일반적인 크롤러 굴삭기 구조를 단순화한 모델이며, 특정 모델의 치수와 형상을 그대로 옮긴 것이 아닙니다.</p>
+</aside>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js" crossorigin="anonymous"></script>
+<script>
+(function(){
+'use strict';
+var T=window.THREE;
+var $=function(id){return document.getElementById(id)};
+if(!T||!T.OrbitControls){$('nogl').hidden=false;return;}
+
+/* ---------- 부품 설명 데이터 ---------- */
+var GROUPS=[['lower','하부 주행부'],['upper','상부 선회부'],['work','작업장치']];
+var GN={lower:'하부 주행부',upper:'상부 선회부',work:'작업장치'};
+var D={
+idler:{t:'트랙 앞쪽의 유도륜입니다. 트랙이 벗겨지지 않게 방향을 잡고, 장력 조절 장치가 이 바퀴를 앞으로 밀어 체인의 처짐을 맞춥니다.',f:'장력 실린더(그리스 주입) → 아이들러 전진 → 트랙 팽팽하게 유지',w:'플랜지 한쪽 마모, 장력이 과하면 롤러와 핀이 빨리 닳음',rel:['track','sprocket']},
+track:{t:'링크와 슈(신발판)가 이어진 무한궤도입니다. 슈 바닥의 돌기(그라우저)가 땅을 파고들어 미끄러지지 않게 하고, 장비 무게를 넓은 면적에 나눠 연약한 지반에서도 빠지지 않게 합니다.',f:'스프로켓이 링크 부시를 맞물려 당김 → 트랙이 바퀴 둘레를 순환',w:'슈·그라우저와 링크 핀 마모, 장력 불량 시 트랙 이탈',rel:['idler','sprocket','uroll','lroll']},
+uroll:{t:'트랙 윗면이 처지지 않도록 받치는 작은 롤러(캐리어 롤러)입니다. 하중은 거의 받지 않고 윗면 궤적만 잡아줍니다.',f:'트랙 윗면 → 상부롤러 → 처짐 방지',w:'씰 손상으로 오일이 새거나 회전이 뻑뻑해짐',rel:['track','lroll']},
+lroll:{t:'장비 무게를 트랙 체인에 전달하는 바퀴(트랙 롤러)입니다. 하부 부품 중 하중을 가장 많이 받아 마모가 빠릅니다.',f:'차체 하중 → 하부롤러 → 트랙 → 지면',w:'플랜지 마모, 씰 누유',rel:['track','uroll']},
+sprocket:{t:'주행모터가 감속기를 거쳐 돌리는 톱니바퀴입니다. 이빨이 트랙 링크의 부시에 맞물려 트랙을 끌어당깁니다.',f:'주행모터 → 최종 감속기 → 스프로켓 → 트랙',w:'이빨이 닳아 뾰족해지면 트랙이 미끄러짐',rel:['track','tmotor','idler']},
+tmotor:{t:'트랙 프레임 뒤끝, 스프로켓 안쪽(차체 쪽)에 붙은 유압 모터와 최종 감속기입니다. 트랙 폭 안에 들어가 있어 바깥으로 튀어나오지 않습니다. 센터조인트를 지나온 유압유로 돌고, 감속기가 회전 속도를 크게 줄이는 대신 힘을 키워 스프로켓에 전달합니다. 좌우 모터를 따로 돌려 방향을 바꿉니다.',f:'센터조인트 → 주행모터 → 최종 감속기 → 스프로켓 → 트랙',w:'감속기 오일 누유, 모터 내부 마모로 한쪽 주행이 약해짐',rel:['sprocket','joint','track']},
+joint:{t:'센터조인트(스위블 조인트)는 상부와 하부 사이 중심의 회전 이음입니다. 상부가 계속 돌아도 주행모터로 가는 유압 호스가 꼬이지 않게 합니다. 바깥 고리는 상부를 받치며 도는 선회 베어링으로, 안쪽 링기어를 선회모터가 돌립니다.',f:'컨트롤 밸브 → 센터조인트 → 좌우 주행모터',w:'내부 씰이 마모되면 주행 힘이 약해짐',rel:['lower','upper','tmotor','smotor']},
+lower:{t:'좌우 트랙 프레임과 중앙 X자 프레임으로 이루어진 하부의 뼈대입니다. 롤러, 아이들러, 주행모터를 지지하고 상부 전체 하중을 받칩니다.',f:'상부 하중 → 선회 베어링 → 하부 프레임 → 롤러',w:'용접부 균열, 트랙 프레임 변형',rel:['joint','lroll','uroll','tmotor']},
+engine:{t:'디젤 엔진은 장비의 동력원입니다. 연료의 에너지를 회전력으로 바꿔 유압펌프를 돌립니다. 뒤쪽 라디에이터와 팬이 엔진을 식힙니다.',f:'연료 → 엔진 회전 → 유압펌프 구동',w:'에어필터·연료필터 막힘, 냉각수 부족으로 과열',rel:['pump','upper']},
+pump:{t:'메인 유압펌프는 엔진의 회전력을 고압 유압유의 흐름으로 바꿉니다. 굴삭기의 모든 동작이 이 펌프에서 나온 유압으로 이루어집니다.',f:'엔진 → 펌프 → 고압 유압유 → 컨트롤 밸브',w:'내부 마모로 압력 저하, 유압유 오염 시 손상',rel:['engine','valve','tank']},
+valve:{t:'컨트롤 밸브는 조이스틱 신호에 따라 유압유를 어느 실린더나 모터로 보낼지, 얼마나 보낼지 정합니다. 스풀(밸브 막대)이 여러 개 나란히 들어 있습니다.',f:'조이스틱 → 파일럿 압력 → 스풀 이동 → 해당 실린더·모터에 유압유 공급',w:'스풀 고착, 내부 누설로 동작이 느려짐',rel:['pump','cab','bmcyl','acyl','bcyl','smotor','joint']},
+tank:{t:'유압유 탱크는 펌프가 빨아들일 유압유를 저장하고, 실린더에서 돌아온 유압유를 식히고 걸러줍니다. 곁에 연료 탱크가 함께 놓입니다.',f:'실린더·모터에서 돌아온 유압유 → 탱크 → 펌프 흡입',w:'유압유 오염·기포, 리턴 필터 막힘',rel:['pump','valve']},
+upper:{t:'선회 베어링 위에 얹힌 본체입니다. 엔진, 메인 유압펌프, 컨트롤 밸브, 선회모터, 유압유·연료 탱크가 들어 있고 붐과 캐빈이 여기에 고정됩니다.',f:'엔진 → 유압펌프 → 컨트롤 밸브 → 실린더·모터',w:'유압 필터 막힘, 방열기에 먼지가 쌓여 과열',rel:['cw','cab','boom','smotor','engine']},
+smotor:{t:'상부 프레임에 세워 설치된 유압 모터입니다. 아래쪽 감속기의 작은 피니언 기어가 선회 베어링 안쪽의 큰 링기어를 돌려 상부 전체를 360도 회전시킵니다. 하부와 관계없이 상부에서 바로 유압을 받습니다.',f:'컨트롤 밸브 → 선회모터 → 감속기 피니언 → 선회 베어링 링기어 → 상부 회전',w:'감속기 오일 부족, 피니언·링기어 마모로 선회 시 덜컹거림',rel:['upper','joint','valve']},
+cw:{t:'본체 뒤쪽의 무게추입니다. 앞쪽 작업장치와 흙의 무게를 상쇄해 장비가 앞으로 기울지 않게 합니다.',f:'앞쪽 하중 ↔ 뒤쪽 무게추 (지렛대 균형)',w:'고정 볼트 풀림',rel:['upper','boom']},
+cab:{t:'조종사가 앉는 운전실입니다. 좌우 조이스틱과 주행 페달 신호가 컨트롤 밸브에 전달되어 모든 동작을 지시합니다. 전복과 낙하물로부터 조종사를 보호하는 구조를 갖춥니다.',f:'조이스틱 → 파일럿 압력 → 컨트롤 밸브 방향 전환',w:'유리·도어 씰 손상, 에어컨 필터 막힘',rel:['upper','valve']},
+boom:{t:'상부 프레임 앞에서 위로 뻗은 첫 번째 팔입니다. 좌우 붐 실린더가 밀고 당겨 위아래로 움직이고, 끝에는 암이 연결됩니다. 옆면을 따라 암·버킷 실린더로 가는 유압 호스가 지나갑니다.',f:'붐 실린더 신장·수축 → 붐 상하 회전',w:'핀과 부싱 마모, 용접부 균열, 호스 마찰 손상',rel:['bmcyl','arm','acyl']},
+bmcyl:{t:'상부 프레임과 붐 사이에 좌우 한 쌍으로 설치된 유압 실린더입니다. 작업장치 전체와 흙을 들어 올려야 해서 두 개를 나란히 씁니다. 로드가 나오면 붐이 올라가고 들어가면 내려갑니다.',f:'고압 유압유 → 실린더 → 피스톤 로드 신장 → 붐 상승',w:'로드 씰 누유, 로드 표면 긁힘',rel:['boom','upper']},
+arm:{t:'붐 끝과 버킷을 잇는 두 번째 팔입니다. 안쪽·바깥쪽으로 움직여 굴착 깊이와 거리를 조절합니다.',f:'암 실린더 → 붐 끝 핀 기준 회전',w:'핀과 부싱 마모, 암 끝 균열',rel:['acyl','boom','bucket','bcyl']},
+acyl:{t:'붐 위쪽에 설치되어 암을 당기고 펴는 실린더입니다. 굴착할 때 흙을 장비 쪽으로 끌어오는 힘을 냅니다.',f:'유압유 → 실린더 → 암 회전',w:'로드 씰 누유, 쿠션 불량으로 충격 발생',rel:['arm','boom']},
+bcyl:{t:'암 앞면을 따라 설치된 실린더입니다. 로드 끝이 버킷 링크에 연결되어 버킷을 말아 쥐거나(크라우드) 쏟아내게(덤프) 합니다.',f:'유압유 → 실린더 → 링크 → 버킷 각도 변화',w:'로드 씰 누유, 핀 마모',rel:['link','arm','bucket']},
+link:{t:'버킷 실린더의 직선 운동을 버킷의 큰 회전으로 바꿔주는 링크입니다. 두 링크의 길이 비율이 버킷의 회전각과 힘을 정합니다.',f:'실린더 로드 → 링크 → 버킷 회전 (레버 원리)',w:'핀 유격이 커지면 버킷이 덜컹거림',rel:['bcyl','bucket','arm']},
+bucket:{t:'흙을 퍼 담는 끝단입니다. 바닥 끝의 이빨(팁)은 지면과 직접 마찰하는 소모 부품이라 주기적으로 교체합니다.',f:'버킷 실린더와 링크의 회전 → 흙을 파고 담고 쏟음',w:'이빨 마모·파손, 바닥판 마모',rel:['link','arm','bcyl']}
+};
+
+/* ---------- 렌더러 · 장면 ---------- */
+var PAPER=0xFBF9F4,INK=0x1C1B19,ACC=0xC2410C;
+var stage=$('stage'),cv=$('gl'),renderer;
+try{renderer=new T.WebGLRenderer({canvas:cv,antialias:true,powerPreference:'high-performance'})}catch(err){$('nogl').hidden=false;return}
+renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;
+renderer.setClearColor(PAPER,1);renderer.localClippingEnabled=true;
+var scene=new T.Scene();
+scene.fog=new T.Fog(PAPER,20,40);
+var camera=new T.PerspectiveCamera(38,1,.1,200);
+var V3=T.Vector3,M4=T.Matrix4;
+var root=new T.Group();scene.add(root);
+var ACCC=new T.Color(ACC);
+
+scene.add(new T.HemisphereLight(0xffffff,0xd9cfbb,.95));
+var sun=new T.DirectionalLight(0xfffaf0,.7);
+sun.position.set(9,15,-9);sun.target.position.set(2.8,1,0);
+sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);sun.shadow.bias=-.0006;sun.shadow.radius=3;
+var sc=sun.shadow.camera;sc.left=-13;sc.right=13;sc.top=13;sc.bottom=-13;sc.near=1;sc.far=50;
+scene.add(sun,sun.target);
+var fill=new T.DirectionalLight(0xffffff,.28);fill.position.set(-8,6,9);scene.add(fill);
+
+/* 종이 격자 바닥 + 그림자만 받는 면 */
+var gmap=null;
+try{
+  var gc=document.createElement('canvas');gc.width=gc.height=128;var gx=gc.getContext('2d');
+  gx.fillStyle='#FBF9F4';gx.fillRect(0,0,128,128);gx.strokeStyle='#E3DCCB';gx.lineWidth=3;gx.strokeRect(0,0,128,128);
+  gx.strokeStyle='#EFEAE0';gx.lineWidth=1.5;gx.beginPath();gx.moveTo(64,0);gx.lineTo(64,128);gx.moveTo(0,64);gx.lineTo(128,64);gx.stroke();
+  gmap=new T.CanvasTexture(gc);gmap.wrapS=gmap.wrapT=T.RepeatWrapping;gmap.repeat.set(30,30);
+  gmap.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());
+}catch(err){gmap=null}
+var gnd=new T.Mesh(new T.CircleGeometry(30,72),new T.MeshBasicMaterial({color:gmap?0xffffff:PAPER,map:gmap}));
+gnd.rotation.x=-Math.PI/2;gnd.position.set(2.8,-.03,0);scene.add(gnd);
+var shd=new T.Mesh(new T.PlaneGeometry(40,40),new T.ShadowMaterial({opacity:.14}));
+shd.rotation.x=-Math.PI/2;shd.position.set(2.8,-.015,0);shd.receiveShadow=true;scene.add(shd);
+
+var controls=new T.OrbitControls(camera,cv);
+controls.enableDamping=true;controls.dampingFactor=.09;controls.screenSpacePanning=true;
+controls.minDistance=5;controls.maxDistance=48;controls.maxPolarAngle=Math.PI/2-.02;controls.autoRotateSpeed=1.4;
+
+/* ---------- 재질 · 기하 도우미 (매뉴얼 팔레트) ---------- */
+var C={Y:0xF7F4EC,YD:0xE6DFCF,ST:0xE3E0D8,HUB:0xA8A193,DK:0x8C8577,GR:0xD8D2C4,BELT:0x9A9384,SHOE:0x8C8577,TL:0xC9DCE0,CH:0xFFFFFF,GL:0xDCEBF0,SOIL:0x9C7B57};
+function M(c,o){o=o||{};
+  var m=new T.MeshStandardMaterial({color:c,roughness:o.r!==undefined?o.r:.85,metalness:o.m!==undefined?o.m:.04});
+  if(o.op!==undefined){m.transparent=true;m.opacity=o.op;m.depthWrite=false}
+  m.userData.bo=m.opacity;m.userData.bt=m.transparent;m.userData.bd=m.depthWrite;m.userData.bc=m.color.clone();return m}
+function MB(c){var m=new T.MeshBasicMaterial({color:c});m.userData.bo=1;m.userData.bt=false;m.userData.bd=true;return m}
+function edgeMat(){var m=new T.LineBasicMaterial({color:INK});m.userData.bo=1;m.userData.bt=false;m.userData.bd=true;m.userData.edge=true;return m}
+var EC={};
+function edgesOf(g){return EC[g.uuid]||(EC[g.uuid]=new T.EdgesGeometry(g,30))}
+function noRay(){}
+
+function rbox(w,h,d,r,m){
+  var x=-w/2,y=-h/2,s=new T.Shape();r=Math.max(.005,Math.min(r,w/2-.002,h/2-.002));
+  s.moveTo(x+r,y);s.lineTo(x+w-r,y);s.quadraticCurveTo(x+w,y,x+w,y+r);s.lineTo(x+w,y+h-r);
+  s.quadraticCurveTo(x+w,y+h,x+w-r,y+h);s.lineTo(x+r,y+h);s.quadraticCurveTo(x,y+h,x,y+h-r);
+  s.lineTo(x,y+r);s.quadraticCurveTo(x,y,x+r,y);
+  var b=Math.min(.03,d/2-.002),dd=Math.max(d-2*b,.002);
+  var g=new T.ExtrudeGeometry(s,{depth:dd,bevelEnabled:true,bevelThickness:b,bevelSize:b*.8,bevelSegments:2,curveSegments:5});
+  g.translate(0,0,-dd/2);return new T.Mesh(g,m)}
+function rb(w,h,d,r,m,x,y,z){var o=rbox(w,h,d,r,m);o.position.set(x,y,z);return o}
+function bx(w,h,d,m,x,y,z){var o=new T.Mesh(new T.BoxGeometry(w,h,d),m);o.position.set(x,y,z);return o}
+function cz(r,len,m,x,y,z,seg){var o=new T.Mesh(new T.CylinderGeometry(r,r,len,seg||24),m);o.rotation.x=Math.PI/2;o.position.set(x,y,z);return o}
+function cy(r,len,m,x,y,z,seg){var o=new T.Mesh(new T.CylinderGeometry(r,r,len,seg||24),m);o.position.set(x,y,z);return o}
+function cx(r,len,m,x,y,z,seg){var o=new T.Mesh(new T.CylinderGeometry(r,r,len,seg||24),m);o.rotation.z=Math.PI/2;o.position.set(x,y,z);return o}
+function ext(shape,depth,m,bev){
+  var b=bev||0,o={depth:Math.max(depth-2*b,.002),bevelEnabled:b>0,bevelThickness:b,bevelSize:b,bevelSegments:1,curveSegments:16};
+  var g=new T.ExtrudeGeometry(shape,o);g.translate(0,0,-o.depth/2);return new T.Mesh(g,m)}
+function beamShape(pts,hw){
+  var n=pts.length,L=[],R=[],i;
+  function dir(a,b){var dx=b[0]-a[0],dy=b[1]-a[1],l=Math.hypot(dx,dy)||1;return[dx/l,dy/l]}
+  for(i=0;i<n;i++){
+    var d1=i>0?dir(pts[i-1],pts[i]):dir(pts[0],pts[1]);
+    var d2=i<n-1?dir(pts[i],pts[i+1]):d1;
+    var n1=[-d1[1],d1[0]],n2=[-d2[1],d2[0]],nx=n1[0]+n2[0],ny=n1[1]+n2[1],l=Math.hypot(nx,ny)||1;
+    nx/=l;ny/=l;var k=1/Math.max(.5,nx*n1[0]+ny*n1[1]);
+    L.push([pts[i][0]+nx*hw[i]*k,pts[i][1]+ny*hw[i]*k]);
+    R.push([pts[i][0]-nx*hw[i]*k,pts[i][1]-ny*hw[i]*k]);
+  }
+  var s=new T.Shape();s.moveTo(L[0][0],L[0][1]);
+  for(i=1;i<n;i++)s.lineTo(L[i][0],L[i][1]);
+  for(i=n-1;i>=0;i--)s.lineTo(R[i][0],R[i][1]);
+  s.closePath();return s}
+function beam(a,b,hw0,hw1,depth,m,z){var o=ext(beamShape([a,b],[hw0,hw1]),depth,m,.02);o.position.z=z;return o}
+function trace(p,H,R){p.moveTo(-H,-R);p.lineTo(H,-R);p.absarc(H,0,R,-Math.PI/2,Math.PI/2,false);p.lineTo(-H,R);p.absarc(-H,0,R,Math.PI/2,Math.PI*1.5,false)}
+
+/* ---------- 부품 레지스트리 ---------- */
+var P={},LIST=[],SPR=[],TRK=[],LDM=new T.Object3D(),GOFF=new M4().makeTranslation(0,-.05,0),GTMP=new M4();
+function def(id,name,grp,o){
+  var p={id:id,name:name,grp:grp,g:new T.Group(),mats:[],meshes:[],off:o.off||[0,0,0],lat:o.lat||0,
+    anchor:new V3().fromArray(o.anchor||[0,0,0]),sg:null,fk:o.fk||0,dyn:!!o.dyn,aw:new V3(),a0:new V3(),rig:null,ef:1,efc:1,feed:new V3(),len:0,flow:0};
+  p.em=edgeMat();p.mats.push(p.em);
+  p.g.matrixAutoUpdate=false;
+  if(p.lat){p.sg={'-1':new T.Group(),'1':new T.Group()};p.g.add(p.sg['-1'],p.sg['1'])}
+  p.n=LIST.length+1;P[id]=p;LIST.push(p);root.add(p.g);return p}
+function addEdge(p,mesh){var l=new T.LineSegments(edgesOf(mesh.geometry),p.em);l.raycast=noRay;mesh.add(l)}
+function putG(p,g,mesh,noE){
+  mesh.castShadow=true;mesh.receiveShadow=true;mesh.userData.part=p.id;g.add(mesh);p.meshes.push(mesh);
+  if(!noE&&!mesh.isInstancedMesh)addEdge(p,mesh);
+  if(p.mats.indexOf(mesh.material)<0)p.mats.push(mesh.material);return mesh}
+function put(p,mesh,side,noE){return putG(p,side?p.sg[side]:p.g,mesh,noE)}
+
+/* ===== 하부 주행부 ===== */
+var HX=1.95,BR=.55,BY=.55,TZ=1.15;
+(function(){
+  var p=def('idler','아이들러','lower',{off:[1.2,0,0],lat:1.2,anchor:[HX,.62,-1.5]});
+  var mw=M(0xE3E0D8),mh=M(C.HUB),mf=M(0xF0EDE6);
+  [-1,1].forEach(function(s){var z=s*TZ;
+    put(p,cz(.42,.4,mw,HX,BY,z),s);put(p,cz(.47,.07,mf,HX,BY,z-.2),s);put(p,cz(.47,.07,mf,HX,BY,z+.2),s);put(p,cz(.18,.58,mh,HX,BY,z,16),s)})
+})();
+(function(){
+  var p=def('track','트랙','lower',{lat:2.6,anchor:[1.1,1.14,-1.15]});
+  var mb=M(C.BELT,{r:.9}),ms=M(C.SHOE,{r:.8}),mg=M(0x6E685D,{r:.8}),N=54;
+  [-1,1].forEach(function(s){
+    var sh=new T.Shape();trace(sh,HX,BR);var hole=new T.Path();trace(hole,HX,.42);sh.holes.push(hole);
+    var g=new T.ExtrudeGeometry(sh,{depth:.62,bevelEnabled:false,curveSegments:20});g.translate(0,0,-.31);
+    var belt=new T.Mesh(g,mb);belt.position.set(0,BY,s*TZ);put(p,belt,s);
+    var im=new T.InstancedMesh(new T.BoxGeometry(.17,.07,.7),ms,N);
+    var gm=new T.InstancedMesh(new T.BoxGeometry(.04,.05,.7),mg,N);
+    [im,gm].forEach(function(m){m.frustumCulled=false;m.position.set(0,BY,s*TZ);put(p,m,s)});
+    TRK.push({s:im,g:gm})})
+})();
+(function(){
+  var p=def('uroll','상부롤러','lower',{off:[0,.9,0],lat:1.2,anchor:[.6,.88,-1.4]});
+  var m=M(0xEDEAE2),mh=M(C.HUB);
+  [-1,1].forEach(function(s){[-.5,.6].forEach(function(x){var z=s*TZ;
+    put(p,cz(.12,.34,m,x,.85,z,18),s);put(p,cz(.15,.06,mh,x,.85,z-.15,18),s);put(p,cz(.15,.06,mh,x,.85,z+.15,18),s)})})
+})();
+(function(){
+  var p=def('lroll','하부롤러','lower',{off:[0,-.5,0],lat:1.2,anchor:[.6,.3,-1.4]});
+  var m=M(0xEDEAE2),mf=M(0xC9C2B4);
+  [-1,1].forEach(function(s){[-1.2,-.6,0,.6,1.2].forEach(function(x){var z=s*TZ;
+    put(p,cz(.17,.32,m,x,.3,z,18),s);put(p,cz(.21,.07,mf,x,.3,z-.19,18),s);put(p,cz(.21,.07,mf,x,.3,z+.19,18),s)})})
+})();
+(function(){
+  var p=def('sprocket','스프로켓','lower',{off:[-1.2,0,0],lat:1.2,anchor:[-HX,.62,-1.45]});
+  var m=M(0xD8D2C4),mt=M(0xF0EDE6),mh=M(C.HUB);
+  [-1,1].forEach(function(s){var z=s*TZ,x0=-HX;
+    put(p,cz(.34,.4,m,x0,BY,z),s);put(p,cz(.17,.6,mh,x0,BY,z,16),s);
+    var tg=new T.Group();tg.position.set(x0,BY,z);SPR.push(tg);p.sg[s].add(tg);
+    for(var k=0;k<14;k++){var a=k/14*Math.PI*2,t=bx(.16,.14,.42,mt,Math.cos(a)*.4,Math.sin(a)*.4,0);t.rotation.z=a;putG(p,tg,t)}})
+})();
+(function(){
+  var p=def('tmotor','주행모터','lower',{off:[-1.4,0,0],lat:-.35,anchor:[-HX,.3,-.62]});
+  var md=M(C.YD),mc=M(0xC9DCE0),mb=M(C.HUB);
+  /* 트랙 안쪽(차체 쪽), 스프로켓 뒤에 붙는 모터 + 최종 감속기 */
+  [-1,1].forEach(function(s){
+    put(p,cz(.3,.2,md,-HX,BY,s*.69),s);
+    put(p,cz(.23,.16,mc,-HX,BY,s*.51),s);
+    put(p,cz(.08,.06,mb,-HX,BY,s*.41,12),s);
+    for(var k=0;k<6;k++){var a=k/6*Math.PI*2;put(p,cz(.025,.05,mb,-HX+Math.cos(a)*.24,BY+Math.sin(a)*.24,s*.58,8),s,true)}})
+})();
+(function(){
+  var p=def('lower','하부 프레임','lower',{anchor:[1.15,.8,-.75]});
+  var m=M(C.GR);
+  [-1,1].forEach(function(s){put(p,rb(3.1,.26,.3,.06,m,0,.61,s*TZ))});
+  [-1,1].forEach(function(s){put(p,rb(.5,.34,2.3,.08,m,s*1.0,.65,0))});
+  put(p,rb(2.4,.46,1.5,.12,m,0,.8,0));
+})();
+(function(){
+  var p=def('joint','센터조인트','lower',{off:[0,.8,0],anchor:[0,1.06,-.85]});
+  var mr=M(0xCFC9BC),mt=M(C.TL);
+  var ring=new T.Mesh(new T.TorusGeometry(.85,.08,12,48),mr);ring.rotation.x=Math.PI/2;ring.position.set(0,1.07,0);put(p,ring,null,true);
+  put(p,cy(.3,.46,mt,0,1.05,0,28));put(p,cy(.2,.1,mt,0,1.32,0,24));
+})();
+
+/* ===== 상부 선회부 ===== */
+(function(){
+  var p=def('upper','상부 프레임','upper',{off:[0,1.7,0],anchor:[0,1.55,-.96]});
+  var m=M(C.Y),md=M(C.DK),my=M(C.YD);
+  put(p,rb(3.5,.22,1.9,.06,m,-.2,1.22,0));
+  put(p,rb(1.5,.85,1.7,.14,m,-1.0,1.76,0));
+  put(p,rb(1.0,.62,.7,.1,m,-.15,1.64,.55));
+  put(p,rb(1.0,.55,.55,.1,m,-.15,1.6,-.65));
+  put(p,cy(.07,.55,md,-1.4,2.45,-.55,14));
+  put(p,rb(.7,.6,.1,.08,my,.75,1.62,.03));put(p,rb(.7,.6,.1,.08,my,.75,1.62,.57));
+  put(p,rb(.34,.3,.36,.06,my,1.5,1.48,.3));
+  put(p,cz(.09,.9,md,1.5,1.5,.3,14));
+  /* 엔진 후드 위 난간 */
+  var mr=M(0x6E685D);
+  put(p,cx(.025,1.3,mr,-1.0,2.55,.8,8),null,true);
+  [-1.6,-1.0,-.4].forEach(function(x){put(p,cy(.022,.36,mr,x,2.37,.8,8),null,true)});
+})();
+(function(){
+  var p=def('smotor','선회모터','upper',{off:[.4,2.3,-1.2],anchor:[.12,1.9,-.1]});
+  var mm=M(0xC9DCE0),mg=M(C.YD),mb=M(C.HUB);
+  put(p,cy(.17,.18,mg,.12,1.37,-.1,22));
+  put(p,cy(.13,.4,mm,.12,1.66,-.1,22));
+  put(p,cy(.07,.08,mb,.12,1.9,-.1,14));
+})();
+(function(){
+  var p=def('cw','카운터웨이트','upper',{off:[-2.2,1.7,0],anchor:[-2.15,1.7,-.96]});
+  var m=M(C.GR),my=M(C.YD),ml=MB(0xC2410C);
+  put(p,rb(.75,1.05,1.9,.2,m,-2.15,1.7,0));
+  put(p,rb(.8,.1,1.94,.04,my,-2.15,1.3,0));
+  [-1,1].forEach(function(s){put(p,bx(.05,.12,.22,ml,-2.54,1.98,s*.62))});
+})();
+(function(){
+  var p=def('cab','캐빈','upper',{off:[.2,3.2,-.3],anchor:[.9,2.2,-1.02]});
+  var m=M(C.Y),md=M(C.DK),mg=M(C.GL,{r:.2,op:.35}),mseat=M(0x6E685D,{r:.9});
+  var cz0=-.55;
+  put(p,rb(1.15,.14,1.0,.04,m,.88,1.4,cz0));
+  [.36,1.4].forEach(function(x){[cz0-.45,cz0+.45].forEach(function(z){put(p,rb(.09,1.35,.09,.02,m,x,2.15,z))})});
+  put(p,rb(1.3,.1,1.15,.04,m,.88,2.86,cz0));
+  var g=new T.Mesh(new T.BoxGeometry(1.02,1.2,.9),mg);g.position.set(.88,2.12,cz0);put(p,g,null,true);g.castShadow=false;
+  put(p,rb(.42,.12,.42,.04,mseat,.66,1.78,cz0));put(p,rb(.1,.5,.4,.04,mseat,.46,2.05,cz0));
+  put(p,bx(.3,.35,.14,md,1.15,1.65,cz0-.3));put(p,bx(.3,.35,.14,md,1.15,1.65,cz0+.3));
+  [-.3,.3].forEach(function(dz){put(p,cy(.03,.3,md,1.15,1.97,cz0+dz,10));put(p,cy(.055,.07,mseat,1.15,2.14,cz0+dz,12))});
+})();
+
+/* ===== 엔진룸 내부 ===== */
+(function(){
+  var p=def('engine','엔진','upper',{off:[-.8,4.4,0],anchor:[-1.1,1.65,-.42]});
+  var m=M(0xC9DCE0),mh=M(0xA9C3C9),mf=M(0x6E685D),mr=M(0xF0D2B8);
+  put(p,rb(.95,.5,.8,.06,m,-1.1,1.62,0));
+  for(var i=0;i<4;i++)put(p,rb(.16,.14,.7,.03,mh,-1.35+i*.22,1.95,0));
+  put(p,rb(.1,.62,1.1,.03,mr,-1.68,1.72,0));
+  put(p,cx(.3,.05,mf,-1.6,1.72,0,22));
+})();
+(function(){
+  var p=def('pump','유압펌프','upper',{off:[-.4,3.7,-1.6],anchor:[-.5,1.62,-.22]});
+  var m=M(0xF0D2B8),ms=M(0xD8D2C4);
+  put(p,cx(.22,.36,m,-.5,1.62,0,24));put(p,cx(.13,.2,ms,-.3,1.62,0,18));put(p,rb(.2,.3,.3,.04,m,-.5,1.8,0));
+})();
+(function(){
+  var p=def('valve','컨트롤 밸브','upper',{off:[-.1,2.4,-2.3],anchor:[-.15,1.6,-.9]});
+  var m=M(0xD3DCEB),ms=M(0xFFFFFF);
+  put(p,rb(.5,.36,.42,.05,m,-.15,1.6,-.66));
+  for(var i=0;i<5;i++)put(p,rb(.06,.16,.3,.02,ms,-.33+i*.09,1.86,-.66));
+})();
+(function(){
+  var p=def('tank','유압 탱크','upper',{off:[-.2,2.6,2.2],anchor:[-.15,1.64,.32]});
+  var m=M(0xDAD6CC),mc=M(0xFFFFFF);
+  put(p,rb(.7,.46,.5,.06,m,-.15,1.64,.57));put(p,cy(.08,.1,mc,.05,1.9,.57,16));
+})();
+
+/* ===== 작업장치 (순기구학) ===== */
+var B0=new V3(.7,1.55,0),P2=new V3(4.3,3.15,0),A1=new V3(4.809,.754,0);
+var Z0=.3;
+(function(){
+  var p=def('boom','붐','work',{off:[0,2.6,.8],fk:1,anchor:[2.7,3.95,Z0]});
+  var m=M(C.Y),md=M(C.YD),mp=M(0xB9B2A3),mh=M(0x4A453D,{r:.7});
+  var P0=[.7,1.55],P1=[1.95,3.35],Pe=[4.3,3.15];
+  var Aa=[P0[0]+.78*(P1[0]-P0[0]),P0[1]+.78*(P1[1]-P0[1])],Bb=[P1[0]+.2*(Pe[0]-P1[0]),P1[1]+.2*(Pe[1]-P1[1])];
+  var pts=[P0],i;
+  for(i=0;i<=10;i++){var t=i/10,u=1-t;pts.push([u*u*Aa[0]+2*u*t*P1[0]+t*t*Bb[0],u*u*Aa[1]+2*u*t*P1[1]+t*t*Bb[1]])}
+  pts.push(Pe);
+  var cum=[0];for(i=1;i<pts.length;i++)cum.push(cum[i-1]+Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]));
+  var key=[[0,.27],[.5,.42],[1,.2]];
+  function hwAt(t){for(var k=0;k<key.length-1;k++){if(t<=key[k+1][0]){var f=(t-key[k][0])/(key[k+1][0]-key[k][0]);return key[k][1]+f*(key[k+1][1]-key[k][1])}}return key[key.length-1][1]}
+  var hw=cum.map(function(c){return hwAt(c/cum[cum.length-1])});
+  var body=ext(beamShape(pts,hw),.44,m,.025);body.position.z=Z0;put(p,body);
+  put(p,cz(.3,.5,md,P0[0],P0[1],Z0,26));put(p,cz(.15,.64,mp,P0[0],P0[1],Z0,16));
+  put(p,cz(.26,.5,md,Pe[0],Pe[1],Z0,26));put(p,cz(.13,.64,mp,Pe[0],Pe[1],Z0,16));
+  var lg=[1.7,2.99];
+  put(p,beam(lg,[2.127,2.693],.12,.12,.3,md,Z0));put(p,cz(.15,.9,mp,2.127,2.693,Z0,16));
+  put(p,beam([2.655,3.29],[2.703,3.848],.13,.13,.3,md,Z0));put(p,cz(.15,.4,mp,2.703,3.848,Z0,16));
+  /* 붐 옆면을 따라가는 유압 호스 한 쌍 */
+  [-1,1].forEach(function(s){
+    var hp=[];for(var j=2;j<pts.length-1;j++)hp.push(new V3(pts[j][0],pts[j][1]+hw[j]*.45,Z0+s*.255));
+    hp.push(new V3(Pe[0]+.15,Pe[1]+.25,Z0+s*.2));
+    put(p,new T.Mesh(new T.TubeGeometry(new T.CatmullRomCurve3(hp),48,.03,6,false),mh),null,true)});
+})();
+(function(){
+  var p=def('arm','암','work',{off:[1.4,1.4,1.9],fk:2,anchor:[4.6,2.3,Z0]});
+  var m=M(C.Y),md=M(C.YD),mp=M(0xB9B2A3);
+  var body=ext(beamShape([[P2.x,P2.y],[A1.x,A1.y]],[.24,.17]),.36,m,.025);body.position.z=Z0;put(p,body);
+  put(p,cz(.28,.4,md,P2.x,P2.y,Z0,26));put(p,cz(.22,.42,md,A1.x,A1.y,Z0,24));put(p,cz(.11,.6,mp,A1.x,A1.y,Z0,14));
+  put(p,beam([P2.x,P2.y],[4.649,3.53],.14,.12,.3,md,Z0));put(p,cz(.15,.4,mp,4.649,3.53,Z0,16));
+  put(p,beam([4.414,2.612],[4.805,2.695],.1,.1,.3,md,Z0));put(p,cz(.14,.4,mp,4.805,2.695,Z0,16));
+  put(p,beam([4.7366,1.096],[4.952,1.142],.09,.09,.3,md,Z0));put(p,cz(.13,.4,mp,4.952,1.142,Z0,16));
+})();
+var soilMesh=null;
+(function(){
+  var p=def('bucket','버킷','work',{off:[2.4,.5,2.9],fk:3,anchor:[A1.x+.55,A1.y-.3,Z0-.52]});
+  var m=M(0xE6DFCF),mt=M(0xFFFFFF),mp=M(0xB9B2A3),md=M(C.YD);
+  var Cp=[[.30,.20],[.60,-.03],[.64,-.32],[.46,-.58],[.12,-.70],[-.30,-.70]];
+  var cv3=new T.CatmullRomCurve3(Cp.map(function(q){return new V3(q[0],q[1],0)}),false,'catmullrom',.5).getPoints(30);
+  var xy=cv3.map(function(v){return[v.x,v.y]});
+  var shell=ext(beamShape(xy,xy.map(function(){return .045})),1.0,m,.015);shell.position.set(A1.x,A1.y,Z0);put(p,shell);
+  var ps=new T.Shape();ps.moveTo(xy[0][0],xy[0][1]);for(var i=1;i<xy.length;i++)ps.lineTo(xy[i][0],xy[i][1]);ps.closePath();
+  [-.5,.5].forEach(function(dz){var pl=ext(ps,.07,m,.01);pl.position.set(A1.x,A1.y,Z0+dz);put(p,pl)});
+  [-.3,.3].forEach(function(dz){var ear=ext(beamShape([[.28,.18],[0,0]],[.14,.12]),.1,md,.01);ear.position.set(A1.x,A1.y,Z0+dz);put(p,ear);
+    put(p,cz(.17,.1,md,A1.x,A1.y,Z0+dz,20))});
+  put(p,cz(.09,.84,mp,A1.x,A1.y,Z0,14));
+  var lu=ext(beamShape([[.5,.0],[.5,.22]],[.1,.09]),.3,md,.01);lu.position.set(A1.x,A1.y,Z0);put(p,lu);
+  put(p,cz(.1,.4,mp,A1.x+.5,A1.y+.22,Z0,14));
+  for(var k=-2;k<=2;k++){var th=rb(.2,.1,.1,.02,mt,A1.x-.37,A1.y-.72,Z0+k*.22);th.rotation.z=.25;put(p,th)}
+  /* 버킷 안의 흙 */
+  soilMesh=new T.Mesh(new T.IcosahedronGeometry(1,1),M(C.SOIL,{r:1}));
+  soilMesh.position.set(A1.x+.24,A1.y-.36,Z0);soilMesh.scale.set(.1,.1,.1);soilMesh.visible=false;put(p,soilMesh,null,true);
+})();
+
+/* ===== 유압 실린더 · 링크 (동적) ===== */
+var UP=new V3(0,1,0);
+var gBar=new T.CylinderGeometry(.12,.12,1,18),gRod=new T.CylinderGeometry(.065,.065,1,14),gCol=new T.CylinderGeometry(.155,.155,.1,18),gEye=new T.CylinderGeometry(.1,.1,.34,14);
+gEye.rotateX(Math.PI/2);
+function cylSet(p,mb,mr,me){return {barrel:put(p,new T.Mesh(gBar,mb)),rod:put(p,new T.Mesh(gRod,mr)),col:put(p,new T.Mesh(gCol,me)),ea:put(p,new T.Mesh(gEye,me)),eb:put(p,new T.Mesh(gEye,me))}}
+function cylPart(id,name,off,lb,pair){
+  var p=def(id,name,'work',{off:off,dyn:true});
+  var mb=M(0xD8D2C4),mr=M(C.CH,{r:.4}),me=M(0xB9B2A3);
+  p.rig=cylSet(p,mb,mr,me);p.rig.type='cyl';p.rig.lb=lb;
+  if(pair){p.rig.pair=cylSet(p,mb,mr,me);p.rig.pair.lb=lb;p.rig.dz=pair}
+  return p}
+cylPart('bmcyl','붐 실린더',[.6,1.3,-2.6],.78,.34);
+cylPart('acyl','암 실린더',[1.2,1.6,-2.7],1.1);
+cylPart('bcyl','버킷 실린더',[2.0,.9,-2.7],.8);
+(function(){
+  var p=def('link','버킷 링크','work',{off:[3.4,.3,-.6],dyn:true});
+  var mb=M(0xD8D2C4),mp=M(C.CH,{r:.4});
+  var gb=new T.BoxGeometry(.12,1,.16),gp=new T.CylinderGeometry(.09,.09,.24,14);gp.rotateX(Math.PI/2);
+  p.rig={type:'link',b1:put(p,new T.Mesh(gb,mb)),b2:put(p,new T.Mesh(gb,mb)),p1:put(p,new T.Mesh(gp,mp)),p2:put(p,new T.Mesh(gp,mp)),p3:put(p,new T.Mesh(gp,mp))};
+})();
+
+/* 부품 번호 순서 정리 (아이들러부터) */
+var ORDER=['idler','track','uroll','lroll','sprocket','tmotor','joint','lower','upper','smotor','cw','cab','engine','pump','valve','tank','boom','bmcyl','arm','acyl','bcyl','link','bucket'];
+LIST.sort(function(a,b){return ORDER.indexOf(a.id)-ORDER.indexOf(b.id)});
+LIST.forEach(function(p,i){p.n=i+1});
+$('sub').textContent='부품 '+LIST.length+' · REV.2';
+
+/* ---------- 순기구학 ---------- */
+var ID=new M4(),Mb=new M4(),Ma=new M4(),Mk=new M4(),Rt=new M4(),Tm=new M4(),Fin=new M4();
+function rotAbout(out,p,th){out.makeTranslation(p.x,p.y,p.z);Tm.makeRotationZ(th);out.multiply(Tm);Tm.makeTranslation(-p.x,-p.y,-p.z);out.multiply(Tm);return out}
+var TIP0=new V3(A1.x-.4,A1.y-.76,0),tip=new V3();
+var AaR=new V3(4.952,1.142,Z0),LbR=new V3(A1.x+.5,A1.y+.22,Z0),JR=new V3(5.5,1.45,Z0);
+var L1=AaR.distanceTo(JR),L2=JR.distanceTo(LbR);
+var SG=((LbR.x-AaR.x)*(JR.y-AaR.y)-(LbR.y-AaR.y)*(JR.x-AaR.x))>=0?1:-1;
+var vA=new V3(),vB=new V3(),vC=new V3(),vD=new V3(),vE=new V3(),ov=new V3(),vJ=new V3(),tA=new V3(),tB=new V3(),tC=new V3(),dzv=new V3();
+function solveJ(Aa,Lb,out){
+  var dx=Lb.x-Aa.x,dy=Lb.y-Aa.y,ln=Math.hypot(dx,dy)||.001,ux=dx/ln,uy=dy/ln;
+  var d=Math.min(Math.max(ln,Math.abs(L1-L2)+.01),L1+L2-.01);
+  var a=(L1*L1-L2*L2+d*d)/(2*d),h=Math.sqrt(Math.max(L1*L1-a*a,0));
+  return out.set(Aa.x+a*ux-SG*h*uy,Aa.y+a*uy+SG*h*ux,Aa.z)}
+function updCyl(r,a,b){
+  vC.subVectors(b,a);var len=Math.max(vC.length(),.05);vC.normalize();var lb=Math.min(r.lb,len*.7);
+  r.barrel.position.copy(a).addScaledVector(vC,lb/2);r.barrel.scale.set(1,lb,1);r.barrel.quaternion.setFromUnitVectors(UP,vC);
+  var rl=Math.max(len-lb,.02);r.rod.position.copy(a).addScaledVector(vC,lb+rl/2);r.rod.scale.set(1,rl,1);r.rod.quaternion.setFromUnitVectors(UP,vC);
+  r.col.position.copy(a).addScaledVector(vC,lb);r.col.quaternion.setFromUnitVectors(UP,vC);
+  r.ea.position.copy(a);r.eb.position.copy(b)}
+function updBar(m,a,b){
+  vC.subVectors(b,a);var len=Math.max(vC.length(),.02);vC.normalize();
+  m.position.copy(a).addScaledVector(vC,len/2);m.scale.set(1,len,1);m.quaternion.setFromUnitVectors(UP,vC)}
+
+/* 실린더 길이만 계산 (계기용) */
+var Mb2=new M4(),Ma2=new M4(),Mk2=new M4(),R2=new M4(),w1=new V3(),w2=new V3(),w3=new V3(),w4=new V3(),w5=new V3();
+function cylLens(t1,t2,t3,out){
+  rotAbout(Mb2,B0,t1);rotAbout(R2,P2,t2);Ma2.copy(Mb2).multiply(R2);rotAbout(R2,A1,t3);Mk2.copy(Ma2).multiply(R2);
+  w1.set(1.5,1.5,Z0);w2.set(2.127,2.693,Z0).applyMatrix4(Mb2);out[0]=w1.distanceTo(w2);
+  w1.set(2.703,3.848,Z0).applyMatrix4(Mb2);w2.set(4.649,3.53,Z0).applyMatrix4(Ma2);out[1]=w1.distanceTo(w2);
+  w3.copy(AaR).applyMatrix4(Ma2);w4.copy(LbR).applyMatrix4(Mk2);solveJ(w3,w4,w5);
+  w1.set(4.805,2.695,Z0).applyMatrix4(Ma2);out[2]=w1.distanceTo(w5);return out}
+
+/* ---------- 상태 ---------- */
+var RM=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+var pose={b:0,a:0,k:0},expl=0,exGoal=0,anim=false,animT=0,spin=false,showPins=false,selected=[],mode='fade',cut=false,multi=false,lastCut=false,dirty=true,guide={on:false,i:0,play:false,t:0,prev:.55},swingOn=false,swingT=0,travelOn=false,FLOW=false,fdt=.016;
+var manual=false,tab='explore',lastT1=0,contact=false,swingVel=0;
+var LIM={b:[-.45,.5],a:[-1,.75],k:[-1,.7]};
+var guideGeo=new T.BufferGeometry();guideGeo.setAttribute('position',new T.BufferAttribute(new Float32Array(LIST.length*6),3));
+var guides=new T.LineSegments(guideGeo,new T.LineBasicMaterial({color:ACC,transparent:true,opacity:.5}));
+guides.frustumCulled=false;scene.add(guides);
+
+/* 스트로크 범위 미리 계산 */
+var SR=[[1e9,-1e9],[1e9,-1e9],[1e9,-1e9]],tmpL=[0,0,0];
+(function(){var i,u;
+  for(i=0;i<=40;i++){u=i/40;
+    cylLens(LIM.b[0]+(LIM.b[1]+.15-LIM.b[0])*u,0,0,tmpL);SR[0][0]=Math.min(SR[0][0],tmpL[0]);SR[0][1]=Math.max(SR[0][1],tmpL[0]);
+    cylLens(0,LIM.a[0]+(LIM.a[1]-LIM.a[0])*u,0,tmpL);SR[1][0]=Math.min(SR[1][0],tmpL[1]);SR[1][1]=Math.max(SR[1][1],tmpL[1]);
+    cylLens(0,0,LIM.k[0]+(LIM.k[1]-LIM.k[0])*u,tmpL);SR[2][0]=Math.min(SR[2][0],tmpL[2]);SR[2][1]=Math.max(SR[2][1],tmpL[2])}})();
+
+var Rs=new M4(),swingA=0,travelD=0,bktOff=new V3();
+var BM0=new V3(A1.x+.2,A1.y-.3,Z0),bmW=new V3(),tipW=new V3();
+function updateScene(){
+  var t1=pose.b,t2=pose.a,t3=pose.k,it;
+  for(it=0;it<6;it++){
+    rotAbout(Mb,B0,t1);rotAbout(Rt,P2,t2);Ma.copy(Mb).multiply(Rt);rotAbout(Rt,A1,t3);Mk.copy(Ma).multiply(Rt);
+    tip.copy(TIP0).applyMatrix4(Mk);
+    if(tip.y>=-.01)break;
+    var rx=tip.x-B0.x;if(rx<.5)break;
+    t1=Math.min(t1+(-.01-tip.y)/rx,LIM.b[1]+.15)}
+  lastT1=t1;contact=tip.y<.07;
+  Rs.makeRotationY(swingA);
+  var gp=guideGeo.attributes.position.array,gi=0;
+  LIST.forEach(function(p){
+    var o=p.off,base,e=expl*p.efc,sw=p.grp!=='lower';
+    if(!p.dyn){
+      base=p.fk===1?Mb:p.fk===2?Ma:p.fk===3?Mk:ID;
+      Fin.makeTranslation(o[0]*e,o[1]*e,o[2]*e).multiply(base);
+      if(sw)Fin.premultiply(Rs);
+      p.g.matrix.copy(Fin);p.g.matrixWorldNeedsUpdate=true;
+      if(p.sg){p.sg['-1'].position.z=-p.lat*e;p.sg['1'].position.z=p.lat*e}
+      p.a0.copy(p.anchor).applyMatrix4(base);if(sw)p.a0.applyMatrix4(Rs);
+      p.aw.copy(p.anchor).applyMatrix4(Fin);
+      if(p.lat)p.aw.z-=p.lat*e;
+    }
+  });
+  /* 흙이 나오는 버킷 입구 · 이빨 끝 (월드 좌표) */
+  var bk=P.bucket,eb=expl*bk.efc;bktOff.set(bk.off[0]*eb,bk.off[1]*eb,bk.off[2]*eb);
+  bmW.copy(BM0).applyMatrix4(Mk).add(bktOff).applyMatrix4(Rs);
+  tipW.copy(tip).add(bktOff).applyMatrix4(Rs);
+  ov.set(0,0,0);
+  vA.set(1.5,1.5,Z0);vB.set(2.127,2.693,Z0).applyMatrix4(Mb);dynPlace(P.bmcyl,vA,vB);
+  vA.set(2.703,3.848,Z0).applyMatrix4(Mb);vB.set(4.649,3.53,Z0).applyMatrix4(Ma);dynPlace(P.acyl,vA,vB);
+  vD.copy(AaR).applyMatrix4(Ma);vE.copy(LbR).applyMatrix4(Mk);solveJ(vD,vE,vJ);
+  vA.set(4.805,2.695,Z0).applyMatrix4(Ma);dynPlace(P.bcyl,vA,vJ);
+  var lk=P.link,lo=lk.off,r=lk.rig,el=expl*lk.efc;
+  ov.set(lo[0]*el,lo[1]*el,lo[2]*el);
+  tA.copy(vD).add(ov);tB.copy(vJ).add(ov);tC.copy(vE).add(ov);
+  updBar(r.b1,tA,tB);updBar(r.b2,tB,tC);r.p1.position.copy(tA);r.p2.position.copy(tB);r.p3.position.copy(tC);
+  lk.g.matrix.copy(Rs);lk.g.matrixWorldNeedsUpdate=true;
+  lk.a0.copy(vJ).applyMatrix4(Rs);lk.aw.copy(tB).applyMatrix4(Rs);
+  LIST.forEach(function(p){
+    gp[gi++]=p.a0.x;gp[gi++]=p.a0.y;gp[gi++]=p.a0.z;gp[gi++]=p.aw.x;gp[gi++]=p.aw.y;gp[gi++]=p.aw.z});
+  guideGeo.attributes.position.needsUpdate=true;guides.visible=expl>.03;
+  guides.material.opacity=Math.min(.55,expl*1.2);updateConn()}
+function dynPlace(p,a,b){
+  var o=p.off,e=expl*p.efc;ov.set(o[0]*e,o[1]*e,o[2]*e);
+  p.a0.copy(a).add(b).multiplyScalar(.5);
+  tA.copy(a).add(ov);tB.copy(b).add(ov);
+  if(p.rig.pair){
+    dzv.set(0,0,p.rig.dz);
+    tA.add(dzv);tB.add(dzv);updCyl(p.rig,tA,tB);
+    dzv.multiplyScalar(-2);tA.add(dzv);tB.add(dzv);updCyl(p.rig.pair,tA,tB);
+    dzv.multiplyScalar(-.5);tA.add(dzv);tB.add(dzv);
+  }else updCyl(p.rig,tA,tB);
+  p.aw.copy(p.a0).add(ov);
+  var ln=a.distanceTo(b),df=p.len?(ln-p.len)/fdt:0;p.len=ln;
+  p.flow=p.flow*.8+Math.max(-1,Math.min(1,df*3))*.2;
+  p.feed.copy(tA);
+  p.g.matrix.copy(Rs);p.g.matrixWorldNeedsUpdate=true;
+  p.a0.applyMatrix4(Rs);p.aw.applyMatrix4(Rs);p.feed.applyMatrix4(Rs)}
+
+/* ---------- 트랙 주행 ---------- */
+function layTracks(d){
+  var N=54,H=HX,R=BR+.03,Lp=4*H+2*Math.PI*R,i,k,s0,x,y,a,f,ph;
+  for(k=0;k<TRK.length;k++){var im=TRK[k].s,gm=TRK[k].g;
+    for(i=0;i<N;i++){
+      s0=(((i/N)*Lp-d)%Lp+Lp)%Lp;
+      if(s0<2*H){x=-H+s0;y=-R;a=0}
+      else if(s0<2*H+Math.PI*R){f=(s0-2*H)/R;ph=-Math.PI/2+f;x=H+R*Math.cos(ph);y=R*Math.sin(ph);a=ph+Math.PI/2}
+      else if(s0<4*H+Math.PI*R){x=H-(s0-2*H-Math.PI*R);y=R;a=Math.PI}
+      else{f=(s0-4*H-Math.PI*R)/R;ph=Math.PI/2+f;x=-H+R*Math.cos(ph);y=R*Math.sin(ph);a=ph+Math.PI/2}
+      LDM.position.set(x,y,0);LDM.rotation.set(0,0,a);LDM.updateMatrix();im.setMatrixAt(i,LDM.matrix);
+      GTMP.copy(LDM.matrix).multiply(GOFF);gm.setMatrixAt(i,GTMP)}
+    im.instanceMatrix.needsUpdate=true;gm.instanceMatrix.needsUpdate=true}
+  for(k=0;k<SPR.length;k++)SPR[k].rotation.z=-d/.4;
+  if(gmap)gmap.offset.x=(d/2)%1}
+layTracks(0);
+
+/* ---------- 흙 입자 ---------- */
+var SN=260,soilIM=new T.InstancedMesh(new T.IcosahedronGeometry(.07,0),M(C.SOIL,{r:1}),SN);
+soilIM.castShadow=true;soilIM.frustumCulled=false;scene.add(soilIM);
+var SP=[],sHead=0,sLive=0,load=0,prevK=0,prevA=0,spawnAcc=0,ZERO=new M4().makeScale(0,0,0);
+for(var si=0;si<SN;si++){SP.push({p:new V3(),v:new V3(),age:0,on:false,land:false,s:1});soilIM.setMatrixAt(si,ZERO)}
+soilIM.instanceMatrix.needsUpdate=true;
+function spawn(at,vx,vy,vz,s){
+  var q=SP[sHead];sHead=(sHead+1)%SN;if(!q.on)sLive++;
+  q.p.copy(at);q.p.x+=(Math.random()-.5)*.25;q.p.z+=(Math.random()-.5)*.35;
+  q.v.set(vx,vy,vz);q.age=0;q.on=true;q.land=false;q.s=s||(.7+Math.random()*.7)}
+function stepSoil(dt){
+  if(!sLive)return false;
+  for(var i=0;i<SN;i++){var q=SP[i];if(!q.on)continue;
+    q.age+=dt;
+    if(!q.land){q.v.y-=9.8*dt;q.p.addScaledVector(q.v,dt);if(q.p.y<=.04){q.p.y=.04;q.land=true}}
+    var sc2=q.s*(q.age>9?Math.max(0,1-(q.age-9)):1);
+    if(sc2<=0){q.on=false;sLive--;soilIM.setMatrixAt(i,ZERO);continue}
+    LDM.position.copy(q.p);LDM.rotation.set(q.age*3*(q.land?0:1),i,0);LDM.scale.set(sc2,sc2*.8,sc2);LDM.updateMatrix();soilIM.setMatrixAt(i,LDM.matrix)}
+  LDM.scale.set(1,1,1);soilIM.instanceMatrix.needsUpdate=true;return true}
+function stepLoad(dt){
+  var dk=pose.k-prevK,da=pose.a-prevA;prevK=pose.k;prevA=pose.a;
+  if(expl>.05)return;
+  if(contact&&(dk<-1e-4||da<-1e-4)){
+    load=Math.min(1,load+(Math.max(0,-dk)*1.3+Math.max(0,-da)*.5));
+    spawnAcc+=dt*14;while(spawnAcc>1){spawnAcc--;spawn(tipW,(Math.random()-.5)*.8,1.2+Math.random(),(Math.random()-.5)*.8,.5)}}
+  else if(!contact&&pose.k>.2&&load>0){
+    var rate=Math.min(1.2,(pose.k-.2)*3)*dt;load=Math.max(0,load-rate);
+    spawnAcc+=rate*90;while(spawnAcc>1){spawnAcc--;spawn(bmW,(Math.random()-.5)*.4,-.3,(Math.random()-.5)*.4)}}
+  soilMesh.visible=load>.02;
+  var l=.35+.65*load;soilMesh.scale.set(.34*l,.24*l,.42*Math.min(1,.5+load))}
+
+/* ---------- 유압 흐름 ---------- */
+var NP=7,FPATH=[
+ {a:'tank',b:'pump',kind:'on'},
+ {a:'pump',b:'valve',kind:'on'},
+ {a:'valve',b:'bmcyl',kind:'cyl'},{a:'valve',b:'acyl',kind:'cyl'},{a:'valve',b:'bcyl',kind:'cyl'},
+ {a:'valve',b:'smotor',kind:'swing'},
+ {a:'valve',b:'joint',kind:'travel'},
+ {a:'joint',b:'tmotor',kind:'travel'},
+ {a:'valve',b:'tank',kind:'ret'}];
+var FN=FPATH.length;
+FPATH.forEach(function(f){f.ph=0});
+var fGeo=new T.BufferGeometry();
+fGeo.setAttribute('position',new T.BufferAttribute(new Float32Array(FN*NP*3),3));
+fGeo.setAttribute('color',new T.BufferAttribute(new Float32Array(FN*NP*3),3));
+var fPts=new T.Points(fGeo,new T.PointsMaterial({size:8,sizeAttenuation:false,vertexColors:true,transparent:true,opacity:.95,depthTest:false}));
+fPts.renderOrder=12;fPts.frustumCulled=false;fPts.visible=false;scene.add(fPts);
+var lGeo=new T.BufferGeometry();
+lGeo.setAttribute('position',new T.BufferAttribute(new Float32Array(FN*6),3));
+lGeo.setAttribute('color',new T.BufferAttribute(new Float32Array(FN*6),3));
+var fLines=new T.LineSegments(lGeo,new T.LineBasicMaterial({vertexColors:true,transparent:true,opacity:.6,depthTest:false}));
+fLines.renderOrder=11;fLines.frustumCulled=false;fLines.visible=false;scene.add(fLines);
+var OR=[.76,.25,.05],BL=[.11,.31,.85],GRY=[.55,.52,.47];
+var ACT={b:0,a:0,k:0,sw:0,tr:0,any:0};
+function updateFlow(dt){
+  var pa=fGeo.attributes.position.array,ca=fGeo.attributes.color.array,la=lGeo.attributes.position.array,lc=lGeo.attributes.color.array,k,i,f,A,B,dir,col,br,t,q;
+  for(k=0;k<FN;k++){
+    f=FPATH[k];A=P[f.a].aw;B=(f.kind==='cyl')?P[f.b].feed:P[f.b].aw;
+    if(f.kind==='on'){dir=1;col=OR;br=1}
+    else if(f.kind==='cyl'){var fl=P[f.b].flow;dir=fl>.1?1:fl<-.1?-1:0;col=dir<0?BL:OR;br=dir?1:.35}
+    else if(f.kind==='swing'){dir=ACT.sw>.02?1:0;col=OR;br=dir?1:.35}
+    else if(f.kind==='travel'){dir=travelOn?1:0;col=OR;br=dir?1:.35}
+    else{dir=ACT.any>.02?1:0;col=BL;br=dir?1:.35}
+    if(!dir&&br<1)col=GRY;
+    f.ph+=dir*dt*.7;
+    q=k*6;la[q]=A.x;la[q+1]=A.y;la[q+2]=A.z;la[q+3]=B.x;la[q+4]=B.y;la[q+5]=B.z;
+    lc[q]=lc[q+3]=col[0];lc[q+1]=lc[q+4]=col[1];lc[q+2]=lc[q+5]=col[2];
+    for(i=0;i<NP;i++){
+      t=(((f.ph+i/NP)%1)+1)%1;q=(k*NP+i)*3;
+      pa[q]=A.x+(B.x-A.x)*t;pa[q+1]=A.y+(B.y-A.y)*t;pa[q+2]=A.z+(B.z-A.z)*t;
+      ca[q]=col[0];ca[q+1]=col[1];ca[q+2]=col[2]}}
+  fGeo.attributes.position.needsUpdate=true;fGeo.attributes.color.needsUpdate=true;
+  lGeo.attributes.position.needsUpdate=true;lGeo.attributes.color.needsUpdate=true}
+
+/* ---------- 선택 · 강조 · 보기 방식 ---------- */
+var CUT=new T.Plane(new V3(0,0,1),0);
+var CONN={};
+function ck(a,b){return a<b?a+'|'+b:b+'|'+a}
+[['idler','track','트랙이 아이들러를 감싸 돌며 진행 방향을 잡습니다.'],
+ ['track','sprocket','스프로켓 이빨이 트랙 링크에 맞물려 트랙을 당깁니다.'],
+ ['track','uroll','상부롤러가 트랙 윗면을 받칩니다.'],
+ ['track','lroll','하부롤러가 트랙 안쪽 면 위를 구르며 하중을 전달합니다.'],
+ ['uroll','lroll','같은 트랙 프레임에 달려 트랙 안쪽을 위아래에서 받칩니다.'],
+ ['idler','sprocket','트랙 양 끝에서 트랙을 팽팽하게 당깁니다.'],
+ ['sprocket','tmotor','주행모터가 최종 감속기를 거쳐 스프로켓을 돌립니다.'],
+ ['joint','tmotor','센터조인트를 지난 유압유가 좌우 주행모터로 갑니다.'],
+ ['tmotor','lower','주행모터가 트랙 프레임 뒤끝에 볼트로 고정됩니다.'],
+ ['track','tmotor','주행모터의 회전이 스프로켓을 거쳐 트랙을 움직입니다.'],
+ ['joint','lower','하부 프레임 중앙에 센터조인트가 설치됩니다.'],
+ ['joint','upper','선회 베어링이 상부 프레임을 받치고 회전시킵니다.'],
+ ['joint','smotor','선회모터의 피니언이 선회 베어링 링기어를 돌립니다.'],
+ ['smotor','upper','선회모터가 상부 프레임에 세워 설치됩니다.'],
+ ['smotor','valve','밸브가 선회모터로 유압유를 보냅니다.'],
+ ['lower','lroll','하부롤러가 트랙 프레임에 고정됩니다.'],
+ ['lower','uroll','상부롤러가 트랙 프레임에 고정됩니다.'],
+ ['upper','cw','카운터웨이트가 본체 뒤쪽에 볼트로 고정됩니다.'],
+ ['upper','cab','캐빈이 상부 프레임 앞쪽에 얹힙니다.'],
+ ['upper','boom','붐 풋 핀으로 상부 프레임에 연결됩니다.'],
+ ['cw','boom','앞쪽 작업 하중을 뒤쪽 무게추가 상쇄합니다.'],
+ ['boom','bmcyl','좌우 붐 실린더가 붐을 들어 올리고 내립니다.'],
+ ['bmcyl','upper','실린더 뒤끝이 상부 프레임 브래킷에 고정됩니다.'],
+ ['boom','arm','붐 끝 핀에 암이 연결됩니다.'],
+ ['boom','acyl','암 실린더 뒤끝이 붐 윗면에 고정됩니다.'],
+ ['arm','acyl','암 실린더가 암을 당기고 폅니다.'],
+ ['arm','bucket','암 끝 핀에 버킷이 연결됩니다.'],
+ ['arm','bcyl','버킷 실린더 뒤끝이 암 앞면에 고정됩니다.'],
+ ['bcyl','link','실린더 로드 끝이 링크 접합부에 연결됩니다.'],
+ ['bcyl','bucket','링크를 거쳐 버킷을 말아 쥐거나 쏟아냅니다.'],
+ ['link','bucket','링크 한쪽 끝이 버킷 귀에 핀으로 연결됩니다.'],
+ ['link','arm','링크 다른 끝이 암 끝 브래킷에 핀으로 연결됩니다.'],
+ ['engine','pump','엔진 출력축이 펌프 축을 직접 돌립니다.'],
+ ['pump','valve','펌프의 고압 유압유가 컨트롤 밸브로 공급됩니다.'],
+ ['pump','tank','펌프가 탱크에서 유압유를 빨아들입니다.'],
+ ['valve','tank','실린더에서 돌아온 유압유가 탱크로 돌아갑니다.'],
+ ['valve','cab','조이스틱 신호가 컨트롤 밸브의 스풀을 움직입니다.'],
+ ['valve','bmcyl','밸브가 붐 실린더로 유압유를 보냅니다.'],
+ ['valve','acyl','밸브가 암 실린더로 유압유를 보냅니다.'],
+ ['valve','bcyl','밸브가 버킷 실린더로 유압유를 보냅니다.'],
+ ['valve','joint','주행용 유압이 센터조인트를 거쳐 하부의 주행모터로 갑니다.'],
+ ['engine','upper','엔진이 상부 프레임의 엔진룸에 고정됩니다.'],
+ ['pump','upper','펌프가 엔진 앞쪽, 상부 프레임 안에 설치됩니다.'],
+ ['valve','upper','컨트롤 밸브가 상부 프레임에 설치됩니다.'],
+ ['tank','upper','탱크가 상부 프레임 오른쪽에 설치됩니다.']
+].forEach(function(r){CONN[ck(r[0],r[1])]=r[2]});
+
+function highlight(){
+  var has=selected.length>0;
+  LIST.forEach(function(p){
+    var on=selected.indexOf(p.id)>=0,f=1;
+    if(mode==='xray')f=on?1:.18;else if(has&&!on)f=guide.on?.4:.14;
+    p.mats.forEach(function(m){
+      var wasT=m.transparent,wasS=m.side;
+      if(f<1){m.transparent=true;m.opacity=m.userData.bo*f;m.depthWrite=false}
+      else{m.transparent=m.userData.bt;m.opacity=m.userData.bo;m.depthWrite=m.userData.bd}
+      if(m.userData.edge)m.color.setHex(on&&has?ACC:INK);
+      else if(m.userData.bc){m.color.copy(m.userData.bc);if(on&&has)m.color.lerp(ACCC,.32)}
+      m.clippingPlanes=cut?[CUT]:[];m.clipShadows=true;if(!m.userData.edge)m.side=cut?T.DoubleSide:T.FrontSide;
+      if(wasT!==m.transparent||wasS!==m.side||lastCut!==cut)m.needsUpdate=true})});
+  lastCut=cut;dirty=true}
+
+var INTRO='<h2>부품을 선택해 보세요</h2><p>모델의 부품이나 주황 번호를 탭하면 역할, 힘의 흐름, 자주 생기는 문제가 표시됩니다.</p><dl><div><dt>탭 안내</dt><dd><b>분해</b>는 부품을 순서대로 떼어 보고, <b>동작</b>은 레버로 직접 굴착하며 계기를 봅니다. <b>유압</b>은 엔진에서 실린더까지 유압유가 가는 길을 보여줍니다.</dd></div></dl>';
+function showInfo(){
+  var box=$('info'),n=selected.length,i,j;
+  if(guide.on){guideInfo(box);return}
+  if(!n){box.innerHTML=INTRO;return}
+  if(n===1){
+    var p=P[selected[0]],d=D[p.id];
+    var rel=d.rel.map(function(r){return '<button class="chip" type="button" data-id="'+r+'"><b>'+P[r].n+'</b>'+P[r].name+'</button>'}).join('');
+    box.innerHTML='<h2><span class="num">'+p.n+'</span>'+p.name+'<span class="tag">'+GN[p.grp]+'</span></h2><p>'+d.t+'</p>'+
+      '<dl><div><dt>힘과 동력의 흐름</dt><dd>'+d.f+'</dd></div><div><dt>자주 생기는 문제</dt><dd>'+d.w+'</dd></div></dl>'+
+      '<div class="rel" aria-label="연결된 부품">'+rel+'</div>'+
+      '<div class="rel"><button class="btn" type="button" data-all="1">선택 해제 · 전체 보기</button></div>';
+    return}
+  var chips=selected.map(function(id){return '<button class="chip on" type="button" data-id="'+id+'"><b>'+P[id].n+'</b>'+P[id].name+'</button>'}).join('');
+  var pairs=[];
+  for(i=0;i<n;i++)for(j=i+1;j<n;j++){var r=CONN[ck(selected[i],selected[j])];
+    if(r)pairs.push('<li><strong>'+P[selected[i]].name+' ↔ '+P[selected[j]].name+'</strong><br><span>'+r+'</span></li>')}
+  box.innerHTML='<h2>선택한 부품 '+n+'개</h2><div class="rel">'+chips+'</div>'+
+    (pairs.length?'<dl><div><dt>직접 연결된 쌍 '+pairs.length+'개 · 3D 화면의 파란 선</dt><dd><ul class="pairs">'+pairs.join('')+'</ul></dd></div></dl>'
+      :'<p>선택한 부품 사이에 직접 연결된 쌍이 없습니다. 이어진 부품을 함께 골라 보세요. 예: 붐, 붐 실린더, 암</p>')+
+    '<div class="rel"><button class="btn" type="button" data-all="1">선택 해제 · 전체 보기</button></div>'}
+
+var focusGoal=null,distGoal=null,connGeo=new T.BufferGeometry();
+connGeo.setAttribute('position',new T.BufferAttribute(new Float32Array(60*6),3));
+var connLines=new T.LineSegments(connGeo,new T.LineBasicMaterial({color:0x1D4ED8,depthTest:false,transparent:true}));
+connLines.renderOrder=10;connLines.frustumCulled=false;connLines.visible=false;scene.add(connLines);
+function updateConn(){
+  var arr=connGeo.attributes.position.array,k=0,i,j,n=selected.length;
+  for(i=0;i<n;i++)for(j=i+1;j<n;j++){
+    if(CONN[ck(selected[i],selected[j])]&&k<60){
+      var a=P[selected[i]].aw,b=P[selected[j]].aw,q=k*6;
+      arr[q]=a.x;arr[q+1]=a.y;arr[q+2]=a.z;arr[q+3]=b.x;arr[q+4]=b.y;arr[q+5]=b.z;k++}}
+  connGeo.setDrawRange(0,k*2);connGeo.attributes.position.needsUpdate=true;connLines.visible=k>0}
+function select(id,opt){
+  if(guide.on)guideStop();
+  if(id===null){selected=[]}
+  else if(multi){var k=selected.indexOf(id);if(k>=0)selected.splice(k,1);else selected.push(id)}
+  else if(opt==='toggle'&&selected.length===1&&selected[0]===id){selected=[]}
+  else{selected=[id]}
+  showInfo();syncSel();highlight();
+  if(!manual)fitSel();
+  if(opt==='list'&&selected.length&&!$('info').hidden)$('info').scrollIntoView({block:'nearest',behavior:RM?'auto':'smooth'});
+  dirty=true}
+function syncSel(){
+  document.querySelectorAll('.chip[data-id]').forEach(function(c){c.classList.toggle('on',selected.indexOf(c.dataset.id)>=0&&!!c.closest('#list'))});
+  document.querySelectorAll('.pin').forEach(function(c){c.classList.toggle('on',selected.indexOf(c.dataset.id)>=0)})}
+
+/* ---------- 분해 가이드 ---------- */
+var STEPS=[
+ {t:'캐빈 분리',d:'가장 위의 캐빈부터 들어냅니다. 조종사가 앉는 공간이며, 조이스틱 신호가 여기서 컨트롤 밸브로 전달됩니다.',ids:['cab']},
+ {t:'버킷과 링크',d:'작업장치의 끝단입니다. 버킷 실린더의 힘이 링크를 거쳐 버킷을 말아 쥐고 쏟아냅니다. 이빨은 소모품이라 가장 먼저 교체합니다.',ids:['bucket','link','bcyl']},
+ {t:'암과 암 실린더',d:'암은 굴착 깊이와 거리를 정하고, 암 실린더가 암을 당기고 폅니다. 붐 끝 핀에서 분리됩니다.',ids:['arm','acyl']},
+ {t:'붐과 붐 실린더',d:'붐은 상부 프레임 앞에서 작업장치 전체를 들어 올립니다. 좌우 한 쌍의 붐 실린더가 붐을 밀어 올리고 내립니다.',ids:['boom','bmcyl']},
+ {t:'카운터웨이트',d:'본체 뒤쪽의 무게추입니다. 앞쪽 작업장치와 흙의 무게를 상쇄해 장비가 앞으로 기울지 않게 합니다.',ids:['cw']},
+ {t:'엔진룸 내부',d:'엔진이 유압펌프를 돌려 고압 유압유를 만들고, 컨트롤 밸브가 이를 각 실린더와 모터로 나눠 보내며, 탱크가 유압유를 저장합니다.',ids:['engine','pump','valve','tank']},
+ {t:'선회모터',d:'상부 프레임에 세워진 유압 모터입니다. 피니언 기어로 선회 베어링의 링기어를 돌려 상부를 회전시킵니다.',ids:['smotor']},
+ {t:'상부 프레임',d:'엔진, 유압 장치, 캐빈, 붐이 모두 얹히던 본체입니다. 선회 베어링 위에서 360도 돕니다.',ids:['upper']},
+ {t:'센터조인트와 선회 베어링',d:'센터조인트는 상부가 돌아도 유압 호스가 꼬이지 않게 하고, 선회 베어링은 상부 전체의 무게를 받치며 회전시킵니다.',ids:['joint']},
+ {t:'주행모터',d:'트랙 프레임 뒤끝의 유압 모터와 최종 감속기입니다. 좌우를 따로 돌려 전진, 후진, 방향 전환을 합니다.',ids:['tmotor']},
+ {t:'롤러·스프로켓·아이들러',d:'하부롤러는 무게를 받치고, 상부롤러는 트랙 윗면을 받칩니다. 스프로켓은 트랙을 당기고, 아이들러는 방향과 장력을 잡습니다.',ids:['uroll','lroll','sprocket','idler']},
+ {t:'트랙',d:'마지막으로 트랙을 벗기면 하부 프레임만 남습니다. 링크와 슈가 이어진 무한궤도로, 하중을 넓게 나눠 지면 위를 달립니다.',ids:['track']}];
+function guideApply(){
+  var rev={},k;guide.t=0;
+  for(k=0;k<=guide.i;k++)STEPS[k].ids.forEach(function(id){rev[id]=1});
+  LIST.forEach(function(p){p.ef=rev[p.id]?1:0;if(RM)p.efc=p.ef});
+  selected=STEPS[guide.i].ids.slice();
+  showInfo();syncSel();highlight();fitSel();dirty=true}
+function setEx(v){exGoal=v;$('ex').value=Math.round(v*100);$('exv').textContent=$('ex').value+'%';$('b-asm').textContent=v<.95?'완전 분해':'조립하기';if(RM)expl=v;dirty=true}
+function guideStart(){
+  guide.on=true;guide.i=0;guide.play=true;guide.prev=exGoal;setEx(1);
+  setPress($('b-guide'),true);guideApply()}
+function guideStop(){
+  if(!guide.on)return;guide.on=false;guide.play=false;
+  LIST.forEach(function(p){p.ef=1;if(RM)p.efc=1});setPress($('b-guide'),false)}
+function guideEnd(){guideStop();selected=[];setEx(guide.prev);showInfo();syncSel();highlight();fitSel();dirty=true}
+function guideInfo(box){
+  var st=STEPS[guide.i],last=guide.i===STEPS.length-1;
+  var chips=st.ids.map(function(id){return '<span class="chip on"><b>'+P[id].n+'</b>'+P[id].name+'</span>'}).join('');
+  box.innerHTML='<h2><span class="num">'+(guide.i+1)+'</span>'+st.t+'<span class="tag">'+(guide.i+1)+' / '+STEPS.length+'</span></h2><p>'+st.d+'</p>'+
+    '<dl><div><dt>이 단계에서 분리되는 부품</dt></div></dl><div class="rel">'+chips+'</div>'+
+    '<div class="rel"><button class="btn" type="button" data-g="prev"'+(guide.i===0?' disabled':'')+'>이전</button>'+
+    '<button class="btn pri" type="button" data-g="play">'+(guide.play?'일시정지':(last?'처음부터':'자동 재생'))+'</button>'+
+    '<button class="btn" type="button" data-g="next"'+(last?' disabled':'')+'>다음</button>'+
+    '<button class="btn" type="button" data-g="stop">가이드 종료</button></div>'}
+function guideAct(a){
+  if(a==='stop'){guideEnd();return}
+  if(a==='prev'&&guide.i>0){guide.i--;guide.play=false;guideApply()}
+  else if(a==='next'&&guide.i<STEPS.length-1){guide.i++;guide.play=false;guideApply()}
+  else if(a==='play'){
+    if(guide.play){guide.play=false;showInfo()}
+    else{if(guide.i===STEPS.length-1){guide.i=0;guide.play=true;guideApply()}else{guide.play=true;guide.t=0;showInfo()}}}}
+
+/* ---------- 패널 · 번호 핀 · 유압 경로 목록 생성 ---------- */
+function chip(id){return '<button class="chip" type="button" data-id="'+id+'"><b>'+P[id].n+'</b>'+P[id].name+'</button>'}
+(function(){
+  var list=$('list'),pins=$('pins');
+  GROUPS.forEach(function(g){
+    var h='<p class="grp">'+g[1]+'</p><div class="chips">';
+    LIST.forEach(function(p){if(p.grp===g[0])h+=chip(p.id)});
+    var w=document.createElement('div');w.innerHTML=h+'</div>';list.appendChild(w)});
+  LIST.forEach(function(p){
+    var b=document.createElement('button');b.type='button';b.className='pin';b.dataset.id=p.id;b.textContent=p.n;b.setAttribute('aria-label',p.n+'번 '+p.name);
+    b.dataset.name=p.name;
+    var ln=document.createElementNS('http://www.w3.org/2000/svg','line');ln.setAttribute('stroke','#C2410C');ln.setAttribute('stroke-opacity','.8');ln.setAttribute('stroke-width','1');ln.style.display='none';
+    $('leaders').appendChild(ln);p.ld=ln;
+    p.pin=b;pins.appendChild(b)});
+  var HS=[
+    ['흡입','펌프가 탱크의 유압유를 빨아들입니다.',['tank']],
+    ['가압','엔진이 돌리는 펌프가 유압유에 높은 압력을 겁니다.',['engine','pump']],
+    ['분배','조이스틱 신호에 따라 밸브의 스풀이 움직여 갈 곳과 양을 정합니다.',['cab','valve']],
+    ['작업','실린더는 직선으로 밀고 당기고, 선회모터는 상부를 돌립니다.',['bmcyl','acyl','bcyl','smotor']],
+    ['주행','주행용 유압은 센터조인트를 지나 하부의 주행모터로 갑니다.',['joint','tmotor']],
+    ['복귀','일을 마친 유압유는 밸브를 거쳐 탱크로 돌아와 식고 걸러집니다.',['tank']]];
+  $('hsteps').innerHTML=HS.map(function(s,i){return '<li><span class="sn">'+(i+1)+'</span><div><strong>'+s[0]+'</strong> · <span>'+s[1]+'</span><div class="chips">'+s[2].map(chip).join('')+'</div></div></li>'}).join('');
+  showInfo()})();
+function showAll(){select(null);moved=false;focusGoal=null;distGoal=null;resetCam()}
+$('dock').addEventListener('click',function(e){if(e.target.closest('[data-all]')){showAll();return}var g=e.target.closest('[data-g]');if(g){guideAct(g.dataset.g);return}var b=e.target.closest('[data-id]');if(b)select(b.dataset.id,'list')});
+$('pins').addEventListener('click',function(e){var b=e.target.closest('[data-id]');if(b)select(b.dataset.id)});
+
+/* ---------- 카메라 ---------- */
+var W=1,H=1,moved=false;
+var camDir=new V3(10.2,5.6,-17.3).normalize(),bb=new T.Box3(),bsz=new V3(),bcn=new V3();
+function boundsOf(list,c){bb.makeEmpty();list.forEach(function(q){bb.expandByObject(q.g)});bb.getCenter(c);return bb.getSize(bsz).length()/2}
+function fitDist(r){
+  var vf=camera.fov*Math.PI/360,hf=Math.atan(Math.tan(vf)*camera.aspect);
+  return r*.9/Math.sin(Math.min(vf,hf))*1.12}
+function withFinal(fn){
+  var se=expl,sv=LIST.map(function(q){return q.efc});
+  expl=exGoal;LIST.forEach(function(q){q.efc=q.ef});updateScene();
+  var out=fn();
+  expl=se;LIST.forEach(function(q,i){q.efc=sv[i]});updateScene();return out}
+function fitSel(){
+  if(!selected.length){focusGoal=null;distGoal=null;return}
+  var list=selected.map(function(id){return P[id]});
+  var d=withFinal(function(){var r=boundsOf(list,bcn);return Math.max(fitDist(r),list.length>1?8:6.5)});
+  focusGoal=bcn.clone();distGoal=d}
+function resetCam(){
+  var d=withFinal(function(){var r=boundsOf(LIST,bcn);return Math.max(fitDist(r),12)});
+  controls.target.copy(bcn);camera.position.copy(bcn).addScaledVector(camDir,d);controls.update();dirty=true}
+function resize(){
+  var r=stage.getBoundingClientRect();W=Math.max(r.width,1);H=Math.max(r.height,1);
+  renderer.setSize(W,H,false);camera.aspect=W/H;camera.updateProjectionMatrix();
+  if(!moved)resetCam();dirty=true}
+if(window.ResizeObserver){new ResizeObserver(resize).observe(stage)}else{window.addEventListener('resize',resize)}
+controls.addEventListener('change',function(){dirty=true});
+controls.addEventListener('start',function(){moved=true;focusGoal=null;distGoal=null;$('hint').classList.add('off')});
+
+/* ---------- 탭으로 부품 선택 ---------- */
+var ray=new T.Raycaster(),ndc=new T.Vector2(),down=null;
+cv.addEventListener('pointerdown',function(e){if(!e.isPrimary){down=null;return}down={x:e.clientX,y:e.clientY,t:performance.now()}});
+cv.addEventListener('pointerup',function(e){
+  if(!down||!e.isPrimary)return;var dx=e.clientX-down.x,dy=e.clientY-down.y,dt=performance.now()-down.t;down=null;
+  if(dx*dx+dy*dy>64||dt>500)return;
+  var r=cv.getBoundingClientRect();ndc.set(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1);
+  ray.setFromCamera(ndc,camera);
+  var hits=ray.intersectObjects(root.children,true),id=null;
+  for(var i=0;i<hits.length;i++){if(hits[i].object.userData.part&&!(cut&&hits[i].point.z<-CUT.constant-.001)){id=hits[i].object.userData.part;break}}
+  if(id){select(id,'toggle')}else if(selected.length&&!multi){select(selected[0],'toggle')}});
+cv.addEventListener('pointercancel',function(){down=null});
+
+/* ---------- 가상 조이스틱 · 키보드 ---------- */
+var JOY={L:{x:0,y:0},R:{x:0,y:0}},KEY={};
+['stL','stR'].forEach(function(id){
+  var el=$(id),s=el.dataset.s,kn=el.querySelector('.knob'),pid=null;
+  function setK(x,y){JOY[s].x=x;JOY[s].y=y;var r=el.clientWidth*.36;kn.style.transform='translate('+(x*r).toFixed(1)+'px,'+(y*r).toFixed(1)+'px)'}
+  function mv(e){var b=el.getBoundingClientRect(),r=b.width*.36,x=(e.clientX-b.left-b.width/2)/r,y=(e.clientY-b.top-b.height/2)/r,l=Math.hypot(x,y);
+    if(l>1){x/=l;y/=l}setK(x,y);dirty=true}
+  el.addEventListener('pointerdown',function(e){if(pid!==null)return;pid=e.pointerId;el.setPointerCapture(pid);el.classList.add('drag');mv(e);e.preventDefault()});
+  el.addEventListener('pointermove',function(e){if(e.pointerId===pid)mv(e)});
+  function up(e){if(e.pointerId!==pid)return;pid=null;el.classList.remove('drag');setK(0,0)}
+  el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up);el.addEventListener('lostpointercapture',up)});
+var KMAP={w:1,s:1,a:1,d:1,i:1,k:1,j:1,l:1};
+window.addEventListener('keydown',function(e){
+  if(!manual||e.ctrlKey||e.metaKey||e.altKey)return;var t=e.target;if(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'))return;
+  var k=(e.key||'').toLowerCase();if(KMAP[k]){KEY[k]=1;e.preventDefault();dirty=true}});
+window.addEventListener('keyup',function(e){var k=(e.key||'').toLowerCase();if(KMAP[k])KEY[k]=0});
+window.addEventListener('blur',function(){KEY={}});
+function clampAx(v){return Math.max(-1,Math.min(1,v))}
+function stepJoy(dt){
+  var lx=clampAx(JOY.L.x+(KEY.d||0)-(KEY.a||0)),ly=clampAx(JOY.L.y+(KEY.s||0)-(KEY.w||0));
+  var rx=clampAx(JOY.R.x+(KEY.l||0)-(KEY.j||0)),ry=clampAx(JOY.R.y+(KEY.k||0)-(KEY.i||0));
+  function dz(v){return Math.abs(v)<.12?0:(v-Math.sign(v)*.12)/.88}
+  lx=dz(lx);ly=dz(ly);rx=dz(rx);ry=dz(ry);
+  pose.b=lastT1;
+  pose.a=Math.max(LIM.a[0],Math.min(LIM.a[1],pose.a-ly*.8*dt));
+  pose.b=Math.max(LIM.b[0],Math.min(LIM.b[1]+.15,pose.b+ry*.55*dt));
+  pose.k=Math.max(LIM.k[0],Math.min(LIM.k[1],pose.k+rx*1.1*dt));
+  swingA-=lx*.9*dt;
+  return lx||ly||rx||ry}
+
+/* ---------- 실시간 계기 ---------- */
+var G={p:2.5,rpm:1000,st:[0,0,0],v:[0,0,0],sw0:0,kp:0,ap:0,dk:0,da:0,dig:false},gL=[0,0,0],lastG=0;
+var GB=[$('gb-b'),$('gb-a'),$('gb-k')].map(function(el){return {el:el,i:el.querySelector('.trk i'),o:el.querySelector('output'),c:''}});
+function stepGauges(dt){
+  cylLens(lastT1,pose.a,pose.k,gL);
+  var tot=0;
+  for(var i=0;i<3;i++){var s=(gL[i]-SR[i][0])/Math.max(SR[i][1]-SR[i][0],1e-3);s=Math.max(0,Math.min(1,s));
+    var v=(s-G.st[i])/Math.max(dt,1e-3);G.v[i]=G.v[i]*.8+v*.2;G.st[i]=s;tot+=Math.abs(G.v[i])}
+  swingVel=(swingA-G.sw0)/Math.max(dt,1e-3);G.sw0=swingA;
+  G.dk=G.dk*.8+(pose.k-G.kp)/Math.max(dt,1e-3)*.2;G.da=G.da*.8+(pose.a-G.ap)/Math.max(dt,1e-3)*.2;G.kp=pose.k;G.ap=pose.a;
+  G.dig=contact&&expl<.05&&(G.dk<-.05||G.da<-.05);
+  ACT.sw=Math.abs(swingVel);ACT.tr=travelOn?1:0;ACT.any=tot+ACT.sw*.5+ACT.tr;
+  var target=2.5;
+  if(ACT.any>.02)target=7+Math.min(1,tot)*12+Math.min(1,ACT.sw)*6+ACT.tr*10+load*4*Math.max(0,G.v[0]);
+  if(G.dig)target=29+load*4;
+  target=Math.min(34.3,target);
+  G.p+=(target-G.p)*Math.min(1,dt*4);
+  G.rpm+=((ACT.any>.02?1850:1000)-G.rpm)*Math.min(1,dt*2)}
+function fmt(v,d){return v.toFixed(d)}
+function renderGauges(){
+  var p=G.p,hot=p>26,sw=((swingA*180/Math.PI)%360+540)%360-180;
+  $('g-p').innerHTML=fmt(p,1)+'<small> MPa</small>';$('g-p').classList.toggle('hot',hot);
+  var pb=$('g-pb');pb.style.width=(p/34.3*100).toFixed(1)+'%';pb.classList.toggle('hot',hot);
+  $('g-sw').innerHTML=(sw>0?'+':'')+Math.round(sw)+'<small>°</small>';
+  $('g-rpm').innerHTML=Math.round(G.rpm/10)*10+'<small> rpm</small>';
+  $('g-ld').innerHTML=Math.round(load*100)+'<small>% · '+(travelOn?'3.4':'0.0')+' km/h</small>';
+  GB.forEach(function(g,i){var s=G.st[i],v=G.v[i],c=v>.03?'ext':v<-.03?'ret':'';
+    g.i.style.width=(s*100).toFixed(1)+'%';g.o.textContent=(c==='ext'?'▲ ':c==='ret'?'▼ ':'')+Math.round(s*100)+'%';
+    if(c!==g.c){g.el.classList.remove('ext','ret');if(c)g.el.classList.add(c);g.c=c}});
+  var st=G.dig?'굴착 중 · 고부하':load>.02&&!contact&&pose.k>.2?'흙 쏟는 중':ACT.any>.02?'작동 중':'정지';
+  $('gstate').textContent=st;
+  $('h-p').innerHTML=fmt(p,1)+'<small> MPa</small>';$('h-p').classList.toggle('hot',hot);
+  var act=[];if(Math.abs(G.v[0])>.03)act.push('붐');if(Math.abs(G.v[1])>.03)act.push('암');if(Math.abs(G.v[2])>.03)act.push('버킷');
+  if(ACT.sw>.02)act.push('선회');if(travelOn)act.push('주행');
+  $('h-act').textContent=act.length?act.join(' · '):'없음';
+  $('vtag').textContent='VIEW A · 선회 '+(sw>0?'+':'')+Math.round(sw)+'°'+(load>.02?' · 적재 '+Math.round(load*100)+'%':'')}
+
+/* ---------- 제어 ---------- */
+function setPress(b,on){b.setAttribute('aria-pressed',on?'true':'false')}
+$('ex').addEventListener('input',function(){setEx(this.value/100)});
+$('b-asm').addEventListener('click',function(){setEx(exGoal<.95?1:0)});
+function setManual(on){
+  manual=on;setPress($('b-joy'),on);$('joy').hidden=!(on&&tab==='motion');$('joyhelp').hidden=!on;
+  if(on){setAnim(false);setSwing(false);if(guide.on)guideEnd();setEx(0);selected=[];showInfo();syncSel();highlight();focusGoal=null;distGoal=null;$('hint').classList.add('off')}
+  else{JOY.L.x=JOY.L.y=JOY.R.x=JOY.R.y=0;KEY={};document.querySelectorAll('.knob').forEach(function(k){k.style.transform=''})}
+  dirty=true}
+function setAnim(on){anim=on;setPress($('b-dig'),on);setPress($('b-hdig'),on);if(on){animT=0;if(manual)setManual(false);if(exGoal>.05&&tab!=='explode')setEx(0)}dirty=true}
+function setSwing(on){swingOn=on;setPress($('b-swing'),on);if(on){if(manual)setManual(false);swingT=Math.asin(Math.max(-1,Math.min(1,swingA/1.1)))/.7}dirty=true}
+function setFlow(on){FLOW=on;setPress($('b-flow'),on);fPts.visible=on;fLines.visible=on;dirty=true}
+$('b-joy').addEventListener('click',function(){setManual(!manual)});
+$('b-dig').addEventListener('click',function(){setAnim(!anim)});
+$('b-hdig').addEventListener('click',function(){setAnim(!anim)});
+$('b-swing').addEventListener('click',function(){setSwing(!swingOn)});
+$('b-trav').addEventListener('click',function(){travelOn=!travelOn;setPress(this,travelOn);dirty=true});
+$('b-flow').addEventListener('click',function(){setFlow(!FLOW)});
+$('b-spin').addEventListener('click',function(){spin=!spin;controls.autoRotate=spin;setPress(this,spin);dirty=true});
+$('b-pin').addEventListener('click',function(){showPins=!showPins;setPress(this,showPins);$('pins').hidden=!showPins;dirty=true});
+$('b-cam').addEventListener('click',function(){moved=false;focusGoal=null;distGoal=null;resetCam()});
+$('b-all').addEventListener('click',showAll);
+$('b-guide').addEventListener('click',function(){if(guide.on)guideEnd();else guideStart()});
+function setMode(m){
+  mode=m;cut=(m==='cut');
+  [['fade','m-fade'],['xray','m-xray'],['cut','m-cut']].forEach(function(q){setPress($(q[1]),q[0]===m)});
+  $('cutrow').hidden=!cut;highlight()}
+$('m-fade').addEventListener('click',function(){setMode('fade')});
+$('m-xray').addEventListener('click',function(){setMode('xray')});
+$('m-cut').addEventListener('click',function(){setMode('cut')});
+$('cutz').addEventListener('input',function(){var z=this.value/10;CUT.constant=-z;$('cutv').textContent=z.toFixed(1);dirty=true});
+$('b-multi').addEventListener('click',function(){
+  multi=!multi;setPress(this,multi);
+  if(!multi&&selected.length>1){var keep=selected[selected.length-1];selected=[keep];showInfo();syncSel();highlight();fitSel()}
+  dirty=true});
+[['b','ps-b','pv-b'],['a','ps-a','pv-a'],['k','ps-k','pv-k']].forEach(function(q){
+  $(q[1]).addEventListener('input',function(){
+    setAnim(false);pose[q[0]]=this.value*Math.PI/180;
+    pose[q[0]]=Math.max(LIM[q[0]][0],Math.min(LIM[q[0]][1],pose[q[0]]));$(q[2]).textContent=this.value+'°';dirty=true})});
+function syncPoseUI(){
+  [['b','ps-b','pv-b'],['a','ps-a','pv-a'],['k','ps-k','pv-k']].forEach(function(q){
+    var v=Math.round(pose[q[0]]*180/Math.PI);$(q[1]).value=v;$(q[2]).textContent=v+'°'})}
+
+/* ---------- 탭 ---------- */
+var TABS=['explore','explode','motion','hydro'];
+var HINTS={explore:'드래그로 회전 · 두 손가락으로 확대 · 부품을 탭하면 설명',explode:'슬라이더로 분해 정도 조절 · 분해 가이드로 순서대로 보기',motion:'직접 조작을 켜면 화면 아래 레버로 굴착할 수 있습니다',hydro:'주황 점은 고압 유압유, 파란 점은 돌아오는 유압유입니다'};
+function setTab(t){
+  if(t===tab)return;
+  var old=tab;tab=t;
+  TABS.forEach(function(k){var on=k===t;$('t-'+k).setAttribute('aria-selected',on?'true':'false');$('t-'+k).tabIndex=on?0:-1;$('p-'+k).hidden=!on});
+  $('info').hidden=(t==='motion');$('list').hidden=(t!=='explore');
+  if(old==='explode'&&guide.on)guideEnd();
+  if(old==='motion'&&manual)setManual(false);
+  if(t==='hydro'&&!FLOW)setFlow(true);
+  if(old==='hydro'&&FLOW)setFlow(false);
+  if(t==='motion'&&exGoal>.05&&!anim)setEx(0);
+  if(t==='explode'&&exGoal<.05)setEx(.55);
+  $('joy').hidden=!(manual&&t==='motion');
+  var h=$('hint');h.textContent=HINTS[t];h.classList.remove('off');clearTimeout(setTab.tm);setTab.tm=setTimeout(function(){h.classList.add('off')},4000);
+  dirty=true}
+TABS.forEach(function(k,i){
+  var b=$('t-'+k);b.tabIndex=k===tab?0:-1;
+  b.addEventListener('click',function(){setTab(k)});
+  b.addEventListener('keydown',function(e){var d=e.key==='ArrowRight'?1:e.key==='ArrowLeft'?-1:0;if(!d)return;e.preventDefault();var n=TABS[(i+d+4)%4];setTab(n);$('t-'+n).focus()})});
+
+var KF=[[0,0,0],[-.04,.65,.55],[-.12,.05,.55],[-.12,-.45,-.7],[.32,-.45,-.8],[.28,.4,.6]];
+var CYCLE=10;
+function animPose(){
+  var u=((animT%CYCLE)/CYCLE)*KF.length,i=Math.floor(u),f=u-i,s=f*f*(3-2*f);
+  var A=KF[i%KF.length],B=KF[(i+1)%KF.length];
+  pose.b=A[0]+(B[0]-A[0])*s;pose.a=A[1]+(B[1]-A[1])*s;pose.k=A[2]+(B[2]-A[2])*s}
+
+/* ---------- 번호 핀 위치 ---------- */
+var pv=new V3(),PX=[],PIN_D=27;
+function updatePins(){
+  if(!showPins)return;
+  var i,j,it,n=LIST.length,a,b,dx,dy,d,pu,q,o;
+  for(i=0;i<n;i++){
+    q=LIST[i];pv.copy(q.aw).project(camera);
+    o=PX[i]||(PX[i]={x:0,y:0,ox:0,oy:0,v:true,fl:false});
+    o.ox=o.x=(pv.x*.5+.5)*W;o.oy=o.y=(-pv.y*.5+.5)*H;o.v=!(pv.z>1||pv.z<-1||o.ox<-8||o.ox>W+8||o.oy<-8||o.oy>H+8)}
+  for(it=0;it<6;it++)for(i=0;i<n;i++){
+    a=PX[i];if(!a.v)continue;
+    for(j=i+1;j<n;j++){
+      b=PX[j];if(!b.v)continue;
+      dx=b.x-a.x;dy=b.y-a.y;d=Math.sqrt(dx*dx+dy*dy);
+      if(d<PIN_D){
+        if(d<.01){dx=(i%2?1:-1);dy=.6;d=Math.sqrt(dx*dx+dy*dy)}
+        pu=(PIN_D-d)/2;dx/=d;dy/=d;a.x-=dx*pu;a.y-=dy*pu;b.x+=dx*pu;b.y+=dy*pu}}}
+  for(i=0;i<n;i++){
+    q=LIST[i];o=PX[i];q.pin.hidden=!o.v;
+    if(!o.v){q.ld.style.display='none';continue}
+    o.x=Math.max(14,Math.min(W-14,o.x));o.y=Math.max(14,Math.min(H-14,o.y));
+    q.pin.style.transform='translate('+o.x.toFixed(1)+'px,'+o.y.toFixed(1)+'px)';
+    var fl=o.x>W-130;if(fl!==o.fl){o.fl=fl;q.pin.classList.toggle('flip',fl)}
+    var off=Math.abs(o.x-o.ox)+Math.abs(o.y-o.oy)>8;
+    if(off){q.ld.style.display='';q.ld.setAttribute('x1',o.ox.toFixed(1));q.ld.setAttribute('y1',o.oy.toFixed(1));q.ld.setAttribute('x2',o.x.toFixed(1));q.ld.setAttribute('y2',o.y.toFixed(1))}
+    else q.ld.style.display='none'}}
+
+/* ---------- 루프 ---------- */
+var last=performance.now(),lastUI=0,dp=new V3(),dv=new V3();
+function frame(now){
+  requestAnimationFrame(frame);
+  var dt=Math.min((now-last)/1000,.05);last=now;fdt=Math.max(dt,.004);
+  controls.update();
+  if(Math.abs(expl-exGoal)>.0008){expl+=(exGoal-expl)*Math.min(1,dt*(RM?60:7));dirty=true}
+  else if(expl!==exGoal){expl=exGoal;dirty=true}
+  if(anim){animT+=dt;animPose();dirty=true}
+  if(manual&&stepJoy(dt))dirty=true;
+  if((anim||manual)&&now-lastUI>120){syncPoseUI();lastUI=now}
+  var kk=RM?1:Math.min(1,dt*6),pe=false;
+  LIST.forEach(function(q){
+    if(q.efc!==q.ef){q.efc+=(q.ef-q.efc)*Math.min(1,dt*(RM?60:5));if(Math.abs(q.ef-q.efc)<.003)q.efc=q.ef;pe=true}});
+  if(pe)dirty=true;
+  if(guide.on&&guide.play){
+    guide.t+=dt;
+    if(guide.t>3.8){guide.t=0;if(guide.i<STEPS.length-1){guide.i++;guideApply()}else{guide.play=false;showInfo()}}}
+  if(swingOn){swingT+=dt;swingA=Math.sin(swingT*.7)*1.1;dirty=true}
+  else if(!manual&&Math.abs(swingA)>.002){swingA*=Math.max(0,1-dt*2.5);dirty=true}
+  else if(!manual&&swingA!==0){swingA=0;dirty=true}
+  if(travelOn){travelD+=dt*1.4;layTracks(travelD);dirty=true}
+  if(FLOW)dirty=true;
+  if(focusGoal){
+    dp.copy(focusGoal).sub(controls.target).multiplyScalar(kk);
+    controls.target.add(dp);camera.position.add(dp);
+    var settled=dp.lengthSq()<1e-6;
+    if(distGoal){
+      dv.copy(camera.position).sub(controls.target);var cd=dv.length();
+      dv.setLength(cd+(distGoal-cd)*kk);camera.position.copy(controls.target).add(dv);
+      if(Math.abs(distGoal-cd)>.02)settled=false}
+    if(settled){focusGoal=null;distGoal=null}
+    dirty=true}
+  stepGauges(dt);
+  if(dirty){
+    dirty=false;updateScene();
+    stepLoad(dt);
+    if(FLOW)updateFlow(dt);
+    var cdist=camera.position.distanceTo(controls.target);scene.fog.near=cdist*1.05;scene.fog.far=cdist*2.4;
+    if(stepSoil(dt))dirty=true;
+    renderer.render(scene,camera);updatePins()}
+  else if(sLive){stepSoil(dt);renderer.render(scene,camera)}
+  if(now-lastG>100){lastG=now;renderGauges()}}
+updateScene();resize();highlight();syncPoseUI();setTab('explore');
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
