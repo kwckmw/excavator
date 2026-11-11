@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>굴삭기 3D 분해도</title>
+<title>건설장비 3D 분해도</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -27,12 +27,10 @@ body{
   padding-bottom:max(10px,env(safe-area-inset-bottom,0px));
 }
 #app{height:100%;display:grid;gap:10px;grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"top" "stage" "dock"}
-.mach{display:flex;flex:none;padding-bottom:2px}
-.mbtn{height:44px;padding:0 13px;font:600 13.5px var(--sans);color:var(--ink);background:var(--sheet);border:1.5px solid var(--ink);border-radius:0;cursor:pointer}
-.mbtn+.mbtn{border-left:none}
-.mbtn[aria-pressed=true]{background:var(--ink);color:var(--sheet)}
-.mbtn:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
-.top{grid-area:top;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;min-width:0;padding-bottom:8px;border-bottom:1.5px solid var(--ink)}
+.mach{display:flex;align-items:center;gap:8px;flex:0 1 250px;padding-bottom:2px;font:500 11px var(--mono);letter-spacing:.08em;color:var(--mut)}
+#ksel{flex:1;min-width:0;height:44px;padding:0 34px 0 12px;font:600 15px var(--sans);color:var(--ink);background:var(--sheet) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231C1B19' stroke-width='1.8'/%3E%3C/svg%3E") no-repeat right 12px center;border:1.5px solid var(--ink);border-radius:0;-webkit-appearance:none;appearance:none;cursor:pointer}
+#ksel:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.top{grid-area:top;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:6px 12px;min-width:0;padding-bottom:8px;border-bottom:1.5px solid var(--ink)}
 .top .fig{display:block;font:500 11px var(--mono);letter-spacing:.08em;color:var(--mut)}
 .top h1{margin:0;font-size:20px;font-weight:700;letter-spacing:-.01em;line-height:1.25}
 .top .sub{margin:0;font:500 11px var(--mono);color:var(--mut);white-space:nowrap;padding-bottom:3px}
@@ -128,8 +126,8 @@ details summary{cursor:pointer;font-size:13px;color:var(--mut);padding:4px 0}
 .pbar i{display:block;height:100%;width:0;background:var(--ink)}
 .pbar i.hot{background:var(--acc)}
 .bars{display:flex;flex-direction:column;gap:9px}
-.bar{display:grid;grid-template-columns:78px minmax(0,1fr) 54px;align-items:center;gap:10px}
-.bar span{font-size:12.5px}
+.bar{display:grid;grid-template-columns:96px minmax(0,1fr) 54px;align-items:center;gap:10px}
+.bar span{font-size:12.5px;white-space:nowrap}
 .bar .trk{height:10px;border:1.5px solid var(--ink);background:var(--sheet)}
 .bar .trk i{display:block;height:100%;width:0;background:var(--ink)}
 .bar.ext .trk i{background:var(--acc)}
@@ -161,10 +159,10 @@ details summary{cursor:pointer;font-size:13px;color:var(--mut);padding:4px 0}
 <body>
 <div id="app">
 <header class="top">
-  <div><span class="fig" id="fig">FIG. 01 · 크롤러 굴삭기</span><h1 id="ttl">굴삭기 3D 분해도</h1></div>
-  <div class="mach" role="group" aria-label="장비 선택">
-    <button class="mbtn" id="k-ex" type="button" aria-pressed="true">굴삭기</button><button class="mbtn" id="k-wl" type="button" aria-pressed="false">휠로더</button>
-  </div>
+  <div><span class="fig" id="fig">FIG. 01 · 크롤러 굴삭기</span><h1 id="ttl">크롤러 굴삭기 3D 분해도</h1></div>
+  <label class="mach"><span>장비</span><select id="ksel" aria-label="장비 선택">
+    <option value="ex">크롤러 굴삭기</option><option value="wx">휠 굴삭기</option><option value="wl">휠로더</option><option value="sl">스키드로더</option><option value="dt">덤프트럭</option><option value="dz">도저</option><option value="mg">모터 그레이더</option>
+  </select></label>
 </header>
 
 <main class="stage" id="stage">
@@ -225,6 +223,7 @@ details summary{cursor:pointer;font-size:13px;color:var(--mut);padding:4px 0}
       <button class="btn" id="b-dig" type="button" aria-pressed="false">굴착 자동</button>
       <button class="btn" id="b-swing" type="button" aria-pressed="false">선회 자동</button>
       <button class="btn" id="b-trav" type="button" aria-pressed="false">주행</button>
+      <button class="btn" id="b-rip" type="button" aria-pressed="false" hidden>리퍼 내리기</button>
     </div>
     <p class="note" id="joyhelp" hidden>ISO 조작 방식입니다. 왼쪽 레버는 앞뒤로 암을 펴고 당기며 좌우로 선회합니다. 오른쪽 레버는 앞뒤로 붐을 내리고 올리며, 왼쪽으로 버킷을 오므리고 오른쪽으로 폅니다. 키보드: <span class="kbd">W</span><span class="kbd">S</span><span class="kbd">A</span><span class="kbd">D</span> 왼쪽, <span class="kbd">I</span><span class="kbd">K</span><span class="kbd">J</span><span class="kbd">L</span> 오른쪽. 버킷을 땅에 대고 오므리면 흙이 담기고, 펴면 쏟아집니다.</p>
     <div class="ghead"><h2>실시간 계기</h2><span id="gstate">정지</span></div>
@@ -232,7 +231,7 @@ details summary{cursor:pointer;font-size:13px;color:var(--mut);padding:4px 0}
       <div><span class="gl">펌프 압력</span><span class="gv" id="g-p">0.0<small> MPa</small></span><div class="pbar"><i id="g-pb"></i></div></div>
       <div><span class="gl" id="gl-sw">선회각</span><span class="gv" id="g-sw">0<small>°</small></span></div>
       <div><span class="gl">엔진 회전수</span><span class="gv" id="g-rpm">1000<small> rpm</small></span></div>
-      <div><span class="gl">버킷 적재 · 주행</span><span class="gv" id="g-ld">0<small>% · 0.0 km/h</small></span></div>
+      <div><span class="gl" id="gl-ld">버킷 적재 · 주행</span><span class="gv" id="g-ld">0<small>% · 0.0 km/h</small></span></div>
     </div>
     <div class="bars">
       <div class="bar" id="gb-b"><span>붐 실린더</span><div class="trk"><i></i></div><output>0%</output></div>
@@ -310,7 +309,7 @@ var WK=(function(){
 var TPL=$('app').innerHTML,stopCur=null;
 function start(kind){if(stopCur){try{stopCur()}catch(e){}stopCur=null}$('app').innerHTML=TPL;stopCur=boot(kind)||null}
 function boot(KIND){
-var EX=KIND!=='wl',alive=true,offs=[];
+var EX=KIND==='ex'||KIND==='wx',WX=KIND==='wx',SL=KIND==='sl',WL=KIND==='wl',DT=KIND==='dt',DZ=KIND==='dz',MG=KIND==='mg',alive=true,offs=[];
 function onWin(ev,fn){window.addEventListener(ev,fn);offs.push(function(){window.removeEventListener(ev,fn)})}
 
 /* ---------- 부품 설명 데이터 ---------- */
@@ -342,7 +341,7 @@ link:{t:'버킷 실린더의 직선 운동을 버킷의 큰 회전으로 바꿔�
 bucket:{t:'흙을 퍼 담는 끝단입니다. 바닥 끝의 이빨(팁)은 지면과 직접 마찰하는 소모 부품이라 주기적으로 교체합니다.',f:'버킷 실린더와 링크의 회전 → 흙을 파고 담고 쏟음',w:'이빨 마모·파손, 바닥판 마모',rel:['link','arm','bcyl']}
 };
 
-if(!EX){
+if(WL){
 GROUPS=[['front','프런트 차체'],['rear','리어 차체'],['work','작업장치']];
 GN={front:'프런트 차체',rear:'리어 차체',work:'작업장치'};
 D={
@@ -371,20 +370,151 @@ blink:{t:'벨크랭크 아래쪽 끝과 버킷 뒷면을 잇는 막대입니다.
 bucket:{t:'흙이나 골재를 퍼 담는 넓은 통입니다. 굴삭기 버킷보다 훨씬 넓고, 땅에 평평하게 대고 차체가 밀고 들어가며 담습니다. 참고한 35톤급 휠로더는 버킷 용량이 7.0 ㎥입니다.',f:'차체 전진(밀기) + 틸트 백 → 적재, 리프트 → 덤프',w:'커팅 엣지·이빨 마모, 바닥판 마모',rel:['arm','blink','cw']}
 };
 }
-var TXT=EX?{ttl:'굴삭기 3D 분해도',fig:'FIG. 01 · 크롤러 굴삭기',sw:'선회',dig:'굴착 자동',swb:'선회 자동',hdig:'굴착하며 보기',digst:'굴착 중 · 고부하',
+if(SL){
+GROUPS=[['drive','프레임·주행'],['body','동력·차체'],['work','작업장치']];
+GN={drive:'프레임·주행',body:'동력·차체',work:'작업장치'};
+D={
+fwheel:{t:'앞바퀴입니다. 스키드로더의 바퀴는 좌우로 꺾이지 않습니다. 왼쪽 두 바퀴와 오른쪽 두 바퀴를 서로 다른 속도로 돌려 방향을 바꾸는데, 이때 바퀴가 옆으로 미끄러지기(스키드) 때문에 스키드 스티어라고 부릅니다.',f:'체인 → 앞 스프로켓 → 앞바퀴 → 지면',w:'미끄러지며 돌기 때문에 타이어가 빨리 닳음, 림 손상',rel:['rwheel','chain','frame']},
+rwheel:{t:'뒷바퀴입니다. 같은 쪽 앞바퀴와 체인으로 묶여 항상 같은 속도로 돕니다. 빈 차일 때는 엔진이 뒤에 있어 무게가 뒷바퀴에 더 실리고, 버킷에 짐을 실으면 앞바퀴로 옮겨 갑니다.',f:'체인 → 뒤 스프로켓 → 뒷바퀴 → 지면',w:'타이어 편마모, 앞뒤 타이어 지름 차이로 체인에 무리',rel:['fwheel','chain','frame']},
+chain:{t:'프레임 양옆에 붙은 긴 상자입니다. 안에서 주행모터의 스프로켓이 체인 두 줄로 앞바퀴와 뒷바퀴 축을 함께 돌립니다. 체인은 오일에 잠겨 있습니다.',f:'주행모터 → 구동 스프로켓 → 체인 → 앞·뒤 차축',w:'체인 늘어남, 케이스 오일 누유, 차축 베어링 마모',rel:['dmotor','fwheel','rwheel','frame']},
+dmotor:{t:'좌우에 하나씩 있는 유압 주행모터입니다. 각 모터가 자기 쪽 바퀴 두 개를 맡습니다. 두 모터를 같은 속도로 돌리면 직진, 한쪽을 느리게 하면 회전, 서로 반대로 돌리면 제자리에서 돕니다.',f:'주행 펌프 → 주행모터 → 체인 → 바퀴',w:'내부 마모로 한쪽이 느려져 직진이 틀어짐',rel:['hstat','chain','frame']},
+frame:{t:'욕조처럼 생긴 일체형 뼈대입니다. 안쪽에 유압 장치를 담고, 양옆에 체인 케이스가 붙으며, 뒤쪽 기둥 꼭대기에 리프트 암의 뿌리 핀이 걸립니다. 차체를 꺾는 관절이 없는 한 덩어리입니다.',f:'버킷 하중 → 리프트 암 → 뒤 기둥 → 프레임 → 바퀴',w:'기둥 핀 구멍 마모, 바닥판 부식',rel:['chain','dmotor','arm','lcyl','cab','engine','hood']},
+engine:{t:'조종석 뒤에 놓인 디젤 엔진입니다. 주행 펌프와 작업 펌프를 돌리는 것이 일의 전부이고, 바퀴와 기계적으로 직접 이어지지 않습니다. 참고한 장비는 정격 출력이 55 kW입니다.',f:'연료 → 엔진 회전 → 주행 펌프 + 작업 펌프',w:'먼지 많은 현장에서 에어필터 막힘, 과열',rel:['hstat','pump','hood','frame']},
+hstat:{t:'엔진에 직결된 주행용 유압펌프 두 개(탠덤)입니다. 왼쪽 모터용과 오른쪽 모터용이 따로 있고, 레버를 미는 만큼 토출량과 방향이 바뀌어 속도와 전진·후진이 정해집니다. 이런 방식을 정유압 변속(HST)이라 합니다.',f:'엔진 → 주행 펌프(좌·우) → 주행모터(좌·우)',w:'차지 압력 저하, 좌우 펌프 편차로 직진 불량',rel:['engine','dmotor','pump','tank']},
+pump:{t:'리프트·틸트 실린더와 어태치먼트에 유압유를 보내는 기어 펌프입니다. 주행 펌프 뒤에 이어 붙어 엔진으로 함께 돕니다.',f:'엔진 → 작업 펌프 → 컨트롤 밸브',w:'내부 마모로 리프트 속도 저하',rel:['hstat','valve','tank','engine']},
+valve:{t:'조이스틱 신호에 따라 유압유를 리프트 실린더, 틸트 실린더, 보조 유압(어태치먼트용)으로 나눠 보내는 밸브입니다.',f:'조이스틱 → 스풀 이동 → 리프트·틸트 실린더',w:'스풀 고착, 내부 누설로 암이 저절로 내려감',rel:['pump','tank','lcyl','tcyl','cab']},
+tank:{t:'유압유 탱크는 펌프가 빨아들일 유압유를 저장하고, 돌아온 유압유를 걸러줍니다. 주행과 작업 회로가 같은 유압유를 씁니다.',f:'돌아온 유압유 → 리턴 필터 → 탱크 → 펌프 흡입',w:'유압유 오염, 필터 막힘',rel:['pump','hstat','valve']},
+hood:{t:'엔진룸 뒤와 위를 덮는 문과 덮개입니다. 위쪽에 라디에이터와 유압유 냉각기가 있고, 뒷문을 열면 엔진 점검부가 한 번에 드러납니다.',f:'냉각팬 → 라디에이터·오일쿨러 → 열 배출',w:'냉각기 핀에 먼지가 막혀 과열',rel:['engine','frame']},
+cab:{t:'조종사가 앉는 보호 구조물(ROPS)입니다. 리프트 암 사이에 앉고 앞쪽으로 타고 내립니다. 왼손 레버로 주행과 회전, 오른손 레버로 리프트와 버킷을 조작하고, 안전바를 내려야 작동합니다.',f:'좌 레버 → 주행 펌프 / 우 레버 → 컨트롤 밸브',w:'안전바 스위치 고장, 측면 망 손상',rel:['frame','valve','hstat','arm']},
+arm:{t:'프레임 뒤 기둥에서 조종석 양옆을 지나 앞으로 뻗은 한 쌍의 팔입니다. 뿌리 핀 하나를 중심으로 돌기 때문에 버킷이 원호를 그리며 올라갑니다(래디얼 리프트). 낮은 높이에서 앞으로 멀리 닿아 굴착과 밀기에 유리합니다.',f:'리프트 실린더 신장 → 암 상승 → 버킷 들어 올림',w:'핀과 부싱 마모, 가로대 균열',rel:['lcyl','tcyl','coupler','frame']},
+lcyl:{t:'프레임 뒤쪽과 리프트 암 사이에 좌우 한 쌍으로 놓인 유압 실린더입니다. 로드가 나오면 암이 올라갑니다.',f:'고압 유압유 → 실린더 신장 → 리프트 암 상승',w:'로드 씰 누유, 내부 누설로 암이 서서히 내려감',rel:['arm','frame','valve']},
+tcyl:{t:'리프트 암 앞쪽에서 커플러로 이어진 한 쌍의 실린더입니다. 로드가 나오면 버킷을 앞으로 쏟고(덤프), 들어가면 뒤로 젖힙니다. 기본형은 수평 유지 기능이 없어 암을 올리면 버킷도 함께 뒤로 기울므로 조종사가 맞춰 줍니다.',f:'고압 유압유 → 실린더 → 커플러 회전 → 버킷 각도 변화',w:'로드 씰 누유, 로드 휨',rel:['coupler','arm','valve']},
+coupler:{t:'리프트 암 끝에 달린 장착판입니다. 버킷 대신 포크, 브레이커, 스위퍼 같은 어태치먼트를 빠르게 바꿔 끼울 수 있어 스키드로더가 만능 장비로 쓰이는 이유가 됩니다.',f:'틸트 실린더 → 커플러 회전 → 어태치먼트',w:'잠금 핀·레버 마모로 어태치먼트 유격',rel:['arm','tcyl','bucket']},
+bucket:{t:'커플러에 걸어 쓰는 기본 어태치먼트입니다. 땅에 평평하게 대고 차체가 밀고 들어가며 흙을 담습니다. 참고한 장비의 정격 작업 하중은 860 kg입니다.',f:'차체 전진(밀기) + 젖히기 → 적재, 리프트 → 덤프',w:'커팅 엣지·이빨 마모, 바닥판 마모',rel:['coupler','arm']}
+};
+}
+if(DT){
+GROUPS=[['front','트랙터(앞차)'],['center','굴절부·구동'],['rear','트레일러(뒤차)']];
+GN={front:'트랙터(앞차)',center:'굴절부·구동',rear:'트레일러(뒤차)'};
+D={
+fwheel:{t:'앞바퀴입니다. 굴절식 덤프트럭은 여섯 바퀴가 모두 구동되고, 크고 넓은 저압 타이어로 진흙과 험지를 달립니다. 바퀴를 꺾지 않고 차체 가운데를 꺾어 방향을 바꿉니다.',f:'앞차축 → 허브 감속기 → 타이어 → 지면',w:'험지 주행으로 옆면 절상, 공기압 저하',rel:['faxle','fframe']},
+faxle:{t:'트랙터 아래의 앞차축입니다. 차동장치가 좌우 바퀴의 회전 차이를 허용하고, 미끄러운 곳에서는 차동 잠금으로 양쪽을 함께 돌립니다.',f:'구동축 → 차동장치 → 허브 감속기 → 앞바퀴',w:'차동장치 오일 누유, 서스펜션 부싱 마모',rel:['fwheel','fframe','shaft']},
+fframe:{t:'엔진, 변속기, 캐빈을 싣는 앞쪽 뼈대입니다. 뒤끝이 굴절·요동 조인트로 리어 프레임과 이어집니다.',f:'엔진·캐빈 하중 → 프런트 프레임 → 앞차축 → 지면',w:'조인트 주변 균열, 엔진 마운트 손상',rel:['faxle','joint','stcyl','cab','hood','trans']},
+trans:{t:'토크컨버터가 달린 자동 변속기와 동력 분배 장치입니다. 엔진의 회전을 속도에 맞게 바꾸고 앞차축과 뒤쪽 두 차축으로 나눠 보냅니다. 주행은 유압이 아니라 기계식 동력 전달입니다.',f:'엔진 → 토크컨버터 → 변속기 → 구동축 → 세 차축',w:'변속 충격, 변속기 오일 과열',rel:['engine','shaft','pump','fframe']},
+engine:{t:'앞차축 앞쪽에 얹힌 디젤 엔진입니다. 주행 동력과 유압 동력을 모두 냅니다. 참고한 장비는 정격 출력이 276 kW입니다.',f:'연료 → 엔진 회전 → 변속기(주행) + 유압펌프(덤프·조향)',w:'에어필터 막힘, 라디에이터 먼지로 과열',rel:['trans','pump','hood']},
+pump:{t:'변속기 쪽 동력 인출부에서 구동되는 유압펌프입니다. 적재함을 들어 올리는 호이스트 실린더와 조향 실린더에 고압 유압유를 보냅니다.',f:'엔진 → 펌프 → 고압 유압유 → 밸브',w:'내부 마모로 덤프 속도 저하',rel:['trans','engine','valve','tank']},
+tank:{t:'유압유 탱크는 펌프가 빨아들일 유압유를 저장하고, 실린더에서 돌아온 유압유를 식히고 걸러줍니다.',f:'돌아온 유압유 → 리턴 필터 → 탱크 → 펌프 흡입',w:'유압유 오염, 필터 막힘',rel:['pump','valve']},
+hood:{t:'엔진과 냉각 장치를 덮는 커버입니다. 정비할 때는 앞으로 젖혀 엽니다.',f:'구조 부품이 아니라 보호·방음·냉각 공기 유도 역할',w:'힌지 처짐, 그릴 막힘',rel:['engine','fframe','cab']},
+cab:{t:'조종사가 앉는 운전실입니다. 차체 가운데에 앉아 핸들로 조향하고, 레버 하나로 적재함을 올리고 내립니다. 전복과 낙하물로부터 조종사를 보호하는 구조를 갖춥니다.',f:'핸들 → 조향 밸브 / 덤프 레버 → 컨트롤 밸브',w:'도어 씰 손상, 에어컨 필터 막힘',rel:['fframe','hood','valve']},
+joint:{t:'앞차와 뒤차를 잇는 관절입니다. 수직 핀은 좌우로 꺾이는 조향(굴절)을 맡고, 그 뒤의 회전 링은 앞뒤 차가 서로 비틀리는 것(요동)을 허용합니다. 덕분에 험한 지형에서도 여섯 바퀴가 모두 땅에 닿습니다.',f:'조향 실린더의 힘 → 수직 핀 중심으로 굴절 / 지형 → 회전 링이 비틀림 흡수',w:'핀·베어링 마모, 그리스 부족',rel:['fframe','rframe','stcyl','shaft']},
+stcyl:{t:'조인트 좌우에 하나씩 놓인 유압 실린더입니다. 한쪽이 늘어나면 반대쪽은 줄어들어 차체를 좌우로 꺾습니다.',f:'조향 밸브 → 좌우 실린더 반대 방향 작동 → 차체 굴절',w:'로드 씰 누유, 핀 유격',rel:['joint','fframe','rframe','valve']},
+shaft:{t:'변속기의 회전을 세 차축으로 전하는 구동축입니다. 조인트를 지나는 부분은 꺾이고 비틀려도 돌 수 있게 유니버설 조인트로 이어집니다.',f:'변속기 → 구동축 → 앞차축·가운데 차축·뒷차축',w:'유니버설 조인트 마모로 진동 발생',rel:['trans','faxle','bogie','joint']},
+mwheel:{t:'뒤차 앞쪽의 가운데 바퀴입니다. 뒷바퀴와 함께 적재함에 실린 무게 대부분을 받칩니다.',f:'가운데 차축 → 허브 감속기 → 타이어 → 지면',w:'과적 시 타이어 과열·손상',rel:['bogie','rwheel','rframe']},
+rwheel:{t:'맨 뒤의 바퀴입니다. 가운데 바퀴와 시소처럼 이어져 있어 한쪽이 돌을 넘으면 다른 쪽이 내려가 접지를 유지합니다.',f:'뒷차축 → 허브 감속기 → 타이어 → 지면',w:'험지에서 옆면 절상',rel:['bogie','mwheel','rframe']},
+bogie:{t:'가운데 차축과 뒷차축을 좌우의 보(빔)로 묶은 탠덤 차축입니다. 보가 가운데 핀을 중심으로 시소처럼 움직여 두 차축이 하중을 고르게 나눠 받습니다.',f:'적재 하중 → 리어 프레임 → 보 → 두 차축 → 지면',w:'보 핀 부싱 마모, 차동장치 누유',rel:['mwheel','rwheel','rframe','shaft']},
+rframe:{t:'적재함과 호이스트 실린더를 싣는 뒤쪽 뼈대입니다. 뒤끝에 적재함이 도는 핀이 있고, 아래에 탠덤 차축이 매달립니다.',f:'적재 하중 → 리어 프레임 → 탠덤 차축 → 지면',w:'적재함 핀 구멍 마모, 프레임 균열',rel:['joint','bogie','body','hoist','stcyl','valve']},
+valve:{t:'덤프 레버 신호에 따라 유압유를 호이스트 실린더로 보내 적재함을 올리고 내리는 밸브입니다. 조향 쪽에는 조향 밸브가 따로 있습니다.',f:'덤프 레버 → 스풀 이동 → 호이스트 실린더',w:'스풀 고착, 내부 누설로 적재함이 서서히 내려감',rel:['pump','tank','hoist','stcyl','cab','rframe']},
+hoist:{t:'리어 프레임과 적재함 바닥 사이에 좌우 한 쌍으로 놓인 유압 실린더입니다. 로드가 나오면 적재함 앞쪽이 들려 흙이 뒤로 쏟아집니다. 길게 뻗어야 해서 여러 단으로 늘어나는 다단 실린더를 쓰기도 합니다.',f:'고압 유압유 → 실린더 신장 → 적재함 상승 → 덤프',w:'로드 씰 누유, 편하중으로 로드 휨',rel:['body','rframe','valve']},
+body:{t:'흙과 암석을 싣는 통입니다. 뒤끝 핀을 중심으로 돌아 올라가며, 뒷문 없이 꼬리 쪽이 위로 들린 모양이라 주행 중에는 흙이 흘러내리지 않습니다. 참고한 장비는 최대 28톤, 17.8 ㎥를 싣습니다.',f:'호이스트 실린더 → 적재함 회전 → 흙이 미끄러져 내림',w:'바닥판 마모, 젖은 흙이 달라붙어 덜 쏟아짐',rel:['hoist','rframe']}
+};
+}
+if(DZ){(function(){var E=D;
+GROUPS=[['lower','하부 주행부'],['body','차체·동력'],['work','작업장치']];
+GN={lower:'하부 주행부',body:'차체·동력',work:'작업장치'};
+D={idler:E.idler,track:E.track,uroll:E.uroll,lroll:E.lroll,sprocket:E.sprocket,
+tmotor:{t:'트랙 프레임 뒤끝, 스프로켓 안쪽에 붙은 유압 주행모터와 최종 감속기입니다. 좌우 모터를 따로 돌려 방향을 바꾸고, 서로 반대로 돌리면 제자리에서 돕니다. 도저는 무거운 흙을 밀어야 해서 감속비가 크고 견인력이 큽니다.',f:'주행 펌프 → 주행모터 → 최종 감속기 → 스프로켓 → 트랙',w:'감속기 오일 누유, 한쪽 모터 약화로 직진이 틀어짐',rel:['sprocket','hstat','track','lower']},
+lower:{t:'좌우 트랙 프레임과 가운데 가로 보로 이루어진 하부의 뼈대입니다. 롤러와 아이들러를 지지하고, 블레이드가 받는 미는 힘을 트랙으로 전합니다.',f:'블레이드 반력 → 메인 프레임 → 트랙 프레임 → 트랙 → 지면',w:'용접부 균열, 트랙 프레임 정렬 틀어짐',rel:['mframe','lroll','uroll','tmotor']},
+mframe:{t:'엔진, 유압 장치, 캐빈, 탱크를 싣는 차체의 뼈대입니다. 앞쪽에는 C프레임의 뿌리 핀과 리프트 실린더가 걸리고, 뒤쪽에는 리퍼가 달립니다.',f:'블레이드·리퍼의 힘 → 메인 프레임 → 트랙 프레임',w:'C프레임 장착부 마모, 바닥 보호판 손상',rel:['lower','cframe','lcyl','ripper','cab','hood','tank']},
+engine:{t:'차체 앞쪽 후드 안의 디젤 엔진입니다. 주행 펌프와 작업 펌프를 돌립니다. 앞쪽 라디에이터가 엔진과 유압유를 식힙니다. 참고한 장비는 정격 출력이 90 kW입니다.',f:'연료 → 엔진 회전 → 주행 펌프 + 작업 펌프',w:'먼지로 라디에이터 막힘, 에어필터 막힘',rel:['hstat','pump','hood']},
+hstat:{t:'엔진에 직결된 주행용 유압펌프 두 개입니다. 왼쪽 트랙용과 오른쪽 트랙용이 따로 있어 양쪽 속도를 끊김 없이 따로 조절합니다(정유압 변속, HST). 한쪽 트랙을 멈추지 않고도 힘을 실은 채 돌 수 있습니다.',f:'엔진 → 주행 펌프(좌·우) → 주행모터(좌·우)',w:'좌우 펌프 편차로 직진 불량, 유압유 과열',rel:['engine','tmotor','pump','tank']},
+pump:{t:'블레이드와 리퍼 실린더에 유압유를 보내는 작업 펌프입니다. 필요한 만큼만 내보내는 가변 용량형이 쓰입니다.',f:'엔진 → 작업 펌프 → 컨트롤 밸브',w:'내부 마모로 블레이드 속도 저하',rel:['hstat','valve','tank','engine']},
+valve:{t:'조이스틱 신호에 따라 유압유를 리프트·앵글·리퍼 실린더로 나눠 보내는 밸브입니다.',f:'조이스틱 → 스풀 이동 → 각 실린더',w:'스풀 고착, 내부 누설로 블레이드가 서서히 내려감',rel:['pump','tank','lcyl','acyl','rcyl','cab']},
+tank:{t:'캐빈 뒤에 놓인 연료 탱크와 유압유 탱크입니다. 무거운 탱크를 뒤에 두어 앞쪽 블레이드 무게와 균형을 맞춥니다.',f:'유압유 탱크 → 펌프 흡입 / 돌아온 유압유 → 필터 → 탱크',w:'유압유 오염, 필터 막힘',rel:['pump','hstat','valve','mframe']},
+hood:{t:'엔진과 냉각 장치를 덮는 커버입니다. 조종사가 블레이드 양 끝을 볼 수 있도록 앞으로 갈수록 좁고 낮게 만듭니다.',f:'구조 부품이 아니라 보호·방음·냉각 공기 유도 역할',w:'그릴 막힘, 옆문 걸쇠 손상',rel:['engine','mframe','cab']},
+cab:{t:'조종사가 앉는 보호 구조물(ROPS)입니다. 왼손 레버로 주행과 방향, 오른손 레버로 블레이드를 조작합니다.',f:'좌 레버 → 주행 펌프 / 우 레버 → 컨트롤 밸브',w:'도어 씰 손상, 에어컨 필터 막힘',rel:['mframe','valve','hstat','hood']},
+cframe:{t:'메인 프레임에서 앞으로 뻗어 블레이드를 받치는 C자 모양의 틀입니다. 뿌리 핀을 중심으로 위아래로 돌고, 앞쪽 가운데의 볼 조인트에 블레이드가 걸려 있어 블레이드가 좌우로 꺾이고 기울 수 있습니다.',f:'블레이드가 받는 미는 힘 → C프레임 → 메인 프레임',w:'뿌리 핀 부싱 마모, 볼 조인트 유격',rel:['blade','lcyl','acyl','mframe']},
+lcyl:{t:'후드 앞 양옆에서 C프레임으로 내려온 한 쌍의 실린더입니다. 로드가 나오면 블레이드가 내려가 땅을 깎고, 들어가면 올라갑니다.',f:'고압 유압유 → 실린더 → C프레임 상하 → 블레이드 높이',w:'로드 씰 누유, 로드 긁힘',rel:['cframe','mframe','valve']},
+acyl:{t:'C프레임과 블레이드 뒷면 사이 좌우에 놓인 실린더입니다. 한쪽이 늘어나고 반대쪽이 줄어들어 블레이드를 좌우로 비스듬히 돌립니다(앵글). 흙을 한쪽 옆으로 흘려보낼 때 씁니다. 참고한 장비의 최대 앵글은 25°입니다.',f:'고압 유압유 → 좌우 실린더 반대 작동 → 블레이드 앵글',w:'핀 유격, 로드 씰 누유',rel:['blade','cframe','valve']},
+blade:{t:'흙을 밀고 깎는 넓은 판입니다. 앞면이 오목해서 흙이 말려 올라가며 앞으로 굴러갑니다. 올림·내림, 좌우 앵글, 좌우 기울임(틸트)이 모두 되는 방식을 PAT 블레이드라고 합니다. 참고한 장비의 블레이드 폭은 2,770 mm입니다.',f:'트랙의 견인력 → C프레임 → 블레이드 → 흙',w:'날 끝(커팅 엣지)과 양 끝 모서리 날 마모',rel:['cframe','acyl','lcyl']},
+ripper:{t:'차체 뒤에 달린 갈고리 모양의 생크입니다. 단단한 땅이나 얼어붙은 흙을 긁어 부숴 놓으면 그다음에 블레이드로 밀기 쉬워집니다.',f:'리퍼 실린더 → 생크가 땅에 박힘 → 차체 전진으로 긁어 부숨',w:'생크 끝(팁) 마모·파손, 핀 유격',rel:['rcyl','mframe']},
+rcyl:{t:'메인 프레임 뒤쪽과 리퍼 사이의 실린더입니다. 로드가 나오면 리퍼가 내려가 땅에 박히고, 들어가면 올라갑니다.',f:'고압 유압유 → 실린더 → 리퍼 상하',w:'로드 씰 누유',rel:['ripper','mframe','valve']}
+};})()}
+if(MG){
+GROUPS=[['front','프런트(앞차)'],['work','작업장치'],['center','굴절부'],['rear','리어(뒤차)']];
+GN={front:'프런트(앞차)',work:'작업장치',center:'굴절부',rear:'리어(뒤차)'};
+D={
+fwheel:{t:'앞바퀴입니다. 구동되지 않고 방향만 잡습니다. 좌우로 꺾일 뿐 아니라 옆으로 기울일 수도 있어(린), 블레이드가 흙을 비스듬히 밀 때 생기는 옆으로 밀리는 힘을 버팁니다.',f:'조향 실린더 → 너클 → 앞바퀴 방향 / 린 실린더 → 바퀴 기울임',w:'타이어 편마모, 너클 핀 유격',rel:['faxle','fframe']},
+faxle:{t:'프런트 프레임 앞끝에 가운데 핀으로 매달린 앞차축입니다. 시소처럼 좌우로 흔들려 울퉁불퉁한 땅에서도 두 바퀴가 땅에 닿습니다. 조향 실린더와 린 실린더가 여기에 달립니다.',f:'프런트 프레임 하중 → 가운데 핀 → 앞차축 → 앞바퀴',w:'요동 핀 부싱 마모, 조향 실린더 누유',rel:['fwheel','fframe']},
+fframe:{t:'캐빈 앞에서 앞차축까지 길게 뻗은 뼈대입니다. 아래에 드로바와 블레이드를 매달고, 가운데 안장에 리프트 실린더가 걸립니다. 앞뒤 바퀴 사이가 길어서 땅의 굴곡을 타도 블레이드 높이가 적게 흔들립니다. 그레이더가 정밀하게 고를 수 있는 이유입니다.',f:'블레이드 반력 → 드로바·리프트 실린더 → 프런트 프레임',w:'안장 장착부 마모, 용접부 균열',rel:['faxle','drawbar','lcyl','joint','artcyl']},
+drawbar:{t:'프런트 프레임 앞끝의 볼 조인트에 매달려 뒤로 뻗은 A자 모양의 틀입니다. 블레이드를 끌고 가는 힘을 전하고, 뒤쪽에 서클을 받칩니다. 앞이 볼 조인트라 위아래와 좌우로 자유롭게 움직입니다.',f:'프런트 프레임 볼 조인트 → 드로바 → 서클 → 블레이드 (견인)',w:'볼 조인트 유격, 서클 받침 슈 마모',rel:['fframe','circle','lcyl','cmotor']},
+cmotor:{t:'드로바 위에 달린 유압모터와 감속기입니다. 작은 피니언 기어로 서클의 톱니를 돌려 블레이드 방향을 바꿉니다.',f:'고압 유압유 → 모터 → 감속기 피니언 → 서클 톱니',w:'피니언·서클 톱니 마모로 블레이드가 덜컹거림',rel:['circle','drawbar','valve']},
+circle:{t:'드로바 아래에서 수평으로 도는 큰 톱니 고리입니다. 여기에 블레이드가 달려 있어, 서클을 돌리면 블레이드가 진행 방향에 대해 비스듬해집니다. 비스듬히 밀어야 흙이 한쪽 옆으로 흘러 나갑니다.',f:'서클 회전 모터 → 서클 → 블레이드 각도',w:'톱니 마모, 받침 슈 간격 벌어짐',rel:['drawbar','cmotor','blade']},
+blade:{t:'흙을 깎고 펴는 길고 얇은 판(몰드보드)입니다. 도저 블레이드보다 낮고 길며, 앞바퀴와 뒷바퀴 사이 가운데에 매달립니다. 좌우 높이를 따로 조절해 경사를 만들고, 옆으로 밀어내거나(사이드 시프트) 앞뒤로 눕힐 수 있습니다. 참고한 장비의 몰드보드 폭은 3,658 mm입니다.',f:'차체 전진 → 드로바 → 블레이드가 흙을 깎아 옆으로 흘림',w:'날 끝(커팅 엣지) 마모, 사이드 시프트 레일 마모',rel:['circle','lcyl','drawbar']},
+lcyl:{t:'프런트 프레임 안장에서 드로바로 내려온 좌우 한 쌍의 실린더입니다. 함께 움직이면 블레이드 높이가 바뀌고, 한쪽만 움직이면 블레이드가 좌우로 기울어 도로의 횡단 경사를 만듭니다.',f:'고압 유압유 → 좌우 실린더 → 드로바 상하 → 블레이드 높이·기울기',w:'로드 씰 누유, 내부 누설로 블레이드가 서서히 내려감',rel:['drawbar','fframe','valve','blade']},
+joint:{t:'프런트 프레임과 리어 프레임을 잇는 수직 핀입니다. 앞바퀴 조향에 더해 차체 가운데를 꺾으면 더 작게 돌 수 있고, 앞뒤 바퀴가 서로 다른 줄을 밟으며 비스듬히 가는 주행(크랩)도 할 수 있습니다.',f:'굴절 실린더의 힘 → 수직 핀 중심으로 차체 굴절',w:'핀·베어링 마모, 그리스 부족',rel:['fframe','rframe','artcyl']},
+artcyl:{t:'굴절 조인트 좌우에 하나씩 놓인 유압 실린더입니다. 한쪽이 늘어나면 반대쪽은 줄어들어 차체를 꺾습니다.',f:'밸브 → 좌우 실린더 반대 방향 작동 → 차체 굴절',w:'로드 씰 누유, 핀 유격',rel:['joint','fframe','rframe','valve']},
+mwheel:{t:'뒤쪽 탠덤의 앞바퀴입니다. 뒤 네 바퀴가 모두 구동되어 블레이드를 끄는 힘을 냅니다.',f:'탠덤 케이스 체인 → 차축 → 타이어 → 지면',w:'타이어 마모, 휠 너트 풀림',rel:['tandem','rwheel']},
+rwheel:{t:'뒤쪽 탠덤의 뒷바퀴입니다. 같은 쪽 앞바퀴와 탠덤 케이스 안의 체인으로 묶여 함께 돕니다.',f:'탠덤 케이스 체인 → 차축 → 타이어 → 지면',w:'타이어 마모, 앞뒤 지름 차이로 체인에 무리',rel:['tandem','mwheel']},
+tandem:{t:'좌우에 하나씩 있는 긴 상자입니다. 가운데 축으로 리어 프레임에 매달려 시소처럼 움직이고, 안에서 체인이 가운데 축의 회전을 앞뒤 두 바퀴로 나눠 전합니다. 한 바퀴가 턱을 넘어도 차체는 절반만 들려 블레이드가 덜 흔들립니다.',f:'변속기 → 뒷차축(차동장치) → 탠덤 케이스 체인 → 앞·뒤 바퀴',w:'체인 늘어남, 케이스 오일 누유',rel:['mwheel','rwheel','rframe','trans']},
+rframe:{t:'엔진, 변속기, 캐빈을 싣는 뒤쪽 뼈대입니다. 아래에 탠덤 케이스가 매달리고, 앞끝이 굴절 조인트로 프런트 프레임과 이어집니다.',f:'엔진·캐빈 하중 → 리어 프레임 → 탠덤 → 뒷바퀴',w:'조인트 주변 균열',rel:['joint','tandem','cab','hood','trans','artcyl']},
+trans:{t:'엔진의 회전을 속도에 맞게 바꿔 뒷차축으로 보내는 변속기입니다. 그레이더는 아주 느린 속도로 정밀하게 고르는 일부터 빠른 이동까지 해야 해서 단수가 많습니다. 주행은 유압이 아니라 기계식 동력 전달입니다.',f:'엔진 → 변속기 → 뒷차축 → 탠덤 케이스 → 뒷바퀴',w:'변속 충격, 변속기 오일 과열',rel:['engine','tandem','pump','rframe']},
+engine:{t:'리어 프레임 뒤쪽의 디젤 엔진입니다. 주행 동력과 유압 동력을 모두 냅니다. 참고한 장비는 정격 출력이 133 kW입니다.',f:'연료 → 엔진 회전 → 변속기(주행) + 유압펌프(작업)',w:'에어필터 막힘, 라디에이터 먼지로 과열',rel:['trans','pump','hood']},
+pump:{t:'엔진의 힘으로 도는 유압펌프입니다. 블레이드 리프트, 서클 회전, 굴절, 조향 등 여러 실린더와 모터에 고압 유압유를 보냅니다.',f:'엔진 → 펌프 → 고압 유압유 → 컨트롤 밸브',w:'내부 마모로 블레이드 반응이 느려짐',rel:['engine','trans','valve','tank']},
+valve:{t:'캐빈 아래의 밸브 묶음입니다. 그레이더는 블레이드 좌·우 리프트, 서클, 사이드 시프트, 블레이드 눕힘, 앞바퀴 린, 굴절 등 조작할 것이 많아 스풀이 여러 개 나란히 있습니다.',f:'조작 레버 → 스풀 이동 → 각 실린더·모터',w:'스풀 고착, 내부 누설',rel:['pump','tank','lcyl','cmotor','artcyl','cab']},
+tank:{t:'유압유 탱크는 펌프가 빨아들일 유압유를 저장하고, 돌아온 유압유를 식히고 걸러줍니다.',f:'돌아온 유압유 → 리턴 필터 → 탱크 → 펌프 흡입',w:'유압유 오염, 필터 막힘',rel:['pump','valve']},
+hood:{t:'엔진과 냉각 장치를 덮는 커버입니다. 옆문을 열어 정비합니다.',f:'구조 부품이 아니라 보호·방음·냉각 공기 유도 역할',w:'그릴 막힘, 걸쇠 손상',rel:['engine','rframe','cab']},
+cab:{t:'조종사가 앉는 운전실입니다. 블레이드와 앞바퀴가 잘 보이도록 높고 앞쪽이 트여 있습니다. 핸들로 조향하고, 여러 개의 레버로 블레이드를 조작합니다. 전복 보호 구조(ROPS)를 갖춥니다.',f:'조작 레버 → 컨트롤 밸브 / 핸들 → 앞바퀴 조향',w:'도어 씰 손상, 레버 링크 유격',rel:['rframe','valve','hood']}
+};
+}
+if(WX){
+['idler','track','uroll','lroll','sprocket'].forEach(function(k){delete D[k]});
+D.fwheel={t:'앞바퀴입니다. 한쪽에 타이어 두 개를 나란히 끼운 복륜이라 무거운 차체와 굴착 반력을 넓게 받칩니다. 앞바퀴는 좌우로 꺾여 방향을 바꿉니다.',f:'앞차축 → 허브 → 복륜 타이어 → 지면',w:'타이어 편마모, 복륜 사이에 돌이 끼어 옆면 손상',rel:['faxle','rwheel','lower']};
+D.rwheel={t:'뒷바퀴입니다. 앞과 같은 복륜이며, 네 바퀴가 모두 구동됩니다. 크롤러와 달리 도로를 스스로 달려 현장 사이를 이동할 수 있습니다.',f:'뒷차축 → 허브 → 복륜 타이어 → 지면',w:'공기압 불균형, 휠 너트 풀림',rel:['raxle','fwheel','lower']};
+D.faxle={t:'조향이 되는 앞차축입니다. 조향 실린더가 바퀴를 좌우로 꺾고, 차축 전체가 가운데 핀을 중심으로 시소처럼 흔들려 울퉁불퉁한 길에서도 네 바퀴가 땅에 닿습니다. 굴착할 때는 이 흔들림을 유압으로 잠가 차체를 고정합니다.',f:'구동축 → 차동장치 → 허브 감속기 → 앞바퀴',w:'요동 잠금 실린더 누유, 조향 너클 유격',rel:['fwheel','lower','shaft']};
+D.raxle={t:'섀시에 단단히 고정된 뒷차축입니다. 가운데 차동장치가 좌우 바퀴의 회전 차이를 허용하고, 바퀴 쪽 허브 감속기가 힘을 키웁니다.',f:'구동축 → 차동장치 → 허브 감속기 → 뒷바퀴',w:'차동장치 오일 누유, 브레이크 디스크 마모',rel:['rwheel','lower','shaft']};
+D.shaft={t:'변속기의 회전을 앞뒤 차축으로 전하는 구동축(프로펠러 샤프트)입니다. 양 끝의 유니버설 조인트가 차축의 움직임을 받아 줍니다.',f:'변속기 → 구동축 → 앞·뒤 차축',w:'유니버설 조인트 마모로 진동과 소음 발생',rel:['tmotor','faxle','raxle']};
+D.tmotor={t:'섀시 아래 가운데에 달린 유압 주행모터와 변속기입니다. 크롤러 굴삭기는 좌우 트랙마다 모터가 하나씩 있지만, 휠 굴삭기는 모터 하나가 변속기와 구동축을 거쳐 네 바퀴를 모두 돌립니다. 변속기로 저속(작업)과 고속(도로 주행)을 바꿉니다.',f:'센터조인트 → 주행모터 → 변속기 → 구동축 → 차축 → 바퀴',w:'변속 불량, 모터 내부 마모로 등판력 저하',rel:['shaft','joint','lower']};
+D.blade={t:'섀시 앞쪽에 달린 넓은 판입니다. 땅을 고르거나 흙을 밀 때 쓰고, 굴착할 때는 땅에 내려 차체가 밀리지 않게 받치는 다리 역할도 합니다. 주행할 때는 들어 올립니다(주행 버튼을 켜면 올라갑니다).',f:'블레이드 실린더 → 암 회전 → 블레이드 상하',w:'날 끝(커팅 엣지) 마모, 실린더 로드 손상',rel:['lower','outrig']};
+D.outrig={t:'섀시 뒤쪽 좌우로 뻗는 받침 다리입니다. 바퀴는 타이어가 눌려 출렁이므로, 굴착할 때는 아웃트리거를 내려 차체를 단단히 받칩니다. 이렇게 하면 옆으로 작업할 때 넘어가지 않고 버틸 수 있는 하중도 커집니다. 주행할 때는 다리를 접어 올려 땅에서 뗍니다(주행 버튼을 켜면 접힙니다).',f:'굴착 반력 → 섀시 → 아웃트리거 발판 → 지면',w:'실린더 누유로 작업 중 다리가 서서히 들림, 발판 핀 마모',rel:['lower','blade']};
+D.lower={t:'차축, 주행모터, 블레이드, 아웃트리거가 달리는 하부의 뼈대(섀시)입니다. 가운데 위에 선회 베어링이 얹혀 상부 전체를 받칩니다.',f:'상부 하중 → 선회 베어링 → 섀시 → 차축·아웃트리거 → 지면',w:'용접부 균열, 아웃트리거 장착부 변형',rel:['joint','faxle','raxle','tmotor','blade','outrig']};
+D.joint.t='센터조인트(스위블 조인트)는 상부와 하부 사이 중심의 회전 이음입니다. 상부가 계속 돌아도 하부의 주행모터, 조향, 블레이드, 아웃트리거로 가는 유압 호스가 꼬이지 않게 합니다. 바깥 고리는 상부를 받치며 도는 선회 베어링입니다.';
+D.joint.f='컨트롤 밸브 → 센터조인트 → 주행모터·조향·블레이드·아웃트리거';
+}
+var TXT=EX?{ttl:'크롤러 굴삭기 3D 분해도',fig:'FIG. 01 · 크롤러 굴삭기',sw:'선회',dig:'굴착 자동',swb:'선회 자동',hdig:'굴착하며 보기',digst:'굴착 중 · 고부하',
   bars:['붐 실린더','암 실린더','버킷 실린더'],bn:['붐','암','버킷'],jl:['L · 암 / 선회','R · 붐 / 버킷'],ax:['펴기','당기기','내림','올림'],
   ar:['왼쪽 레버: 앞뒤 암, 좌우 선회','오른쪽 레버: 앞뒤 붐, 좌우 버킷'],
   help:'ISO 조작 방식입니다. 왼쪽 레버는 앞뒤로 암을 펴고 당기며 좌우로 선회합니다. 오른쪽 레버는 앞뒤로 붐을 내리고 올리며, 왼쪽으로 버킷을 오므리고 오른쪽으로 폅니다. 키보드: <span class="kbd">W</span><span class="kbd">S</span><span class="kbd">A</span><span class="kbd">D</span> 왼쪽, <span class="kbd">I</span><span class="kbd">K</span><span class="kbd">J</span><span class="kbd">L</span> 오른쪽. 버킷을 땅에 대고 오므리면 흙이 담기고, 펴면 쏟아집니다.',
   note:'일반적인 크롤러 굴삭기 구조를 단순화한 모델이며, 특정 모델의 치수와 형상을 그대로 옮긴 것이 아닙니다.'}
- :{ttl:'휠로더 3D 분해도',fig:'FIG. 02 · 굴절식 휠로더',sw:'조향',dig:'적재 자동',swb:'조향 자동',hdig:'적재하며 보기',digst:'적재 중 · 고부하',
+ :{ttl:'휠로더 3D 분해도',fig:'FIG. 03 · 굴절식 휠로더',sw:'조향',dig:'적재 자동',swb:'조향 자동',hdig:'적재하며 보기',digst:'적재 중 · 고부하',
   bars:['리프트 실린더','틸트 실린더','조향 실린더'],bn:['리프트','버킷','조향'],jl:['L · 주행 / 조향','R · 리프트 / 버킷'],ax:['전진','후진','내림','올림'],
   ar:['왼쪽 레버: 앞뒤 주행, 좌우 조향','오른쪽 레버: 앞뒤 리프트, 좌우 버킷'],
   help:'오른쪽 레버는 실제 휠로더 조이스틱과 같습니다. 앞으로 밀면 리프트 암이 내려가고 당기면 올라가며, 왼쪽으로 버킷을 젖히고(틸트 백) 오른쪽으로 쏟습니다(덤프). 왼쪽 레버는 앞뒤로 전진·후진, 좌우로 조향입니다(실제 장비는 핸들과 페달). 키보드: <span class="kbd">W</span><span class="kbd">S</span><span class="kbd">A</span><span class="kbd">D</span> 왼쪽, <span class="kbd">I</span><span class="kbd">K</span><span class="kbd">J</span><span class="kbd">L</span> 오른쪽. 버킷을 땅에 대고 전진하면 흙이 담기고, 들어 올려 쏟으면 떨어집니다.',
   note:'일반적인 굴절식 휠로더(Z바 링크) 구조를 단순화한 모델입니다. 35톤급 장비의 공개 제원을 크기 비율과 설명에 참고했으며, 특정 모델의 형상을 그대로 옮긴 것이 아닙니다.'};
+if(MG)TXT={ttl:'모터 그레이더 3D 분해도',fig:'FIG. 07 · 모터 그레이더',sw:'굴절',swn:'서클',dig:'정지 작업 자동',swb:'굴절 자동',hdig:'고르면서 보기',digst:'정지 작업 중',ld:'밀어낸 흙 · 주행',
+  bars:['리프트 실린더','굴절 실린더','서클 각도'],bn:['블레이드','굴절','서클'],jl:['L · 주행 / 조향','R · 블레이드'],ax:['전진','후진','내림','올림'],
+  ar:['왼쪽 레버: 앞뒤 주행, 좌우 조향과 굴절','오른쪽 레버: 앞뒤 블레이드 내림과 올림, 좌우 서클 회전'],
+  help:'왼쪽 레버는 앞뒤로 전진·후진, 좌우로 조향입니다(앞바퀴가 꺾이고 차체도 함께 굴절합니다). 오른쪽 레버는 앞으로 밀면 블레이드가 내려가고 당기면 올라가며, 좌우로 서클을 돌려 블레이드 각도를 바꿉니다. 실제 장비는 핸들과 여러 개의 레버로 조작합니다. 키보드: <span class="kbd">W</span><span class="kbd">S</span><span class="kbd">A</span><span class="kbd">D</span> 왼쪽, <span class="kbd">I</span><span class="kbd">K</span><span class="kbd">J</span><span class="kbd">L</span> 오른쪽. 블레이드를 땅에 대고 전진하면 깎인 흙이 블레이드 뒤쪽 끝으로 흘러 나갑니다.',
+  note:'일반적인 굴절식 모터 그레이더(뒤 4륜 탠덤 구동) 구조를 단순화한 모델입니다. 15톤급 장비의 공개 제원을 크기 비율과 설명에 참고했으며, 특정 모델의 형상을 그대로 옮긴 것이 아닙니다. 블레이드 좌우 기울임, 사이드 시프트, 앞바퀴 린은 움직이지 않습니다. 세 번째 막대는 실린더가 아니라 서클 각도입니다.'};
+if(DZ)TXT={ttl:'도저 3D 분해도',fig:'FIG. 06 · 크롤러 도저',sw:'회전',dig:'도징 자동',swb:'제자리 회전',hdig:'밀면서 보기',digst:'도징 중 · 고부하',ld:'블레이드 앞 흙 · 주행',
+  bars:['리프트 실린더','리퍼 실린더','주행 펌프'],bn:['블레이드','리퍼','주행'],jl:['L · 주행 / 회전','R · 블레이드'],ax:['전진','후진','내림','올림'],
+  ar:['왼쪽 레버: 앞뒤 주행, 좌우 회전','오른쪽 레버: 앞뒤 블레이드 내림과 올림, 좌우 앵글'],
+  help:'왼쪽 레버는 앞뒤로 전진·후진, 좌우로 회전입니다(좌우 트랙 속도 차이로 돕니다). 오른쪽 레버는 앞으로 밀면 블레이드가 내려가고 당기면 올라가며, 좌우로 블레이드를 비스듬히 돌립니다(앵글). 리퍼는 아래 <b>리퍼 내리기</b> 버튼으로 조작합니다. 키보드: <span class="kbd">W</span><span class="kbd">S</span><span class="kbd">A</span><span class="kbd">D</span> 왼쪽, <span class="kbd">I</span><span class="kbd">K</span><span class="kbd">J</span><span class="kbd">L</span> 오른쪽. 블레이드를 땅에 대고 전진하면 앞에 흙이 쌓이고, 들어 올리면 그 자리에 남습니다.',
+  note:'일반적인 정유압 구동 크롤러 도저(PAT 블레이드, 리퍼 장착) 구조를 단순화한 모델입니다. 10톤급 장비의 공개 제원을 크기 비율과 설명에 참고했으며, 특정 모델의 형상을 그대로 옮긴 것이 아닙니다. 블레이드 틸트는 움직이지 않습니다. 세 번째 막대는 실린더가 아니라 주행 펌프의 토출량입니다.'};
+if(DT)TXT={ttl:'덤프트럭 3D 분해도',fig:'FIG. 05 · 굴절식 덤프트럭',sw:'조향',dig:'운반 자동',swb:'조향 자동',hdig:'덤프하며 보기',digst:'덤프 상승 · 고부하',ld:'적재함 적재 · 주행',
+  bars:['호이스트 실린더','조향 실린더','적재량'],bn:['호이스트','조향','적재'],jl:['L · 주행 / 조향','R · 적재함'],ax:['전진','후진','내림','올림'],
+  ar:['왼쪽 레버: 앞뒤 주행, 좌우 조향','오른쪽 레버: 앞뒤 적재함 내림과 올림'],
+  help:'왼쪽 레버는 앞뒤로 전진·후진, 좌우로 조향입니다(실제 장비는 핸들과 페달). 오른쪽 레버는 앞으로 밀면 적재함이 내려가고 당기면 올라갑니다. 키보드: <span class="kbd">W</span><span class="kbd">S</span><span class="kbd">A</span><span class="kbd">D</span> 왼쪽, <span class="kbd">I</span><span class="kbd">K</span> 오른쪽. 적재함을 높이 올리면 흙이 뒤로 쏟아지고, 다 내린 채 멈춰 있으면 다시 실립니다.',
+  note:'일반적인 6륜 구동 굴절식 덤프트럭 구조를 단순화한 모델입니다. 28톤 적재급 장비의 공개 제원을 크기 비율과 설명에 참고했으며, 특정 모델의 형상을 그대로 옮긴 것이 아닙니다. 세 번째 막대는 실린더가 아니라 적재량입니다.'};
+if(SL)TXT={ttl:'스키드로더 3D 분해도',fig:'FIG. 04 · 스키드 스티어 로더',sw:'회전',dig:'적재 자동',swb:'제자리 회전',hdig:'적재하며 보기',digst:'적재 중 · 고부하',
+  bars:['리프트 실린더','틸트 실린더','주행 펌프'],bn:['리프트','버킷','주행'],jl:['L · 주행 / 회전','R · 리프트 / 버킷'],ax:['전진','후진','내림','올림'],
+  ar:['왼쪽 레버: 앞뒤 주행, 좌우 회전','오른쪽 레버: 앞뒤 리프트, 좌우 버킷'],
+  help:'실제 스키드로더의 ISO 방식 레버와 같습니다. 왼쪽 레버는 앞뒤로 전진·후진, 좌우로 회전입니다(좌우 바퀴 속도 차이로 돕니다). 오른쪽 레버는 앞으로 밀면 리프트 암이 내려가고 당기면 올라가며, 왼쪽으로 버킷을 젖히고 오른쪽으로 쏟습니다. 키보드: <span class="kbd">W</span><span class="kbd">S</span><span class="kbd">A</span><span class="kbd">D</span> 왼쪽, <span class="kbd">I</span><span class="kbd">K</span><span class="kbd">J</span><span class="kbd">L</span> 오른쪽. 암을 올리면 버킷도 같이 뒤로 기울므로, 올리면서 조금씩 앞으로 숙여 주세요.',
+  note:'일반적인 스키드 스티어 로더(래디얼 리프트) 구조를 단순화한 모델입니다. 3.4톤급 장비의 공개 제원을 크기 비율과 설명에 참고했으며, 특정 모델의 형상을 그대로 옮긴 것이 아닙니다. 세 번째 막대는 실린더가 아니라 주행 펌프의 토출량입니다.'};
+if(WX){TXT.ttl='휠 굴삭기 3D 분해도';TXT.fig='FIG. 02 · 휠 굴삭기';TXT.note='일반적인 휠 굴삭기 구조를 단순화한 모델입니다. 15톤급 장비의 공개 제원을 크기 비율과 설명에 참고했으며, 특정 모델의 형상을 그대로 옮긴 것이 아닙니다.'}
 document.title=TXT.ttl;$('ttl').textContent=TXT.ttl;
-setPress($('k-ex'),EX);setPress($('k-wl'),!EX);
-$('k-ex').addEventListener('click',function(){if(!EX)setTimeout(function(){start('ex')},0)});
-$('k-wl').addEventListener('click',function(){if(EX)setTimeout(function(){start('wl')},0)});
+if(TXT.ld)$('gl-ld').textContent=TXT.ld;
+var ks=$('ksel');ks.value=KIND;ks.addEventListener('change',function(){var k=ks.value;if(k!==KIND)setTimeout(function(){start(k)},0)});
+$('b-rip').hidden=!DZ;$('b-rip').addEventListener('click',function(){ripGoal=ripGoal?0:.5;setPress(this,!!ripGoal);dirty=true});
 $('b-dig').textContent=TXT.dig;$('b-swing').textContent=TXT.swb;$('b-hdig').textContent=TXT.hdig;$('gl-sw').textContent=TXT.sw+'각';
 $('jl-L').textContent=TXT.jl[0];$('jl-R').textContent=TXT.jl[1];
 ['ax-Ln','ax-Ls','ax-Rn','ax-Rs'].forEach(function(id,i){$(id).textContent=TXT.ax[i]});
@@ -393,7 +523,7 @@ $('joyhelp').innerHTML=TXT.help;$('mnote').textContent=TXT.note;$('posedet').hid
 ['gb-b','gb-a','gb-k'].forEach(function(id,i){$(id).querySelector('span').textContent=TXT.bars[i]});
 
 /* ---------- 렌더러 · 장면 ---------- */
-var PAPER=0xFBF9F4,INK=0x1C1B19,ACC=0xC2410C,CXG=EX?2.8:.4;
+var PAPER=0xFBF9F4,INK=0x1C1B19,ACC=0xC2410C,CXG=EX?2.8:.4;if(DT)CXG=.3;if(MG)CXG=1.0;
 var stage=$('stage'),cv=$('gl'),renderer;
 try{renderer=new T.WebGLRenderer({canvas:cv,antialias:true,powerPreference:'high-performance'})}catch(err){$('nogl').hidden=false;return}
 renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
@@ -505,8 +635,9 @@ function cylPart(id,name,off,lb,pair,grp,sw){
   p.rig=cylSet(p,mb,mr,me);p.rig.type='cyl';p.rig.lb=lb;
   if(pair){p.rig.pair=cylSet(p,mb,mr,me);p.rig.pair.lb=lb;p.rig.dz=pair}
   return p}
-var soilMesh=null,HX=1.95,BR=.55,BY=.55,TZ=1.15,Z0=.3,B0=new V3(.7,1.55,0),P2=new V3(4.3,3.15,0),A1=new V3(4.809,.754,0);
-if(EX){
+var soilMesh=null,WSP=[],WXO={blade:null,legs:[]},stow=0,HX=1.95,BR=.55,BY=.55,TZ=1.15,Z0=.3,B0=new V3(.7,1.55,0),P2=new V3(4.3,3.15,0),A1=new V3(4.809,.754,0);
+if(EX||DZ){
+if(!WX){
 /* ===== 하부 주행부 ===== */
 (function(){
   var p=def('idler','아이들러','lower',{off:[1.2,0,0],lat:1.2,anchor:[HX,.62,-1.5]});
@@ -563,6 +694,55 @@ if(EX){
   [-1,1].forEach(function(s){put(p,rb(.5,.34,2.3,.08,m,s*1.0,.65,0))});
   put(p,rb(2.4,.46,1.5,.12,m,0,.8,0));
 })();
+}else{
+/* ===== 휠 굴삭기 하부: 섀시 · 차축 · 복륜 · 주행모터 · 블레이드 · 아웃트리거 ===== */
+(function(){
+  var XR=.47,AX=1.25,p,MC={};
+  function pm(c){var k=LIST[LIST.length-1].id+'|'+c;return MC[k]||(MC[k]=M(c))}
+  [['fwheel','앞바퀴',AX,.6],['rwheel','뒷바퀴',-AX,-.6]].forEach(function(w){
+    var p=def(w[0],w[1],'lower',{off:[w[3],0,0],lat:.9,anchor:[w[2],XR+.3,-1.07]});
+    var mt=M(0x8C8577,{r:.95}),mr=M(0xF0EDE6),ml=M(0x6E685D,{r:.9}),mh=M(C.HUB);
+    [-1,1].forEach(function(s){
+      var g=new T.Group();g.position.set(w[2],XR,s*.84);p.sg[s].add(g);WSP.push(g);
+      var k,a,t;
+      [-.12,.12].forEach(function(dz){
+        putG(p,g,cz(XR-.03,.22,mt,0,0,dz,28));
+        for(k=0;k<14;k++){a=k/14*Math.PI*2;t=bx(.09,.06,.22,ml,Math.cos(a)*(XR-.01),Math.sin(a)*(XR-.01),dz);t.rotation.z=a+Math.PI/2;putG(p,g,t,true)}});
+      putG(p,g,cz(.27,.5,mr,0,0,0,22));putG(p,g,cz(.12,.56,mh,0,0,0,14));
+      for(k=0;k<8;k++){a=k/8*Math.PI*2;putG(p,g,cz(.025,.58,mh,Math.cos(a)*.19,Math.sin(a)*.19,0,8),true)}})});
+  [['faxle','앞차축',AX,.6],['raxle','뒷차축',-AX,-.6]].forEach(function(w){
+    var p=def(w[0],w[1],'lower',{off:[w[3],0,0],anchor:[w[2],XR,-.4]});
+    put(p,cz(.12,1.5,pm(C.GR),w[2],XR,0,16));put(p,cx(.21,.34,pm(C.GR),w[2],XR,0,20));
+    put(p,cx(.09,.18,pm(C.HUB),w[2]+(w[2]>0?-.25:.25),XR,0,12));
+    if(w[2]>0){put(p,cx(.05,.3,pm(C.HUB),w[2],.72,0,10));[-1,1].forEach(function(s){put(p,cz(.045,.5,pm(0xFFFFFF),w[2]-.2,XR,s*.42,10))})}
+    else put(p,rb(.5,.14,.7,.04,pm(C.HUB),w[2],.62,0))});
+  p=def('shaft','구동축','lower',{off:[0,0,2.0],anchor:[.5,.5,0]});
+  put(p,cx(.045,1.2,pm(0xD8D2C4),.4,.49,0,12));put(p,cx(.045,.5,pm(0xD8D2C4),-.75,.49,0,12));
+  [-.2,1.0,-.5,-1.0].forEach(function(x){put(p,new T.Mesh(new T.SphereGeometry(.075,10,8),pm(0xB9B2A3)),null,true).position.set(x,.49,0)});
+  p=def('tmotor','주행모터·변속기','lower',{off:[0,0,-2.2],anchor:[-.35,.5,-.3]});
+  put(p,rb(.36,.36,.4,.05,pm(C.YD),-.35,.5,0));
+  put(p,cy(.13,.3,pm(0xC9DCE0),-.35,.8,0,18));put(p,cy(.07,.06,pm(C.HUB),-.35,.98,0,12));
+  /* 블레이드와 아웃트리거는 주행할 때 접어 올리고, 작업할 때 내린다 (WXO로 각도 제어) */
+  p=def('blade','도저 블레이드','lower',{off:[1.3,0,0],anchor:[2.3,.55,-1.05]});
+  (function(){var PX=1.5,PY=.74,g=new T.Group();g.position.set(PX,PY,0);p.g.add(g);WXO.blade=g;
+    function inG(m,z){m.position.set(-PX,-PY,z||0);return putG(p,g,m)}
+    inG(ext(beamShape([[2.22,.62],[2.3,.45],[2.3,.2],[2.2,.05]],[.03,.035,.035,.03]),2.3,pm(C.Y),.01));
+    putG(p,g,bx(.08,.05,2.3,pm(C.DK),2.17-PX,.045-PY,0));
+    [-1,1].forEach(function(s){inG(ext(beamShape([[1.5,.74],[2.24,.3]],[.07,.06]),.1,pm(C.YD),.02),s*.5);put(p,cz(.07,.14,pm(0xB9B2A3),PX,PY,s*.5,12))})})();
+  p=def('outrig','아웃트리거','lower',{off:[-1.3,0,0],anchor:[-2.05,.75,-.8]});
+  put(p,rb(.3,.28,1.7,.05,pm(C.YD),-2.0,.66,0));
+  [-1,1].forEach(function(s){
+    var g=new T.Group();g.position.set(-2.0,.62,s*.8);p.g.add(g);
+    putG(p,g,bx(.14,.72,.16,pm(C.Y),0,-.36,0));putG(p,g,cx(.06,.34,pm(0xB9B2A3),0,0,0,12));
+    var pg=new T.Group();pg.position.set(0,-.72,0);g.add(pg);putG(p,pg,bx(.4,.06,.36,pm(C.DK),0,0,0));
+    WXO.legs.push({g:g,pad:pg,s:s})});
+  p=def('lower','섀시(하부 프레임)','lower',{anchor:[.9,.85,-.4]});
+  put(p,rb(3.3,.34,.8,.08,pm(C.GR),0,.82,0));put(p,rb(1.4,.22,1.4,.08,pm(C.GR),0,.94,0));
+  [-1,1].forEach(function(s){put(p,rb(.5,.18,.3,.04,pm(C.DK),0,.62,s*.72));put(p,bx(.3,.04,.26,pm(C.DK),.05,.42,s*.72))});
+})();
+}
+}
+if(EX){
 (function(){
   var p=def('joint','센터조인트','lower',{off:[0,.8,0],anchor:[0,1.06,-.85]});
   var mr=M(0xCFC9BC),mt=M(C.TL);
@@ -706,8 +886,8 @@ cylPart('bcyl','버킷 실린더',[2.0,.9,-2.7],.8);
 
 }
 /* ===== 휠로더 ===== */
-var WR=.62,WZ=.87,FAX=1.0,RAX=-1.4,PVX=-.2,WSP=[],KX,KY;
-if(!EX){(function(){
+var WR=.62,WZ=.87,FAX=1.0,RAX=-1.4,PVX=-.2,KX,KY;
+if(WL){(function(){
   KX=WK.Kp0[0];KY=WK.Kp0[1];
   /* 재질은 부품마다 따로 만든다 (같이 쓰면 선택 강조가 다른 부품까지 번진다) */
   var MC={},p,i;
@@ -826,8 +1006,449 @@ if(!EX){(function(){
     soilMesh.position.set(KX+.62,KY+.12,0);soilMesh.scale.set(.1,.1,.1);soilMesh.visible=false;put(p,soilMesh,null,true)})();
 })()}
 
+/* ===== 스키드로더 ===== */
+var SAP=[-1.35,2.2],SK0=[1.75,.42],SKR=[SK0[0]-SAP[0],SK0[1]-SAP[1]],SKC=[0,0],SLF=[-1.45,1.2],SLA=[-.1,1.9],STA=[1.28,1.38],STQ=[SK0[0]+.06,SK0[1]+.42],SLL=[1,2],TIPS=[1.38,-.4],HEELS=[.5,-.42],SOILS=[.5,.3,1.02];
+if(SL){(function(){
+  KX=SK0[0];KY=SK0[1];SOILS=[.4,.24,.95];
+  var XR=.5,p,i,MC={};
+  function pm(c){var k=LIST[LIST.length-1].id+'|'+c;return MC[k]||(MC[k]=M(c))}
+  [['fwheel','앞바퀴',.75],['rwheel','뒷바퀴',-.75]].forEach(function(w){
+    var p=def(w[0],w[1],'drive',{lat:1.1,anchor:[w[2],XR+.3,-1.22],sw:true});
+    var mt=M(0x8C8577,{r:.95}),mr=M(0xF0EDE6),ml=M(0x6E685D,{r:.9}),mh=M(C.HUB);
+    [-1,1].forEach(function(s){
+      var g=new T.Group();g.position.set(w[2],XR,s*1.0);g.userData.s=s;p.sg[s].add(g);WSP.push(g);
+      var k,a,t;
+      putG(p,g,cz(XR-.03,.44,mt,0,0,0,28));putG(p,g,cz(.27,.46,mr,0,0,0,22));putG(p,g,cz(.11,.5,mh,0,0,0,14));
+      for(k=0;k<14;k++){a=k/14*Math.PI*2;t=bx(.1,.07,.44,ml,Math.cos(a)*(XR-.01),Math.sin(a)*(XR-.01),0);t.rotation.z=a+Math.PI/2;putG(p,g,t,true)}
+      for(k=0;k<8;k++){a=k/8*Math.PI*2;putG(p,g,cz(.025,.52,mh,Math.cos(a)*.18,Math.sin(a)*.18,0,8),true)}})});
+  p=def('chain','체인 케이스','drive',{lat:.45,anchor:[0,.62,-.71],sw:true});
+  [-1,1].forEach(function(s){
+    put(p,rb(2.0,.34,.1,.04,pm(C.GR),0,.5,s*.71),s);
+    [-.75,0,.75].forEach(function(x){put(p,cz(x?.15:.1,.14,pm(0xF0EDE6),x,.5,s*.71,x?16:12),s)});
+    [-.75,.75].forEach(function(x){put(p,cz(.07,.2,pm(C.HUB),x,.5,s*.82,10),s)})});
+  p=def('dmotor','주행모터','drive',{off:[0,1.3,0],lat:.0,anchor:[0,.5,-.5],sw:true});
+  [-1,1].forEach(function(s){put(p,cz(.16,.26,pm(0xC9DCE0),0,.5,s*.5,18));put(p,cz(.1,.1,pm(C.YD),0,.5,s*.32,14))});
+  p=def('frame','메인 프레임','drive',{anchor:[-.4,.9,-.66],sw:true});
+  put(p,rb(2.9,.7,1.32,.1,pm(C.GR),-.15,.7,0));
+  [-1,1].forEach(function(s){
+    put(p,rb(2.7,.08,.5,.03,pm(C.YD),-.2,1.09,s*1.0));
+    put(p,rb(.5,1.32,.2,.05,pm(C.Y),-1.35,1.72,s*.9));
+    put(p,cz(.09,.3,pm(0xB9B2A3),SAP[0],SAP[1],s*.9,14));put(p,cz(.07,.3,pm(0xB9B2A3),SLF[0],SLF[1],s*.9,12))});
+  put(p,rb(.12,.3,1.9,.04,pm(C.DK),-1.62,.55,0));
+  p=def('engine','엔진','body',{off:[-2.3,.5,0],anchor:[-1.3,1.3,-.45],sw:true});
+  put(p,rb(.55,.7,.9,.06,pm(0xC9DCE0),-1.3,1.0,0));
+  for(i=0;i<4;i++)put(p,rb(.4,.12,.16,.03,pm(0xA9C3C9),-1.3,1.41,-.33+i*.22));
+  put(p,cz(.16,.06,pm(0x6E685D),-1.3,.95,.5,16));
+  p=def('hstat','주행 펌프(HST)','body',{off:[-.9,2.0,0],anchor:[-.75,.62,-.15],sw:true});
+  put(p,cx(.15,.26,pm(0xF0D2B8),-.86,.62,0,18));put(p,cx(.15,.26,pm(0xF0D2B8),-.58,.62,0,18));put(p,rb(.5,.12,.22,.03,pm(0xD8D2C4),-.72,.8,0));
+  p=def('pump','작업 펌프','body',{off:[-.4,2.5,-1.6],anchor:[-.33,.62,-.11],sw:true});
+  put(p,cx(.11,.2,pm(0xF0D2B8),-.33,.62,0,16));put(p,rb(.14,.2,.2,.03,pm(0xF0D2B8),-.33,.76,0));
+  p=def('valve','컨트롤 밸브','body',{off:[.5,2.3,2.0],anchor:[.6,.62,.3],sw:true});
+  put(p,rb(.3,.22,.36,.04,pm(0xD3DCEB),.6,.62,.3));
+  for(i=0;i<3;i++)put(p,cx(.03,.4,pm(0xFFFFFF),.6,.62,.2+i*.1,8),null,true);
+  p=def('tank','유압 탱크','body',{off:[.6,2.0,-2.2],anchor:[.6,.7,-.45],sw:true});
+  put(p,rb(.4,.4,.3,.05,pm(0xDAD6CC),.6,.7,-.3));put(p,cy(.05,.06,pm(0xFFFFFF),.6,.93,-.3,12));
+  p=def('hood','리어 도어·냉각기','body',{off:[-3.2,.4,0],anchor:[-1.68,1.5,-.75],sw:true});
+  put(p,rb(.12,1.3,1.5,.05,pm(C.Y),-1.68,1.3,0));put(p,rb(.62,.1,1.5,.04,pm(C.Y),-1.33,2.0,0));
+  put(p,rb(.5,.07,1.1,.02,pm(0xF0D2B8),-1.33,1.88,0));
+  for(i=0;i<5;i++)put(p,bx(.02,.05,1.1,pm(C.DK),-1.745,.95+i*.16,0),null,true);
+  p=def('cab','캐빈(ROPS)','body',{off:[.2,3.0,0],anchor:[.1,2.3,-.62],sw:true});
+  (function(){var ms=M(0x6E685D,{r:.9}),mg=M(C.GL,{r:.2,op:.3});
+    put(p,rb(2.1,.1,1.24,.04,pm(C.Y),.1,1.1,0));
+    [-.95,1.15].forEach(function(x){[-.58,.58].forEach(function(z){put(p,rb(.09,1.2,.09,.02,pm(C.Y),x,1.75,z))})});
+    put(p,rb(2.3,.1,1.3,.04,pm(C.Y),.1,2.38,0));
+    var g=new T.Mesh(new T.BoxGeometry(2.0,1.1,1.1),mg);g.position.set(.1,1.75,0);put(p,g,null,true);g.castShadow=false;
+    put(p,rb(.45,.12,.5,.04,ms,-.3,1.4,0));put(p,rb(.1,.6,.48,.04,ms,-.55,1.72,0));
+    [-.36,.36].forEach(function(z){put(p,cy(.025,.3,pm(C.DK),.25,1.55,z,8));put(p,cy(.05,.06,ms,.25,1.72,z,10))});
+    put(p,cz(.03,1.1,pm(C.DK),.55,1.62,0,8))})();
+  p=def('arm','리프트 암','work',{off:[0,1.9,0],lat:.5,fk:1,anchor:[0,2.15,-.9],sw:true});
+  (function(){var pts=[SAP,[.3,2.0],[1.2,1.5],SK0],hw=[.13,.12,.13,.1];
+    [-1,1].forEach(function(s){
+      var b=ext(beamShape(pts,hw),.14,pm(C.Y),.015);b.position.z=s*.9;put(p,b,s);
+      put(p,cz(.17,.16,pm(C.YD),SAP[0],SAP[1],s*.9,18),s);put(p,cz(.13,.16,pm(C.YD),SK0[0],SK0[1],s*.9,16),s);
+      put(p,cz(.08,.2,pm(0xB9B2A3),SLA[0],SLA[1],s*.9,12),s)});
+    put(p,cz(.07,1.8,pm(C.YD),1.5,.9,0,12))})();
+  cylPart('lcyl','리프트 실린더',[-.6,1.2,-2.2],.9,.9,'work',true);
+  cylPart('tcyl','틸트 실린더',[1.0,1.9,-2.0],.45,.68,'work',true);
+  p=def('coupler','퀵 커플러','work',{off:[1.6,.9,0],fk:3,anchor:[SK0[0]+.1,SK0[1]+.5,-.75],sw:true});
+  put(p,rb(.07,.8,1.5,.03,pm(C.YD),SK0[0]+.1,SK0[1]+.25,0));
+  [-1,1].forEach(function(s){put(p,rb(.16,.6,.08,.03,pm(C.YD),SK0[0]+.03,SK0[1]+.2,s*.68));put(p,cz(.06,.2,pm(0xB9B2A3),STQ[0],STQ[1],s*.68,10))});
+  put(p,cz(.05,1.7,pm(0xB9B2A3),SK0[0],SK0[1],0,10));
+  p=def('bucket','버킷','work',{off:[2.6,.3,0],fk:3,anchor:[KX+.8,KY+.6,-1.15],sw:true});
+  (function(){var m=M(0xE6DFCF),mt=M(0xFFFFFF);
+    var Cp=[[.5,.78],[.2,.66],[.18,.2],[.26,-.22],[.5,-.38],[1.25,-.4]];
+    var c3=new T.CatmullRomCurve3(Cp.map(function(q){return new V3(q[0],q[1],0)}),false,'catmullrom',.5).getPoints(30);
+    var xy=c3.map(function(v){return[v.x,v.y]});
+    var shell=ext(beamShape(xy,xy.map(function(){return .035})),2.3,m,.012);shell.position.set(KX,KY,0);put(p,shell);
+    var ps=new T.Shape();ps.moveTo(xy[0][0],xy[0][1]);for(var i=1;i<xy.length;i++)ps.lineTo(xy[i][0],xy[i][1]);ps.closePath();
+    [-1.15,1.15].forEach(function(dz){var pl=ext(ps,.05,m,.01);pl.position.set(KX,KY,dz);put(p,pl)});
+    put(p,bx(.16,.045,2.3,pm(C.YD),KX+1.2,KY-.405,0));
+    for(var k=0;k<7;k++)put(p,rb(.2,.06,.1,.02,mt,KX+1.32,KY-.405,-1.02+k*.34));
+    soilMesh=new T.Mesh(new T.IcosahedronGeometry(1,1),M(C.SOIL,{r:1}));
+    soilMesh.position.set(KX+.7,KY+.05,0);soilMesh.scale.set(.1,.1,.1);soilMesh.visible=false;put(p,soilMesh,null,true)})();
+  /* 리프트 실린더 길이 범위 */
+  (function(){function ll(th){var c=Math.cos(th),s=Math.sin(th),x=SLA[0]-SAP[0],y=SLA[1]-SAP[1];return Math.hypot(SAP[0]+x*c-y*s-SLF[0],SAP[1]+x*s+y*c-SLF[1])}SLL=[ll(0),ll(1.1)]})();
+})()}
+function updateSceneSL(){
+  var th=pose.b,g=0,it,ym=0,kx=0,ky=0,c,s;
+  for(it=0;it<8;it++){c=Math.cos(th);s=Math.sin(th);kx=SAP[0]+SKR[0]*c-SKR[1]*s;ky=SAP[1]+SKR[0]*s+SKR[1]*c;g=th+pose.k;
+    ym=Math.min(ky+TIPS[0]*Math.sin(g)+TIPS[1]*Math.cos(g),ky+HEELS[0]*Math.sin(g)+HEELS[1]*Math.cos(g));
+    if(ym>=-.005||th>=LIM.b[1])break;th=Math.min(LIM.b[1],th+(-ym)/3)}
+  lastT1=th;contact=ym<.09;wlg=g;
+  B0w.set(SAP[0],SAP[1],0);rotAbout(Mb,B0w,th);SKC[0]=kx;SKC[1]=ky;place(Mk,SK0,SKC,g);
+  Rs.makeRotationY(swingA);
+  placeStatic();
+  var bk=P.bucket,eb=expl*bk.efc;bktOff.set(bk.off[0]*eb,bk.off[1]*eb,bk.off[2]*eb);
+  tipW.set(KX+TIPS[0],KY+TIPS[1],0).applyMatrix4(Mk).add(bktOff).applyMatrix4(Rs);
+  bmW.set(KX+.95,KY+.25,0).applyMatrix4(Mk).add(bktOff).applyMatrix4(Rs);
+  vA.set(SLF[0],SLF[1],0);vB.set(SLA[0],SLA[1],0).applyMatrix4(Mb);dynPlace(P.lcyl,vA,vB);
+  vA.set(STA[0],STA[1],0).applyMatrix4(Mb);vB.set(STQ[0],STQ[1],0).applyMatrix4(Mk);dynPlace(P.tcyl,vA,vB);
+  rollWheels(travelD);
+  var gp=guideGeo.attributes.position.array,gi=0;
+  LIST.forEach(function(p){
+    gp[gi++]=p.a0.x;gp[gi++]=p.a0.y;gp[gi++]=p.a0.z;gp[gi++]=p.aw.x;gp[gi++]=p.aw.y;gp[gi++]=p.aw.z});
+  guideGeo.attributes.position.needsUpdate=true;guides.visible=expl>.03;
+  guides.material.opacity=Math.min(.55,expl*1.2);updateConn()}
+
+/* ===== 굴절식 덤프트럭 ===== */
+var DPV=1.0,DBP=[-2.25,1.15],DHF=[-.9,.9],DHB=[0,1.23],DHL=[1,2];
+if(DT){(function(){
+  var XR=.55,p,i,MC={};
+  function pm(c){var k=LIST[LIST.length-1].id+'|'+c;return MC[k]||(MC[k]=M(c))}
+  function wheels(id,name,grp,ax,sw){
+    var p=def(id,name,grp,{lat:1.0,anchor:[ax,XR+.32,-.99],sw:sw});
+    var mt=M(0x8C8577,{r:.95}),mr=M(0xF0EDE6),ml=M(0x6E685D,{r:.9}),mh=M(C.HUB);
+    [-1,1].forEach(function(s){
+      var g=new T.Group();g.position.set(ax,XR,s*.78);p.sg[s].add(g);WSP.push(g);
+      var k,a,t;
+      putG(p,g,cz(XR-.03,.42,mt,0,0,0,30));putG(p,g,cz(.3,.44,mr,0,0,0,22));putG(p,g,cz(.13,.5,mh,0,0,0,14));
+      for(k=0;k<16;k++){a=k/16*Math.PI*2;t=bx(.1,.07,.42,ml,Math.cos(a)*(XR-.01),Math.sin(a)*(XR-.01),0);t.rotation.z=a+Math.PI/2;putG(p,g,t,true)}
+      for(k=0;k<8;k++){a=k/8*Math.PI*2;putG(p,g,cz(.028,.52,mh,Math.cos(a)*.2,Math.sin(a)*.2,0,8),true)}})}
+  /* 트랙터(앞차) — 고정 */
+  wheels('fwheel','앞바퀴','front',2.2,false);
+  p=def('faxle','앞차축','front',{anchor:[2.2,XR,-.4],sw:false});
+  put(p,cz(.13,1.2,pm(C.GR),2.2,XR,0,16));put(p,cx(.24,.4,pm(C.GR),2.2,XR,0,20));put(p,cx(.1,.2,pm(C.HUB),1.9,XR,0,12));
+  p=def('fframe','프런트 프레임','front',{off:[0,.9,0],anchor:[2.0,.9,-.35],sw:false});
+  put(p,rb(2.1,.3,.7,.07,pm(C.GR),2.15,.88,0));put(p,rb(.3,.6,.56,.06,pm(C.YD),DPV+.2,.92,0));
+  [-1,1].forEach(function(s){put(p,rb(1.35,.07,.46,.03,pm(C.YD),2.2,1.17,s*.8))});
+  put(p,bx(.16,.1,.9,pm(C.YD),DPV+.75,.9,0));put(p,rb(.12,.4,1.7,.04,pm(C.DK),3.42,.85,0));
+  p=def('trans','변속기','front',{off:[.2,.5,-2.4],anchor:[1.6,.8,-.26],sw:false});
+  put(p,rb(.5,.42,.5,.06,pm(0xC9DCE0),1.6,.8,0));put(p,cx(.24,.2,pm(0xA9C3C9),1.95,.95,0,20));
+  p=def('engine','엔진','front',{off:[.9,2.9,0],anchor:[2.75,1.55,-.3],sw:false});
+  put(p,rb(.95,.5,.6,.06,pm(0xC9DCE0),2.7,1.4,0));
+  for(i=0;i<4;i++)put(p,rb(.16,.13,.52,.03,pm(0xA9C3C9),2.38+i*.22,1.72,0));
+  put(p,rb(.1,.62,1.05,.03,pm(0xF0D2B8),3.33,1.5,0));put(p,cx(.28,.05,pm(0x6E685D),3.24,1.5,0,20));
+  p=def('pump','유압펌프','front',{off:[.2,1.6,2.2],anchor:[1.6,1.12,.15],sw:false});
+  put(p,cx(.14,.28,pm(0xF0D2B8),1.6,1.08,.15,18));
+  p=def('tank','유압 탱크','front',{off:[-.2,1.2,-2.2],anchor:[1.42,1.4,-.97],sw:false});
+  put(p,rb(.6,.34,.3,.05,pm(0xDAD6CC),1.42,1.38,-.82));put(p,cy(.05,.06,pm(0xFFFFFF),1.3,1.58,-.82,12));
+  p=def('hood','엔진 후드','front',{off:[1.2,1.7,0],anchor:[2.85,1.9,-.65],sw:false});
+  put(p,rb(1.25,.78,1.3,.14,pm(C.Y),2.85,1.52,0));put(p,cy(.06,.5,pm(C.DK),2.4,2.1,.5,12));
+  for(i=0;i<4;i++)put(p,bx(.02,.05,.9,pm(C.DK),3.485,1.3+i*.13,0),null,true);
+  p=def('cab','캐빈','front',{off:[0,3.0,0],anchor:[1.7,2.1,-.6],sw:false});
+  (function(){var ms=M(0x6E685D,{r:.9}),mg=M(C.GL,{r:.2,op:.35});
+    put(p,rb(1.0,.12,1.2,.04,pm(C.Y),1.7,1.22,0));
+    [1.25,2.15].forEach(function(x){[-.55,.55].forEach(function(z){put(p,rb(.08,1.2,.08,.02,pm(C.Y),x,1.86,z))})});
+    put(p,rb(1.1,.1,1.3,.04,pm(C.Y),1.7,2.5,0));
+    var g=new T.Mesh(new T.BoxGeometry(.86,1.12,1.06),mg);g.position.set(1.7,1.86,0);put(p,g,null,true);g.castShadow=false;
+    put(p,rb(.4,.12,.42,.04,ms,1.55,1.52,0));put(p,rb(.1,.5,.4,.04,ms,1.35,1.8,0));
+    var col=cy(.03,.42,pm(C.DK),1.95,1.52,0,10);col.rotation.z=-.35;put(p,col);
+    var wh=new T.Mesh(new T.TorusGeometry(.15,.022,8,24),ms);wh.position.set(1.88,1.76,0);wh.rotation.y=Math.PI/2;wh.rotation.z=.35;put(p,wh,null,true)})();
+  /* 가운데 */
+  p=def('joint','굴절·요동 조인트','center',{off:[0,.9,-1.6],anchor:[DPV,1.25,0],sw:false});
+  put(p,cy(.08,.24,pm(0xB9B2A3),DPV,1.14,0,14));put(p,cy(.08,.24,pm(0xB9B2A3),DPV,.7,0,14));
+  put(p,cx(.24,.3,pm(C.TL),DPV-.3,.9,0,24));put(p,cx(.3,.06,pm(C.TL),DPV-.47,.9,0,24));
+  cylPart('stcyl','조향 실린더',[0,.35,0],.6,.38,'center',false);
+  p=def('shaft','구동축','center',{off:[0,-.0,0],dyn:true,sw:false});
+  (function(){var gs=new T.CylinderGeometry(.05,.05,1,12),ms=M(0xD8D2C4);
+    p.rig={type:'shaft',b1:put(p,new T.Mesh(gs,ms)),b2:put(p,new T.Mesh(gs,ms)),b3:put(p,new T.Mesh(gs,ms)),b4:put(p,new T.Mesh(gs,ms)),j:put(p,new T.Mesh(new T.SphereGeometry(.085,12,8),pm(0xB9B2A3)),null,true)}})();
+  /* 트레일러(뒤차) — 굴절 */
+  wheels('mwheel','가운데 바퀴','rear',-.6,true);
+  wheels('rwheel','뒷바퀴','rear',-1.75,true);
+  p=def('bogie','탠덤 차축(보기)','rear',{anchor:[-1.175,XR,-.5],sw:true});
+  [-.6,-1.75].forEach(function(x){put(p,cz(.13,1.2,pm(C.GR),x,XR,0,16));put(p,cx(.24,.4,pm(C.GR),x,XR,0,20))});
+  [-1,1].forEach(function(s){put(p,rb(1.5,.16,.1,.04,pm(C.YD),-1.175,XR+.05,s*.48));put(p,cz(.09,.16,pm(0xB9B2A3),-1.175,XR+.12,s*.48,12))});
+  p=def('rframe','리어 프레임','rear',{off:[0,.9,0],anchor:[-.6,.9,-.35],sw:true});
+  put(p,rb(3.3,.3,.7,.07,pm(C.GR),-.75,.88,0));put(p,cx(.16,.4,pm(C.GR),DPV-.75,.9,0,18));
+  put(p,bx(.16,.1,.9,pm(C.YD),DPV-.45,.9,0));
+  [-1,1].forEach(function(s){put(p,rb(.3,.36,.1,.04,pm(C.YD),DBP[0],1.05,s*.5));put(p,cz(.07,.2,pm(0xB9B2A3),DBP[0],DBP[1],s*.5,12));put(p,cz(.07,.2,pm(0xB9B2A3),DHF[0],DHF[1],s*.45,12))});
+  p=def('valve','컨트롤 밸브','rear',{off:[.2,-.0,2.4],anchor:[.5,1.12,.2],sw:true});
+  put(p,rb(.34,.2,.36,.04,pm(0xD3DCEB),.5,1.13,0));
+  for(i=0;i<3;i++)put(p,cz(.03,.46,pm(0xFFFFFF),.4+i*.1,1.13,0,8),null,true);
+  cylPart('hoist','호이스트 실린더',[0,1.2,-2.4],.8,.45,'rear',true);
+  p=def('body','적재함','rear',{off:[-.6,2.6,0],fk:1,anchor:[-.8,2.1,-.95],sw:true});
+  (function(){var fl=[[-2.8,1.6],[-2.15,1.27],[.5,1.27],[.78,2.3]];
+    put(p,ext(beamShape(fl,[.04,.04,.04,.04]),1.9,pm(C.Y),.012));
+    [-1,1].forEach(function(s){var sh=new T.Shape();sh.moveTo(-2.8,1.6);sh.lineTo(-2.15,1.27);sh.lineTo(.5,1.27);sh.lineTo(.78,2.3);sh.lineTo(-2.8,2.05);sh.closePath();
+      var w=ext(sh,.06,pm(C.Y),.01);w.position.z=s*.95;put(p,w);
+      put(p,rb(3.5,.08,.1,.03,pm(C.YD),-1.0,2.2,s*.98)).rotation.z=.07;
+      put(p,rb(.3,.2,.1,.04,pm(C.YD),DBP[0],1.2,s*.5))});
+    put(p,rb(.5,.06,1.9,.02,pm(C.YD),.95,2.33,0));
+    soilMesh=new T.Mesh(new T.IcosahedronGeometry(1,1),M(C.SOIL,{r:1}));
+    soilMesh.position.set(-.9,1.75,0);soilMesh.scale.set(1.25,.1,.85);soilMesh.visible=false;put(p,soilMesh,null,true)})();
+  (function(){function hl(th){var c=Math.cos(th),s=Math.sin(th),x=DHB[0]-DBP[0],y=DHB[1]-DBP[1];return Math.hypot(DBP[0]+x*c-y*s-DHF[0],DBP[1]+x*s+y*c-DHF[1])}DHL=[hl(0),hl(1.2)]})();
+})()}
+function updateSceneDT(){
+  var th=pose.b;lastT1=th;contact=false;
+  B0w.set(DBP[0],DBP[1],0);rotAbout(Mb,B0w,th);
+  Rs.makeTranslation(DPV,0,0);Tm.makeRotationY(swingA);Rs.multiply(Tm);Tm.makeTranslation(-DPV,0,0);Rs.multiply(Tm);
+  placeStatic();
+  var bd=P.body,eb=expl*bd.efc;bktOff.set(bd.off[0]*eb,bd.off[1]*eb,bd.off[2]*eb);
+  bmW.set(-2.75,1.75,0).applyMatrix4(Mb).add(bktOff).applyMatrix4(Rs);
+  vA.set(DHF[0],DHF[1],0);vB.set(DHB[0],DHB[1],0).applyMatrix4(Mb);dynPlace(P.hoist,vA,vB);
+  /* 조향 실린더: 앞차(고정)와 뒤차(굴절) 사이 */
+  var sp=P.stcyl,es=expl*sp.efc;ov.set(sp.off[0]*es,sp.off[1]*es,sp.off[2]*es);
+  q1.set(DPV+.75,.9,.38);q2.set(DPV-.45,.9,.38).applyMatrix4(Rs);
+  q3.set(DPV+.75,.9,-.38);q4.set(DPV-.45,.9,-.38).applyMatrix4(Rs);
+  var ln=q1.distanceTo(q2),df=sp.len?(ln-sp.len)/fdt:0;sp.len=ln;
+  sp.flow=sp.flow*.8+Math.max(-1,Math.min(1,df*3))*.2;
+  sp.a0.copy(q1).add(q2).multiplyScalar(.5);sp.aw.copy(sp.a0).add(ov);
+  q1.add(ov);q2.add(ov);q3.add(ov);q4.add(ov);updCyl(sp.rig,q1,q2);updCyl(sp.rig.pair,q3,q4);sp.feed.copy(q1);
+  /* 구동축: 변속기 → 앞차축, 변속기 → 조인트 → 가운데 차축 → 뒷차축 (6륜 구동) */
+  var sh=P.shaft,eh=expl*sh.efc;ov.set(sh.off[0]*eh,sh.off[1]*eh,sh.off[2]*eh);
+  q1.set(1.4,.68,0).add(ov);q2.set(DPV,.66,0).add(ov);q3.set(-.3,.6,0).applyMatrix4(Rs).add(ov);q4.set(-1.45,.6,0).applyMatrix4(Rs).add(ov);
+  updBar(sh.rig.b1,q1,q2);updBar(sh.rig.b2,q2,q3);updBar(sh.rig.b3,q3,q4);sh.rig.j.position.copy(q2);
+  sh.aw.copy(q2);sh.a0.copy(q2).sub(ov);
+  q1.set(1.8,.68,0).add(ov);q4.set(1.95,.58,0).add(ov);updBar(sh.rig.b4,q1,q4);
+  rollWheels(travelD);
+  var gp=guideGeo.attributes.position.array,gi=0;
+  LIST.forEach(function(p){
+    gp[gi++]=p.a0.x;gp[gi++]=p.a0.y;gp[gi++]=p.a0.z;gp[gi++]=p.aw.x;gp[gi++]=p.aw.y;gp[gi++]=p.aw.z});
+  guideGeo.attributes.position.needsUpdate=true;guides.visible=expl>.03;
+  guides.material.opacity=Math.min(.55,expl*1.2);updateConn()}
+function stepLoadDT(dt){
+  spill=false;if(expl>.05)return;
+  var th=pose.b;
+  if(th>.45&&load>0){var rate=Math.min(1,(th-.45)*1.6)*dt*.9;load=Math.max(0,load-rate);spill=true;
+    spawnAcc+=rate*150;while(spawnAcc>1){spawnAcc--;spawn(bmW,-.5-Math.random()*.6,-.2,(Math.random()-.5)*.3)}}
+  else if(th<.03&&Math.abs(travelV)<.05&&load<1)load=Math.min(1,load+dt*.2);
+  soilMesh.visible=load>.02;soilMesh.scale.set(1.25,.1+.38*load,.85)}
+
+/* ===== 크롤러 도저 (하부 주행부는 크롤러 굴삭기와 같은 부품을 쓴다) ===== */
+var ZTP=[1.3,.8],ZBC=[3.4,.6],ZRP=[-2.0,1.15],ZLA=[2.05,1.75],ZLB=[2.9,.68],ZRA=[-1.95,1.75],ZRB=[-2.8,1.15],ZL=[1,2],ZR=[1,2],ripGoal=0,ripW=new V3();
+if(DZ){(function(){
+  var p,i,MC={};
+  function pm(c){var k=LIST[LIST.length-1].id+'|'+c;return MC[k]||(MC[k]=M(c))}
+  p=def('mframe','메인 프레임','body',{off:[0,1.3,0],anchor:[-.6,1.4,-.75]});
+  put(p,rb(3.7,.5,1.5,.1,pm(C.GR),-.1,1.27,0));
+  [-1,1].forEach(function(s){put(p,rb(3.3,.07,.72,.03,pm(C.YD),-.2,1.25,s*1.16));
+    put(p,rb(.26,.34,.1,.04,pm(C.YD),1.97,1.7,s*.62));put(p,cz(.07,.22,pm(0xB9B2A3),ZLA[0],ZLA[1],s*.62,12));
+    put(p,cz(.08,.2,pm(0xB9B2A3),ZTP[0],ZTP[1],s*.72,12))});
+  put(p,rb(.3,.5,.9,.06,pm(C.YD),-1.98,1.25,0));
+  p=def('engine','엔진','body',{off:[.9,4.2,0],anchor:[1.15,2.0,-.3],sw:true});
+  put(p,rb(1.0,.52,.62,.06,pm(0xC9DCE0),1.15,1.85,0));
+  for(i=0;i<4;i++)put(p,rb(.16,.13,.54,.03,pm(0xA9C3C9),.82+i*.22,2.17,0));
+  put(p,rb(.1,.66,.95,.03,pm(0xF0D2B8),1.92,1.9,0));put(p,cx(.28,.05,pm(0x6E685D),1.83,1.9,0,20));
+  p=def('hstat','주행 펌프(HST)','body',{off:[0,1.3,-2.3],anchor:[.1,1.27,-.16]});
+  put(p,cx(.16,.26,pm(0xF0D2B8),.24,1.27,0,18));put(p,cx(.16,.26,pm(0xF0D2B8),-.04,1.27,0,18));
+  p=def('pump','작업 펌프','body',{off:[-.3,1.3,2.3],anchor:[-.32,1.27,.11]});
+  put(p,cx(.11,.2,pm(0xF0D2B8),-.32,1.27,0,16));
+  p=def('valve','컨트롤 밸브','body',{off:[-.6,2.2,2.4],anchor:[-.7,1.27,.5]});
+  put(p,rb(.3,.22,.36,.04,pm(0xD3DCEB),-.7,1.27,.35));
+  for(i=0;i<3;i++)put(p,cx(.03,.4,pm(0xFFFFFF),-.7,1.27,.25+i*.1,8),null,true);
+  p=def('tank','연료·유압 탱크','body',{off:[-1.7,1.7,0],anchor:[-1.68,2.2,-.67]});
+  put(p,rb(.55,.75,1.35,.08,pm(0xDAD6CC),-1.68,1.92,0));put(p,cy(.06,.07,pm(0xFFFFFF),-1.68,2.32,.4,12));put(p,cy(.06,.07,pm(0xFFFFFF),-1.68,2.32,-.4,12));
+  p=def('hood','엔진 후드','body',{off:[1.0,2.6,0],anchor:[1.25,2.3,-.55]});
+  put(p,rb(1.6,.78,1.1,.12,pm(C.Y),1.25,1.92,0));put(p,cy(.06,.55,pm(C.DK),.9,2.55,.3,12));put(p,cy(.09,.2,pm(C.DK),1.5,2.4,-.3,14));
+  for(i=0;i<5;i++)put(p,bx(.02,.05,.85,pm(C.DK),2.06,1.68+i*.12,0),null,true);
+  p=def('cab','캐빈(ROPS)','body',{off:[-.2,3.4,0],anchor:[-.4,2.6,-.65]});
+  (function(){var ms=M(0x6E685D,{r:.9}),mg=M(C.GL,{r:.2,op:.35});
+    put(p,rb(1.7,.1,1.3,.04,pm(C.Y),-.42,1.57,0));
+    [-1.2,.36].forEach(function(x){[-.6,.6].forEach(function(z){put(p,rb(.09,1.3,.09,.02,pm(C.Y),x,2.27,z))})});
+    put(p,rb(1.85,.1,1.42,.04,pm(C.Y),-.42,2.95,0));
+    var g=new T.Mesh(new T.BoxGeometry(1.52,1.22,1.16),mg);g.position.set(-.42,2.27,0);put(p,g,null,true);g.castShadow=false;
+    put(p,rb(.45,.12,.48,.04,ms,-.6,1.92,0));put(p,rb(.1,.6,.46,.04,ms,-.85,2.25,0));
+    [-.36,.36].forEach(function(z){put(p,cy(.025,.3,pm(C.DK),-.25,2.05,z,8));put(p,cy(.05,.06,ms,-.25,2.22,z,10))})})();
+  p=def('cframe','C프레임(푸시 프레임)','work',{off:[1.5,.3,0],fk:1,anchor:[2.2,.72,-.68]});
+  [-1,1].forEach(function(s){put(p,beam(ZTP,[3.2,.6],.1,.09,.12,pm(C.Y),s*.68));put(p,cz(.13,.14,pm(C.YD),ZTP[0],ZTP[1],s*.68,14));
+    put(p,cz(.07,.2,pm(0xB9B2A3),ZLB[0],ZLB[1],s*.62,10));put(p,cz(.06,.2,pm(0xB9B2A3),2.2,.72,s*.6,10))});
+  put(p,rb(.22,.2,1.5,.05,pm(C.Y),3.2,.6,0));put(p,new T.Mesh(new T.SphereGeometry(.13,14,10),pm(0xB9B2A3)),null,true).position.set(ZBC[0]-.02,ZBC[1],0);
+  cylPart('lcyl','블레이드 리프트 실린더',[.8,1.6,0],.55,.62,'work',true);
+  cylPart('acyl','앵글 실린더',[1.9,.4,0],.6,.6,'work',true);
+  p=def('blade','블레이드','work',{off:[2.8,.3,0],fk:3,anchor:[3.5,1.2,-1.68]});
+  (function(){var pr=[[3.55,1.22],[3.45,.86],[3.48,.42],[3.63,.07]];
+    put(p,ext(beamShape(pr,[.035,.035,.035,.035]),3.36,pm(C.Y),.012));
+    put(p,bx(.1,.06,3.36,pm(C.DK),3.64,.05,0));
+    [-1.66,1.66].forEach(function(z){var sh=new T.Shape();sh.moveTo(3.55,1.22);sh.lineTo(3.45,.86);sh.lineTo(3.48,.42);sh.lineTo(3.63,.07);sh.lineTo(3.78,.07);sh.lineTo(3.7,1.22);sh.closePath();
+      var w=ext(sh,.05,pm(C.YD),.008);w.position.z=z;put(p,w)});
+    [-1.25,0,1.25].forEach(function(z){put(p,rb(.1,.7,.12,.03,pm(C.YD),3.41,.62,z))});
+    soilMesh=new T.Mesh(new T.IcosahedronGeometry(1,1),M(C.SOIL,{r:1}));
+    soilMesh.position.set(3.95,.22,0);soilMesh.scale.set(.1,.1,.1);soilMesh.visible=false;put(p,soilMesh,null,true)})();
+  p=def('ripper','리퍼','work',{off:[-1.8,.3,0],fk:2,anchor:[-2.85,1.1,-1.1]});
+  [-1,1].forEach(function(s){put(p,beam(ZRP,[-2.85,.95],.09,.09,.12,pm(C.Y),s*.5));put(p,cz(.1,.14,pm(C.YD),ZRP[0],ZRP[1],s*.5,12))});
+  put(p,rb(.3,.3,2.2,.06,pm(C.Y),-2.85,.95,0));put(p,cz(.06,.3,pm(0xB9B2A3),ZRB[0],ZRB[1],0,10));
+  [-.85,0,.85].forEach(function(z){var sh=new T.Shape();sh.moveTo(-2.75,.85);sh.lineTo(-2.95,.85);sh.lineTo(-3.0,.5);sh.lineTo(-3.02,.3);sh.lineTo(-2.84,.42);sh.closePath();
+    var t=ext(sh,.1,pm(C.DK),.01);t.position.z=z;put(p,t)});
+  cylPart('rcyl','리퍼 실린더',[-1.2,1.6,0],.5,0,'work',true);
+  function rl(o,b,a,th){var c=Math.cos(th),s=Math.sin(th),x=b[0]-o[0],y=b[1]-o[1];return Math.hypot(o[0]+x*c-y*s-a[0],o[1]+x*s+y*c-a[1])}
+  ZL=[rl(ZTP,ZLB,ZLA,.3),rl(ZTP,ZLB,ZLA,-.08)];ZR=[rl(ZRP,ZRB,ZRA,0),rl(ZRP,ZRB,ZRA,.55)];
+  if(ZR[0]>ZR[1])ZR.reverse();if(ZL[0]>ZL[1])ZL.reverse();
+  LIST.forEach(function(q){q.sw=true});
+})()}
+function updateSceneDZ(){
+  var th=pose.b;lastT1=th;contact=th<.02;
+  B0w.set(ZTP[0],ZTP[1],0);rotAbout(Mb,B0w,th);
+  Mk.copy(Mb);Tm.makeTranslation(ZBC[0],ZBC[1],0);Mk.multiply(Tm);Tm.makeRotationY(pose.a);Mk.multiply(Tm);Tm.makeTranslation(-ZBC[0],-ZBC[1],0);Mk.multiply(Tm);
+  B0w.set(ZRP[0],ZRP[1],0);rotAbout(Ma,B0w,pose.k);
+  Rs.makeRotationY(swingA);
+  placeStatic();
+  var bd=P.blade,eb=expl*bd.efc;bktOff.set(bd.off[0]*eb,bd.off[1]*eb,bd.off[2]*eb);
+  tipW.set(3.74,.1,0).applyMatrix4(Mk).add(bktOff).applyMatrix4(Rs);
+  bmW.set(3.9,.4,0).applyMatrix4(Mk).add(bktOff).applyMatrix4(Rs);
+  ripW.set(-3.0,.3,0).applyMatrix4(Ma).applyMatrix4(Rs);
+  vA.set(ZLA[0],ZLA[1],0);vB.set(ZLB[0],ZLB[1],0).applyMatrix4(Mb);dynPlace(P.lcyl,vA,vB);
+  vA.set(ZRA[0],ZRA[1],0);vB.set(ZRB[0],ZRB[1],0).applyMatrix4(Ma);dynPlace(P.rcyl,vA,vB);
+  /* 앵글 실린더: C프레임과 블레이드 뒷면 사이, 좌우가 반대로 움직인다 */
+  var sp=P.acyl,es=expl*sp.efc;ov.set(sp.off[0]*es,sp.off[1]*es,sp.off[2]*es);
+  q1.set(2.2,.72,.6).applyMatrix4(Mb);q2.set(3.4,.62,1.25).applyMatrix4(Mk);
+  q3.set(2.2,.72,-.6).applyMatrix4(Mb);q4.set(3.4,.62,-1.25).applyMatrix4(Mk);
+  var ln=q1.distanceTo(q2),df=sp.len?(ln-sp.len)/fdt:0;sp.len=ln;
+  sp.flow=sp.flow*.8+Math.max(-1,Math.min(1,df*3))*.2;
+  sp.a0.copy(q1).add(q2).multiplyScalar(.5);sp.aw.copy(sp.a0).add(ov);
+  q1.add(ov);q2.add(ov);q3.add(ov);q4.add(ov);updCyl(sp.rig,q1,q2);updCyl(sp.rig.pair,q3,q4);sp.feed.copy(q1);
+  sp.g.matrix.copy(Rs);sp.g.matrixWorldNeedsUpdate=true;sp.a0.applyMatrix4(Rs);sp.aw.applyMatrix4(Rs);sp.feed.applyMatrix4(Rs);
+  var gp=guideGeo.attributes.position.array,gi=0;
+  LIST.forEach(function(p){
+    gp[gi++]=p.a0.x;gp[gi++]=p.a0.y;gp[gi++]=p.a0.z;gp[gi++]=p.aw.x;gp[gi++]=p.aw.y;gp[gi++]=p.aw.z});
+  guideGeo.attributes.position.needsUpdate=true;guides.visible=expl>.03;
+  guides.material.opacity=Math.min(.55,expl*1.2);updateConn()}
+function stepLoadDZ(dt){
+  spill=false;if(expl>.05)return;
+  if(contact&&travelV>.3){load=Math.min(1,load+dt*.22);
+    spawnAcc+=dt*16;while(spawnAcc>1){spawnAcc--;spawn(tipW,.4+Math.random()*.6,.8+Math.random(),(Math.random()-.5)*.6,.5)}}
+  else if(lastT1>.08&&load>0){var rate=dt*.7;load=Math.max(0,load-rate);spill=true;
+    spawnAcc+=rate*120;while(spawnAcc>1){spawnAcc--;spawn(bmW,(Math.random()-.5)*.3,-.2,(Math.random()-.5)*.3)}}
+  if(pose.k>.38&&Math.abs(travelV)>.3){spawnAcc+=dt*10;while(spawnAcc>1){spawnAcc--;spawn(ripW,(Math.random()-.5)*.5,.8+Math.random()*.6,(Math.random()-.5)*.5,.45)}}
+  soilMesh.visible=load>.02;var l=.3+.7*load;soilMesh.scale.set(.55*l,.42*l,1.45)}
+
+/* ===== 모터 그레이더 ===== */
+var GPV=.2,GDB=[4.05,.95],GCC=[2.3,.72],GLA=[2.6,1.7],GLB=[2.15,.8],GL=[1,2],MGS=[];
+if(MG){(function(){
+  var XR=.5,p,i,MC={};
+  function pm(c){var k=LIST[LIST.length-1].id+'|'+c;return MC[k]||(MC[k]=M(c))}
+  function wheels(id,name,grp,ax,sw,wd,steer){
+    var p=def(id,name,grp,{lat:.9,anchor:[ax,XR+.3,-.85-wd/2],sw:sw});
+    var mt=M(0x8C8577,{r:.95}),mr=M(0xF0EDE6),ml=M(0x6E685D,{r:.9}),mh=M(C.HUB);
+    [-1,1].forEach(function(s){
+      var h=new T.Group();h.position.set(ax,XR,s*.85);p.sg[s].add(h);if(steer)MGS.push(h);
+      var g=new T.Group();h.add(g);WSP.push(g);
+      var k,a,t;
+      putG(p,g,cz(XR-.03,wd,mt,0,0,0,28));putG(p,g,cz(.27,wd+.02,mr,0,0,0,22));putG(p,g,cz(.11,wd+.08,mh,0,0,0,14));
+      for(k=0;k<14;k++){a=k/14*Math.PI*2;t=bx(.09,.06,wd,ml,Math.cos(a)*(XR-.01),Math.sin(a)*(XR-.01),0);t.rotation.z=a+Math.PI/2;putG(p,g,t,true)}
+      for(k=0;k<8;k++){a=k/8*Math.PI*2;putG(p,g,cz(.025,wd+.1,mh,Math.cos(a)*.18,Math.sin(a)*.18,0,8),true)}})}
+  /* 앞차 (굴절하는 쪽) */
+  wheels('fwheel','앞바퀴','front',4.4,true,.3,true);
+  p=def('faxle','앞차축','front',{anchor:[4.4,.62,-.4],sw:true});
+  put(p,rb(.16,.14,1.5,.04,pm(C.GR),4.4,.6,0));put(p,cx(.07,.3,pm(0xB9B2A3),4.4,.72,0,12));
+  [-1,1].forEach(function(s){put(p,rb(.12,.3,.1,.03,pm(C.YD),4.4,.56,s*.68));put(p,cz(.04,.5,pm(0xFFFFFF),4.22,.62,s*.4,10))});
+  put(p,cz(.03,1.3,pm(C.HUB),4.2,.5,0,8),null,true);
+  p=def('fframe','프런트 프레임','front',{off:[0,1.3,0],anchor:[2.8,1.75,-.15],sw:true});
+  put(p,ext(beamShape([[GPV+.1,1.0],[1.0,1.7],[4.2,1.5],[4.45,.82]],[.17,.16,.13,.1]),.3,pm(C.Y),.02));
+  put(p,rb(.3,.5,.5,.06,pm(C.YD),GPV+.2,1.0,0));put(p,rb(.4,.16,.9,.05,pm(C.YD),GLA[0],GLA[1]+.02,0));
+  [-1,1].forEach(function(s){put(p,cz(.06,.16,pm(0xB9B2A3),GLA[0],GLA[1],s*.42,10))});
+  put(p,new T.Mesh(new T.SphereGeometry(.1,12,8),pm(0xB9B2A3)),null,true).position.set(GDB[0],GDB[1],0);
+  put(p,rb(.3,.3,.16,.04,pm(C.YD),GDB[0],GDB[1]+.22,0));put(p,rb(.5,.5,1.3,.1,pm(C.GR),4.95,.8,0));
+  p=def('drawbar','드로바','work',{off:[.4,-.0,2.6],fk:1,anchor:[3.2,.86,0],sw:true});
+  [-1,1].forEach(function(s){
+    var sh=ext(beamShape([[GDB[0]-.05,GDB[1]-.02],[GCC[0]+.3,GCC[1]+.1]],[.06,.07]),.1,pm(C.Y),.015);
+    sh.position.set(0,0,0);var g=new T.Group();g.position.set(GDB[0],0,0);g.rotation.y=s*.34;sh.position.x=-GDB[0];g.add(sh);p.g.add(g);
+    sh.castShadow=true;sh.receiveShadow=true;sh.userData.part=p.id;p.meshes.push(sh);addEdge(p,sh);if(p.mats.indexOf(sh.material)<0)p.mats.push(sh.material);
+    put(p,cz(.06,.14,pm(0xB9B2A3),GLB[0],GLB[1],s*.62,10))});
+  put(p,rb(.3,.1,1.5,.03,pm(C.Y),GLB[0],GLB[1]+.02,0));put(p,cy(.5,.08,pm(C.YD),GCC[0],GCC[1]+.1,0,28));
+  p=def('cmotor','서클 회전 모터','work',{off:[.2,1.0,-2.4],fk:1,anchor:[2.85,1.0,0],sw:true});
+  put(p,cy(.1,.26,pm(0xC9DCE0),2.85,.98,0,16));put(p,cy(.13,.08,pm(C.YD),2.85,.82,0,16));
+  p=def('circle','서클','work',{off:[-.3,-.0,2.6],fk:2,anchor:[GCC[0],GCC[1],-.62],sw:true});
+  (function(){var r=new T.Mesh(new T.TorusGeometry(.62,.06,10,44),pm(C.YD));r.rotation.x=Math.PI/2;r.position.set(GCC[0],GCC[1],0);put(p,r,null,true);
+    for(var k=0;k<24;k++){var a=k/24*Math.PI*2;put(p,bx(.05,.08,.1,pm(0xB9B2A3),GCC[0]+Math.cos(a)*.68,GCC[1],Math.sin(a)*.68),null,true).rotation.y=-a}
+    [-1,1].forEach(function(s){put(p,rb(.14,.46,.1,.03,pm(C.YD),GCC[0],GCC[1]-.2,s*.62));put(p,rb(.5,.08,.1,.03,pm(C.YD),GCC[0]+.1,GCC[1]-.4,s*.62))})})();
+  p=def('blade','몰드보드(블레이드)','work',{off:[-.2,-.0,3.6],fk:2,anchor:[GCC[0]+.25,.5,-1.45],sw:true});
+  (function(){var pr=[[2.5,.6],[2.42,.42],[2.45,.2],[2.58,.06]];
+    put(p,ext(beamShape(pr,[.03,.03,.03,.03]),2.9,pm(C.Y),.01));put(p,bx(.08,.05,2.9,pm(C.DK),2.59,.045,0));
+    put(p,rb(.08,.1,2.6,.03,pm(C.YD),2.38,.36,0));put(p,cz(.035,1.2,pm(0xFFFFFF),2.34,.36,.5,10));
+    soilMesh=new T.Mesh(new T.IcosahedronGeometry(1,1),M(C.SOIL,{r:1}));
+    soilMesh.position.set(2.3,.12,-1.6);soilMesh.scale.set(.1,.1,.1);soilMesh.visible=false;put(p,soilMesh,null,true)})();
+  cylPart('lcyl','블레이드 리프트 실린더',[.2,1.5,-2.2],.5,.5,'work',true);
+  /* 가운데 */
+  p=def('joint','굴절 조인트','center',{off:[0,1.3,-1.6],anchor:[GPV,1.3,0],sw:false});
+  put(p,cy(.08,.26,pm(0xB9B2A3),GPV,1.2,0,14));put(p,cy(.08,.26,pm(0xB9B2A3),GPV,.8,0,14));put(p,cy(.15,.06,pm(C.TL),GPV,1.35,0,18));put(p,cy(.15,.06,pm(C.TL),GPV,.65,0,18));
+  cylPart('artcyl','굴절 실린더',[0,.4,0],.55,.4,'center',false);
+  /* 뒤차 (고정) */
+  wheels('mwheel','가운데 바퀴','rear',-.9,false,.4,false);
+  wheels('rwheel','뒷바퀴','rear',-1.9,false,.4,false);
+  p=def('tandem','탠덤 케이스','rear',{lat:.45,anchor:[-1.4,.62,-.56],sw:false});
+  [-1,1].forEach(function(s){put(p,rb(1.5,.36,.14,.06,pm(C.GR),-1.4,.52,s*.56),s);put(p,cz(.1,.2,pm(0xB9B2A3),-1.4,.6,s*.44,12),s);
+    [-.9,-1.9].forEach(function(x){put(p,cz(.08,.2,pm(C.HUB),x,XR,s*.62,10),s)})});
+  p=def('rframe','리어 프레임','rear',{off:[0,1.3,0],anchor:[-1.6,.95,-.4],sw:false});
+  put(p,rb(3.0,.34,.8,.08,pm(C.GR),-1.4,.95,0));put(p,rb(.3,.7,.5,.06,pm(C.YD),GPV-.2,1.0,0));
+  put(p,cz(.12,.96,pm(C.GR),-1.4,.68,0,14));put(p,rb(.3,.6,1.6,.1,pm(C.GR),-3.02,1.05,0));
+  p=def('trans','변속기','rear',{off:[-.2,1.3,-2.4],anchor:[-1.0,.95,-.28],sw:false});
+  put(p,rb(.55,.44,.55,.06,pm(0xC9DCE0),-1.0,1.0,0));put(p,cx(.24,.2,pm(0xA9C3C9),-1.38,1.2,0,20));put(p,rb(.3,.3,.4,.04,pm(0xC9DCE0),-1.4,.78,0));
+  p=def('engine','엔진','rear',{off:[-.9,4.0,0],anchor:[-2.05,1.75,-.32],sw:false});
+  put(p,rb(1.0,.52,.64,.06,pm(0xC9DCE0),-2.05,1.5,0));
+  for(i=0;i<4;i++)put(p,rb(.16,.13,.56,.03,pm(0xA9C3C9),-2.38+i*.22,1.82,0));
+  put(p,rb(.1,.7,1.05,.03,pm(0xF0D2B8),-2.8,1.6,0));put(p,cx(.3,.05,pm(0x6E685D),-2.7,1.6,0,20));
+  p=def('pump','유압펌프','rear',{off:[-.4,3.0,2.2],anchor:[-1.0,1.36,0],sw:false});
+  put(p,cx(.14,.28,pm(0xF0D2B8),-1.0,1.36,0,18));
+  p=def('valve','컨트롤 밸브','rear',{off:[.1,2.6,-2.4],anchor:[-.3,1.14,-.18],sw:false});
+  put(p,rb(.34,.2,.36,.04,pm(0xD3DCEB),-.3,1.24,0));
+  for(i=0;i<4;i++)put(p,cz(.03,.46,pm(0xFFFFFF),-.42+i*.08,1.24,0,8),null,true);
+  p=def('tank','유압 탱크','rear',{off:[-.6,2.8,2.6],anchor:[-1.35,1.75,.3],sw:false});
+  put(p,rb(.4,.5,.34,.05,pm(0xDAD6CC),-1.35,1.6,.45));put(p,cy(.05,.06,pm(0xFFFFFF),-1.35,1.88,.45,12));
+  p=def('hood','엔진 후드','rear',{off:[-.5,2.4,0],anchor:[-2.0,2.05,-.7],sw:false});
+  put(p,rb(1.85,.85,1.4,.14,pm(C.Y),-2.0,1.62,0));put(p,cy(.06,.5,pm(C.DK),-1.5,2.3,.4,12));put(p,cy(.1,.2,pm(C.DK),-2.2,2.14,-.35,14));
+  p=def('cab','캐빈(ROPS)','rear',{off:[-.1,3.3,0],anchor:[-.45,2.2,-.58],sw:false});
+  (function(){var ms=M(0x6E685D,{r:.9}),mg=M(C.GL,{r:.2,op:.35});
+    put(p,rb(1.0,.12,1.15,.04,pm(C.Y),-.45,1.4,0));
+    [-.9,0].forEach(function(x){[-.52,.52].forEach(function(z){put(p,rb(.08,1.35,.08,.02,pm(C.Y),x,2.12,z))})});
+    put(p,rb(1.12,.1,1.3,.04,pm(C.Y),-.45,2.84,0));
+    var g=new T.Mesh(new T.BoxGeometry(.86,1.28,1.0),mg);g.position.set(-.45,2.12,0);put(p,g,null,true);g.castShadow=false;
+    put(p,rb(.4,.12,.42,.04,ms,-.6,1.72,0));put(p,rb(.1,.5,.4,.04,ms,-.8,2.0,0));
+    var col=cy(.03,.45,pm(C.DK),-.2,1.72,0,10);col.rotation.z=-.3;put(p,col);
+    var wh=new T.Mesh(new T.TorusGeometry(.14,.022,8,24),ms);wh.position.set(-.26,1.97,0);wh.rotation.y=Math.PI/2;wh.rotation.z=.3;put(p,wh,null,true);
+    for(i=0;i<4;i++)put(p,cy(.018,.22,pm(C.DK),-.1,1.75,-.3+i*.2,6),null,true)})();
+  function ll(th){var c=Math.cos(-th),s=Math.sin(-th),x=GLB[0]-GDB[0],y=GLB[1]-GDB[1];return Math.hypot(GDB[0]+x*c-y*s-GLA[0],GDB[1]+x*s+y*c-GLA[1])}
+  GL=[ll(.22),ll(-.04)];if(GL[0]>GL[1])GL.reverse();
+})()}
+function updateSceneMG(){
+  var th=pose.b;lastT1=th;contact=th<.015;
+  B0w.set(GDB[0],GDB[1],0);rotAbout(Mb,B0w,-th);
+  Ma.copy(Mb);Tm.makeTranslation(GCC[0],GCC[1],0);Ma.multiply(Tm);Tm.makeRotationY(pose.a);Ma.multiply(Tm);Tm.makeTranslation(-GCC[0],-GCC[1],0);Ma.multiply(Tm);
+  Rs.makeTranslation(GPV,0,0);Tm.makeRotationY(swingA);Rs.multiply(Tm);Tm.makeTranslation(-GPV,0,0);Rs.multiply(Tm);
+  for(var k=0;k<MGS.length;k++)MGS[k].rotation.y=swingA*1.2;
+  placeStatic();
+  var sg=pose.a>0?-1:1;soilMesh.position.z=sg*1.6;
+  var bd=P.blade,eb=expl*bd.efc;bktOff.set(bd.off[0]*eb,bd.off[1]*eb,bd.off[2]*eb);
+  tipW.set(2.55,.1,sg*1.4).applyMatrix4(Ma).add(bktOff).applyMatrix4(Rs);
+  bmW.set(2.4,.3,sg*1.55).applyMatrix4(Ma).add(bktOff).applyMatrix4(Rs);
+  vA.set(GLA[0],GLA[1],0);vB.set(GLB[0],GLB[1],0).applyMatrix4(Mb);dynPlace(P.lcyl,vA,vB);
+  /* 굴절 실린더: 뒤차(고정)와 앞차(굴절) 사이 */
+  var sp=P.artcyl,es=expl*sp.efc;ov.set(sp.off[0]*es,sp.off[1]*es,sp.off[2]*es);
+  q1.set(GPV-.65,.95,.4);q2.set(GPV+.4,1.0,.4).applyMatrix4(Rs);
+  q3.set(GPV-.65,.95,-.4);q4.set(GPV+.4,1.0,-.4).applyMatrix4(Rs);
+  var ln=q1.distanceTo(q2),df=sp.len?(ln-sp.len)/fdt:0;sp.len=ln;
+  sp.flow=sp.flow*.8+Math.max(-1,Math.min(1,df*3))*.2;
+  sp.a0.copy(q1).add(q2).multiplyScalar(.5);sp.aw.copy(sp.a0).add(ov);
+  q1.add(ov);q2.add(ov);q3.add(ov);q4.add(ov);updCyl(sp.rig,q1,q2);updCyl(sp.rig.pair,q3,q4);sp.feed.copy(q1);
+  rollWheels(travelD);
+  var gp=guideGeo.attributes.position.array,gi=0;
+  LIST.forEach(function(p){
+    gp[gi++]=p.a0.x;gp[gi++]=p.a0.y;gp[gi++]=p.a0.z;gp[gi++]=p.aw.x;gp[gi++]=p.aw.y;gp[gi++]=p.aw.z});
+  guideGeo.attributes.position.needsUpdate=true;guides.visible=expl>.03;
+  guides.material.opacity=Math.min(.55,expl*1.2);updateConn()}
+function stepLoadMG(dt){
+  spill=false;if(expl>.05)return;
+  if(contact&&travelV>.3){load=Math.min(1,load+dt*.3);spill=true;
+    spawnAcc+=dt*18;while(spawnAcc>1){spawnAcc--;spawn(bmW,-.4-Math.random()*.4,.3+Math.random()*.5,(Math.random()-.5)*.3,.5)}}
+  else if(load>0)load=Math.max(0,load-dt*.5);
+  soilMesh.visible=load>.02;var l=.3+.7*load;soilMesh.scale.set(.7*l,.22*l,.3*l)}
+
 /* 부품 번호 순서 정리 */
 var ORDER=EX?['idler','track','uroll','lroll','sprocket','tmotor','joint','lower','upper','smotor','cw','cab','engine','pump','valve','tank','boom','bmcyl','arm','acyl','bcyl','link','bucket']:['fwheel','faxle','fframe','valve','joint','stcyl','shaft','rwheel','raxle','rframe','trans','engine','pump','tank','hood','cab','cw','arm','lcyl','crank','tcyl','blink','bucket'];
+if(WX)ORDER=['fwheel','faxle','rwheel','raxle','shaft','tmotor','blade','outrig','lower','joint','upper','smotor','cw','cab','engine','pump','valve','tank','boom','bmcyl','arm','acyl','bcyl','link','bucket'];
+if(SL)ORDER=['fwheel','rwheel','chain','dmotor','frame','engine','hstat','pump','valve','tank','hood','cab','arm','lcyl','tcyl','coupler','bucket'];
+if(DT)ORDER=['fwheel','faxle','fframe','trans','engine','pump','tank','hood','cab','joint','stcyl','shaft','mwheel','rwheel','bogie','rframe','valve','hoist','body'];
+if(DZ)ORDER=['idler','track','uroll','lroll','sprocket','tmotor','lower','mframe','engine','hstat','pump','valve','tank','hood','cab','cframe','lcyl','acyl','blade','ripper','rcyl'];
+if(MG)ORDER=['fwheel','faxle','fframe','drawbar','cmotor','circle','blade','lcyl','joint','artcyl','mwheel','rwheel','tandem','rframe','trans','engine','pump','valve','tank','hood','cab'];
 LIST.sort(function(a,b){return ORDER.indexOf(a.id)-ORDER.indexOf(b.id)});
 LIST.forEach(function(p,i){p.n=i+1});
 $('fig').textContent=TXT.fig+' · 부품 '+LIST.length;
@@ -869,7 +1490,11 @@ var RM=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').
 var pose={b:0,a:0,k:0},expl=0,exGoal=0,anim=false,animT=0,spin=false,showPins=false,selected=[],mode='fade',cut=false,multi=false,lastCut=false,dirty=true,guide={on:false,i:0,play:false,t:0,prev:.55},swingOn=false,swingT=0,travelOn=false,FLOW=false,fdt=.016;
 var manual=false,tab='explore',lastT1=0,contact=false,swingVel=0,travelV=0,joyV=0,animV=0,spill=false;
 var LIM={b:[-.45,.5],a:[-1,.75],k:[-1,.7]};
-if(!EX){LIM={b:[0,.98],a:[0,0],k:[1.3,2.2]};pose.k=WK.C0}
+if(WL){LIM={b:[0,.98],a:[0,0],k:[1.3,2.2]};pose.k=WK.C0}
+if(SL)LIM={b:[0,1.1],a:[0,0],k:[-1.9,.55]};
+if(DT)LIM={b:[0,1.2],a:[0,0],k:[0,0]};
+if(DZ)LIM={b:[-.08,.3],a:[-.4,.4],k:[0,.55]};
+if(MG){LIM={b:[-.04,.22],a:[-.9,.9],k:[0,0]};pose.a=.5}
 var guideGeo=new T.BufferGeometry();guideGeo.setAttribute('position',new T.BufferAttribute(new Float32Array(LIST.length*6),3));
 var guides=new T.LineSegments(guideGeo,new T.LineBasicMaterial({color:ACC,transparent:true,opacity:.5}));
 guides.frustumCulled=false;scene.add(guides);
@@ -931,7 +1556,7 @@ function placeStatic(){
   })}
 /* ---------- 휠로더 자세 계산 ---------- */
 var Mc=new M4(),B0w=new V3(),TIPR=[1.48,-.36],HEELR=[.42,-.38],wlg=0,stLen=0,LIFT0=1,LIFT1=2,q1=new V3(),q2=new V3(),q3=new V3(),q4=new V3();
-if(!EX){B0w.set(WK.Bp[0],WK.Bp[1],0);LIFT0=WK.fk(0,WK.C0).lift;LIFT1=WK.fk(.98,WK.C0).lift}
+if(WL){B0w.set(WK.Bp[0],WK.Bp[1],0);LIFT0=WK.fk(0,WK.C0).lift;LIFT1=WK.fk(.98,WK.C0).lift}
 function place(out,ref,cur,ang){out.makeTranslation(cur[0],cur[1],0);Tm.makeRotationZ(ang);out.multiply(Tm);Tm.makeTranslation(-ref[0],-ref[1],0);out.multiply(Tm);return out}
 function relY(S,r){return S.Kp[1]+r[0]*Math.sin(S.g)+r[1]*Math.cos(S.g)}
 function updateSceneWL(){
@@ -971,8 +1596,12 @@ function updateSceneWL(){
     gp[gi++]=p.a0.x;gp[gi++]=p.a0.y;gp[gi++]=p.a0.z;gp[gi++]=p.aw.x;gp[gi++]=p.aw.y;gp[gi++]=p.aw.z});
   guideGeo.attributes.position.needsUpdate=true;guides.visible=expl>.03;
   guides.material.opacity=Math.min(.55,expl*1.2);updateConn()}
-function rollWheels(d){for(var k=0;k<WSP.length;k++)WSP[k].rotation.z=-d/WR;if(gmap)gmap.offset.x=(d/2)%1}
-function updateScene(){if(EX)updateSceneEX();else updateSceneWL()}
+function setStow(v){
+  stow=v;var a=.607+(2.269-.607)*v;
+  WXO.legs.forEach(function(l){l.g.rotation.x=-l.s*a;l.pad.rotation.x=l.s*a});
+  if(WXO.blade)WXO.blade.rotation.z=.32*v}
+function rollWheels(d){for(var k=0;k<WSP.length;k++)WSP[k].rotation.z=-(d+(SL?(WSP[k].userData.s||0)*swingA:0))/(WX?.47:SL||MG?.5:DT?.55:WR);if(gmap)gmap.offset.x=(d/2)%1}
+function updateScene(){if(EX)updateSceneEX();else if(SL)updateSceneSL();else if(DT)updateSceneDT();else if(DZ)updateSceneDZ();else if(MG)updateSceneMG();else updateSceneWL()}
 function dynPlace(p,a,b){
   var o=p.off,e=expl*p.efc;ov.set(o[0]*e,o[1]*e,o[2]*e);
   p.a0.copy(a).add(b).multiplyScalar(.5);
@@ -1005,7 +1634,7 @@ function layTracks(d){
     im.instanceMatrix.needsUpdate=true;gm.instanceMatrix.needsUpdate=true}
   for(k=0;k<SPR.length;k++)SPR[k].rotation.z=-d/.4;
   if(gmap)gmap.offset.x=(d/2)%1}
-if(EX)layTracks(0);
+if((EX&&!WX)||DZ)layTracks(0);
 
 /* ---------- 흙 입자 ---------- */
 var SN=260,soilIM=new T.InstancedMesh(new T.IcosahedronGeometry(.07,0),M(C.SOIL,{r:1}),SN);
@@ -1013,9 +1642,10 @@ soilIM.castShadow=true;soilIM.frustumCulled=false;scene.add(soilIM);
 var SP=[],sHead=0,sLive=0,load=0,prevK=0,prevA=0,spawnAcc=0,ZERO=new M4().makeScale(0,0,0);
 for(var si=0;si<SN;si++){SP.push({p:new V3(),v:new V3(),age:0,on:false,land:false,s:1});soilIM.setMatrixAt(si,ZERO)}
 soilIM.instanceMatrix.needsUpdate=true;
+if(DT)load=1;
 function spawn(at,vx,vy,vz,s){
   var q=SP[sHead];sHead=(sHead+1)%SN;if(!q.on)sLive++;
-  q.p.copy(at);q.p.x+=(Math.random()-.5)*.25;q.p.z+=(Math.random()-.5)*(EX?.35:1.9);
+  q.p.copy(at);q.p.x+=(Math.random()-.5)*.25;q.p.z+=(Math.random()-.5)*(EX?.35:DT?1.5:DZ?3.0:MG?.3:1.9);
   q.v.set(vx,vy,vz);q.age=0;q.on=true;q.land=false;q.s=s||(.7+Math.random()*.7)}
 function stepSoil(dt){
   if(!sLive)return false;
@@ -1036,8 +1666,11 @@ function stepLoadWL(dt){
     var rate=Math.min(1.5,(-wlg-.3)*3)*dt;load=Math.max(0,load-rate);spill=true;
     spawnAcc+=rate*110;while(spawnAcc>1){spawnAcc--;spawn(bmW,.3+(Math.random()-.5)*.4,-.3,(Math.random()-.5)*.4)}}
   soilMesh.visible=load>.02;
-  var l=.35+.65*load;soilMesh.scale.set(.5*l,.3*l,1.02*Math.min(1,.5+load))}
+  var l=.35+.65*load;soilMesh.scale.set(SOILS[0]*l,SOILS[1]*l,SOILS[2]*Math.min(1,.5+load))}
 function stepLoad(dt){
+  if(DT){stepLoadDT(dt);return}
+  if(DZ){stepLoadDZ(dt);return}
+  if(MG){stepLoadMG(dt);return}
   if(!EX){stepLoadWL(dt);return}
   var dk=pose.k-prevK,da=pose.a-prevA;prevK=pose.k;prevA=pose.a;spill=false;
   if(expl>.05)return;
@@ -1062,6 +1695,24 @@ var NP=7,FPATH=EX?[
  {a:'tank',b:'pump',kind:'on'},{a:'pump',b:'valve',kind:'on'},
  {a:'valve',b:'lcyl',kind:'cyl'},{a:'valve',b:'tcyl',kind:'cyl'},{a:'valve',b:'stcyl',kind:'cyl'},
  {a:'valve',b:'tank',kind:'ret'}];
+if(MG)FPATH=[
+ {a:'tank',b:'pump',kind:'on'},{a:'pump',b:'valve',kind:'on'},
+ {a:'valve',b:'lcyl',kind:'cyl'},{a:'valve',b:'cmotor',kind:'swing'},{a:'valve',b:'artcyl',kind:'cyl'},
+ {a:'valve',b:'tank',kind:'ret'}];
+if(DZ)FPATH=[
+ {a:'tank',b:'pump',kind:'on'},{a:'pump',b:'valve',kind:'on'},
+ {a:'valve',b:'lcyl',kind:'cyl'},{a:'valve',b:'acyl',kind:'cyl'},{a:'valve',b:'rcyl',kind:'cyl'},
+ {a:'tank',b:'hstat',kind:'on'},{a:'hstat',b:'tmotor',kind:'travel'},
+ {a:'valve',b:'tank',kind:'ret'}];
+if(DT)FPATH=[
+ {a:'tank',b:'pump',kind:'on'},{a:'pump',b:'valve',kind:'on'},
+ {a:'valve',b:'hoist',kind:'cyl'},{a:'valve',b:'stcyl',kind:'cyl'},
+ {a:'valve',b:'tank',kind:'ret'}];
+if(SL)FPATH=[
+ {a:'tank',b:'pump',kind:'on'},{a:'pump',b:'valve',kind:'on'},
+ {a:'valve',b:'lcyl',kind:'cyl'},{a:'valve',b:'tcyl',kind:'cyl'},
+ {a:'tank',b:'hstat',kind:'on'},{a:'hstat',b:'dmotor',kind:'travel'},
+ {a:'valve',b:'tank',kind:'ret'}];
 var FN=FPATH.length;
 FPATH.forEach(function(f){f.ph=0});
 var fGeo=new T.BufferGeometry();
@@ -1083,7 +1734,7 @@ function updateFlow(dt){
     if(f.kind==='on'){dir=1;col=OR;br=1}
     else if(f.kind==='cyl'){var fl=P[f.b].flow;dir=fl>.1?1:fl<-.1?-1:0;col=dir<0?BL:OR;br=dir?1:.35}
     else if(f.kind==='swing'){dir=ACT.sw>.02?1:0;col=OR;br=dir?1:.35}
-    else if(f.kind==='travel'){dir=travelOn?1:0;col=OR;br=dir?1:.35}
+    else if(f.kind==='travel'){dir=(EX?travelOn:ACT.tr)?1:0;col=OR;br=dir?1:.35}
     else{dir=ACT.any>.02?1:0;col=BL;br=dir?1:.35}
     if(!dir&&br<1)col=GRY;
     f.ph+=dir*dt*.7;
@@ -1187,7 +1838,170 @@ function ck(a,b){return a<b?a+'|'+b:b+'|'+a}
  ['crank','tcyl','틸트 실린더 로드 끝이 벨크랭크 위쪽 끝을 밉니다.'],
  ['crank','blink','벨크랭크 아래쪽 끝이 버킷 링크를 당깁니다.'],
  ['blink','bucket','링크 앞끝이 버킷 뒷면 귀에 핀으로 연결됩니다.']
-]).forEach(function(r){CONN[ck(r[0],r[1])]=r[2]});
+]).concat(WX?[
+ ['fwheel','faxle','앞차축 양 끝 허브에 복륜 앞바퀴가 고정되고, 조향 너클로 좌우로 꺾입니다.'],
+ ['rwheel','raxle','뒷차축 양 끝 허브에 복륜 뒷바퀴가 고정됩니다.'],
+ ['fwheel','rwheel','네 바퀴가 모두 구동됩니다.'],
+ ['faxle','lower','앞차축은 섀시에 가운데 핀으로 매달려 좌우로 흔들릴 수 있고, 작업 중에는 잠급니다.'],
+ ['raxle','lower','뒷차축은 섀시에 단단히 고정됩니다.'],
+ ['faxle','shaft','구동축이 앞차축 차동장치에 회전을 전합니다.'],
+ ['raxle','shaft','구동축이 뒷차축 차동장치에 회전을 전합니다.'],
+ ['tmotor','shaft','변속기 출력이 앞뒤 구동축으로 나갑니다.'],
+ ['tmotor','lower','주행모터와 변속기가 섀시 아래 가운데에 고정됩니다.'],
+ ['joint','tmotor','센터조인트를 지난 유압유가 주행모터 하나를 돌립니다.'],
+ ['blade','lower','블레이드 암이 섀시 앞쪽에 핀으로 걸리고 실린더로 오르내립니다.'],
+ ['outrig','lower','아웃트리거가 섀시 뒤쪽에 고정됩니다.'],
+ ['blade','outrig','굴착할 때 앞은 블레이드, 뒤는 아웃트리거를 내려 차체를 받칩니다.'],
+ ['joint','blade','블레이드 실린더로 가는 유압도 센터조인트를 지납니다.'],
+ ['joint','outrig','아웃트리거 실린더로 가는 유압도 센터조인트를 지납니다.']
+
+]:[]).forEach(function(r){CONN[ck(r[0],r[1])]=r[2]});
+if(MG){CONN={};[
+ ['fwheel','faxle','앞차축 양 끝 너클에 앞바퀴가 달려 좌우로 꺾이고 기울어집니다.'],
+ ['faxle','fframe','앞차축이 프런트 프레임 앞끝에 가운데 핀으로 매달려 좌우로 흔들립니다.'],
+ ['fframe','drawbar','드로바 앞끝이 프런트 프레임의 볼 조인트에 걸립니다.'],
+ ['fframe','lcyl','리프트 실린더 위끝이 프런트 프레임 안장에 걸립니다.'],
+ ['drawbar','lcyl','리프트 실린더가 드로바 뒤쪽을 올리고 내립니다.'],
+ ['drawbar','circle','서클이 드로바 아래 받침 슈에 물려 돕니다.'],
+ ['drawbar','cmotor','서클 회전 모터가 드로바 위에 고정됩니다.'],
+ ['cmotor','circle','모터의 피니언이 서클 톱니를 돌립니다.'],
+ ['circle','blade','블레이드가 서클 아래 브래킷에 달려 서클과 함께 돕니다.'],
+ ['lcyl','blade','좌우 리프트 실린더가 블레이드의 높이와 좌우 기울기를 정합니다.'],
+ ['drawbar','blade','드로바가 블레이드를 끌고 가는 힘을 전합니다.'],
+ ['fframe','joint','굴절 조인트가 프런트 프레임과 리어 프레임을 잇습니다.'],
+ ['rframe','joint','굴절 조인트가 프런트 프레임과 리어 프레임을 잇습니다.'],
+ ['fframe','artcyl','굴절 실린더 로드 끝이 프런트 프레임에 걸립니다.'],
+ ['rframe','artcyl','굴절 실린더 뒤끝이 리어 프레임에 고정됩니다.'],
+ ['joint','artcyl','굴절 실린더가 수직 핀을 중심으로 차체를 꺾습니다.'],
+ ['mwheel','tandem','탠덤 케이스 앞쪽 축에 바퀴가 고정됩니다.'],
+ ['rwheel','tandem','탠덤 케이스 뒤쪽 축에 바퀴가 고정됩니다.'],
+ ['mwheel','rwheel','탠덤 케이스 안의 체인으로 묶여 함께 돕니다.'],
+ ['tandem','rframe','탠덤 케이스가 리어 프레임에 가운데 축으로 매달려 시소처럼 움직입니다.'],
+ ['tandem','trans','변속기의 회전이 뒷차축을 거쳐 탠덤 케이스로 들어갑니다.'],
+ ['trans','engine','엔진 회전이 변속기로 들어갑니다.'],
+ ['trans','pump','유압펌프가 변속기 쪽 동력 인출부에서 구동됩니다.'],
+ ['trans','rframe','변속기가 리어 프레임에 고정됩니다.'],
+ ['engine','pump','엔진의 힘으로 유압펌프가 돕니다.'],
+ ['engine','hood','후드가 엔진과 냉각 장치를 덮습니다.'],
+ ['hood','rframe','후드가 리어 프레임 위에 얹힙니다.'],
+ ['hood','cab','캐빈 뒤에 엔진 후드가 놓입니다.'],
+ ['cab','rframe','캐빈이 리어 프레임 앞쪽에 얹힙니다.'],
+ ['pump','tank','펌프가 탱크에서 유압유를 빨아들입니다.'],
+ ['pump','valve','펌프의 고압 유압유가 컨트롤 밸브로 공급됩니다.'],
+ ['valve','tank','돌아온 유압유가 탱크로 돌아갑니다.'],
+ ['valve','lcyl','밸브가 좌우 리프트 실린더로 유압유를 보냅니다.'],
+ ['valve','cmotor','밸브가 서클 회전 모터로 유압유를 보냅니다.'],
+ ['valve','artcyl','밸브가 굴절 실린더로 유압유를 보냅니다.'],
+ ['valve','cab','조작 레버가 컨트롤 밸브의 스풀을 움직입니다.']
+].forEach(function(r){CONN[ck(r[0],r[1])]=r[2]})}
+if(DZ){CONN={};[
+ ['idler','track','트랙이 아이들러를 감싸 돌며 진행 방향을 잡습니다.'],
+ ['track','sprocket','스프로켓 이빨이 트랙 링크에 맞물려 트랙을 당깁니다.'],
+ ['track','uroll','상부롤러가 트랙 윗면을 받칩니다.'],
+ ['track','lroll','하부롤러가 트랙 안쪽 면 위를 구르며 하중을 전달합니다.'],
+ ['idler','sprocket','트랙 양 끝에서 트랙을 팽팽하게 당깁니다.'],
+ ['sprocket','tmotor','주행모터가 최종 감속기를 거쳐 스프로켓을 돌립니다.'],
+ ['tmotor','lower','주행모터가 트랙 프레임 뒤끝에 볼트로 고정됩니다.'],
+ ['tmotor','hstat','주행 펌프의 유압유가 좌우 주행모터를 각각 돌립니다.'],
+ ['lower','lroll','하부롤러가 트랙 프레임에 고정됩니다.'],
+ ['lower','uroll','상부롤러가 트랙 프레임에 고정됩니다.'],
+ ['lower','mframe','메인 프레임이 좌우 트랙 프레임 위에 얹혀 고정됩니다.'],
+ ['hstat','engine','주행 펌프가 엔진 출력축에 직결됩니다.'],
+ ['hstat','pump','작업 펌프가 주행 펌프 뒤에 이어 붙습니다.'],
+ ['hstat','tank','주행 회로의 보충 유압유를 탱크에서 받습니다.'],
+ ['hstat','cab','왼쪽 레버가 주행 펌프의 토출량과 방향을 정합니다.'],
+ ['pump','engine','엔진의 힘으로 작업 펌프가 돕니다.'],
+ ['pump','tank','펌프가 탱크에서 유압유를 빨아들입니다.'],
+ ['pump','valve','펌프의 고압 유압유가 컨트롤 밸브로 공급됩니다.'],
+ ['valve','tank','실린더에서 돌아온 유압유가 탱크로 돌아갑니다.'],
+ ['valve','lcyl','밸브가 리프트 실린더로 유압유를 보냅니다.'],
+ ['valve','acyl','밸브가 앵글 실린더로 유압유를 보냅니다.'],
+ ['valve','rcyl','밸브가 리퍼 실린더로 유압유를 보냅니다.'],
+ ['valve','cab','오른쪽 레버 신호가 컨트롤 밸브의 스풀을 움직입니다.'],
+ ['engine','hood','후드가 엔진과 냉각 장치를 덮습니다.'],
+ ['hood','mframe','후드가 메인 프레임 앞쪽 위에 얹힙니다.'],
+ ['hood','cab','캐빈 앞에 엔진 후드가 놓입니다.'],
+ ['cab','mframe','캐빈이 메인 프레임 위에 방진 마운트로 얹힙니다.'],
+ ['tank','mframe','탱크가 캐빈 뒤 메인 프레임 위에 놓입니다.'],
+ ['cframe','mframe','C프레임 뿌리 핀이 메인 프레임 양옆에 걸립니다.'],
+ ['cframe','lcyl','리프트 실린더가 C프레임을 올리고 내립니다.'],
+ ['lcyl','mframe','리프트 실린더 위끝이 후드 앞 브래킷에 고정됩니다.'],
+ ['cframe','blade','블레이드가 C프레임 앞 가운데의 볼 조인트에 걸립니다.'],
+ ['cframe','acyl','앵글 실린더 뒤끝이 C프레임에 고정됩니다.'],
+ ['acyl','blade','앵글 실린더 로드 끝이 블레이드 뒷면 좌우를 밀고 당깁니다.'],
+ ['lcyl','blade','리프트 실린더가 C프레임을 거쳐 블레이드 높이를 정합니다.'],
+ ['ripper','mframe','리퍼 암이 메인 프레임 뒤쪽 핀에 걸립니다.'],
+ ['ripper','rcyl','리퍼 실린더가 리퍼를 내려 땅에 박고 다시 올립니다.'],
+ ['rcyl','mframe','리퍼 실린더 위끝이 메인 프레임 뒤쪽에 고정됩니다.']
+].forEach(function(r){CONN[ck(r[0],r[1])]=r[2]})}
+if(DT){CONN={};[
+ ['fwheel','faxle','앞차축 양 끝 허브에 앞바퀴가 고정됩니다.'],
+ ['faxle','fframe','앞차축이 프런트 프레임 아래에 서스펜션으로 매달립니다.'],
+ ['faxle','shaft','구동축이 앞차축 차동장치에 회전을 전합니다.'],
+ ['fframe','joint','조인트가 프런트 프레임과 리어 프레임을 잇습니다.'],
+ ['rframe','joint','조인트의 회전 링이 리어 프레임 앞끝에 물립니다.'],
+ ['fframe','stcyl','조향 실린더 뒤끝이 프런트 프레임에 고정됩니다.'],
+ ['rframe','stcyl','조향 실린더 로드 끝이 리어 프레임 쪽에 걸립니다.'],
+ ['joint','stcyl','조향 실린더가 수직 핀을 중심으로 차체를 꺾습니다.'],
+ ['joint','shaft','구동축이 조인트 가운데를 지나 뒤차로 넘어갑니다.'],
+ ['trans','shaft','변속기 출력이 앞뒤 구동축으로 나갑니다.'],
+ ['trans','engine','엔진 회전이 토크컨버터를 거쳐 변속기로 들어갑니다.'],
+ ['trans','pump','유압펌프가 변속기 쪽 동력 인출부에서 구동됩니다.'],
+ ['trans','fframe','변속기가 프런트 프레임에 고정됩니다.'],
+ ['engine','pump','엔진의 힘으로 유압펌프가 돕니다.'],
+ ['engine','hood','후드가 엔진과 냉각 장치를 덮습니다.'],
+ ['hood','fframe','후드가 프런트 프레임 앞쪽에 경첩으로 달립니다.'],
+ ['hood','cab','캐빈 바로 앞에 엔진 후드가 놓입니다.'],
+ ['cab','fframe','캐빈이 프런트 프레임 위에 방진 마운트로 얹힙니다.'],
+ ['pump','tank','펌프가 탱크에서 유압유를 빨아들입니다.'],
+ ['pump','valve','펌프의 고압 유압유가 밸브로 공급됩니다.'],
+ ['valve','tank','실린더에서 돌아온 유압유가 탱크로 돌아갑니다.'],
+ ['valve','hoist','밸브가 호이스트 실린더로 유압유를 보냅니다.'],
+ ['valve','stcyl','조향 밸브가 좌우 조향 실린더로 유압유를 보냅니다.'],
+ ['valve','cab','덤프 레버 신호가 밸브의 스풀을 움직입니다.'],
+ ['valve','rframe','밸브가 리어 프레임 앞쪽에 설치됩니다.'],
+ ['shaft','bogie','구동축이 가운데 차축을 지나 뒷차축까지 이어집니다.'],
+ ['mwheel','bogie','가운데 차축 양 끝에 바퀴가 고정됩니다.'],
+ ['rwheel','bogie','뒷차축 양 끝에 바퀴가 고정됩니다.'],
+ ['mwheel','rwheel','보로 이어져 시소처럼 움직이며 하중을 나눠 받습니다.'],
+ ['bogie','rframe','탠덤 차축의 보가 리어 프레임에 핀으로 매달립니다.'],
+ ['body','rframe','적재함이 리어 프레임 뒤끝 핀을 중심으로 돕니다.'],
+ ['body','hoist','호이스트 실린더가 적재함 바닥을 밀어 올립니다.'],
+ ['hoist','rframe','호이스트 실린더 아래끝이 리어 프레임에 고정됩니다.']
+].forEach(function(r){CONN[ck(r[0],r[1])]=r[2]})}
+if(SL){CONN={};[
+ ['fwheel','chain','앞 차축이 체인 케이스에서 나와 앞바퀴를 돌립니다.'],
+ ['rwheel','chain','뒤 차축이 체인 케이스에서 나와 뒷바퀴를 돌립니다.'],
+ ['fwheel','rwheel','같은 쪽 앞뒤 바퀴는 체인으로 묶여 같은 속도로 돕니다.'],
+ ['chain','dmotor','주행모터의 스프로켓이 체인 두 줄을 돌립니다.'],
+ ['chain','frame','체인 케이스가 프레임 양옆에 붙어 있습니다.'],
+ ['dmotor','frame','주행모터가 프레임 안쪽 벽에 고정됩니다.'],
+ ['dmotor','hstat','주행 펌프의 유압유가 좌우 주행모터를 각각 돌립니다.'],
+ ['hstat','engine','주행 펌프가 엔진 출력축에 직결됩니다.'],
+ ['hstat','pump','작업 펌프가 주행 펌프 뒤에 이어 붙습니다.'],
+ ['hstat','tank','주행 회로의 보충 유압유를 탱크에서 받습니다.'],
+ ['hstat','cab','왼쪽 레버가 주행 펌프의 토출량과 방향을 정합니다.'],
+ ['pump','engine','엔진의 힘으로 작업 펌프가 돕니다.'],
+ ['pump','tank','펌프가 탱크에서 유압유를 빨아들입니다.'],
+ ['pump','valve','펌프의 고압 유압유가 컨트롤 밸브로 공급됩니다.'],
+ ['valve','tank','실린더에서 돌아온 유압유가 탱크로 돌아갑니다.'],
+ ['valve','lcyl','밸브가 리프트 실린더로 유압유를 보냅니다.'],
+ ['valve','tcyl','밸브가 틸트 실린더로 유압유를 보냅니다.'],
+ ['valve','cab','오른쪽 레버 신호가 컨트롤 밸브의 스풀을 움직입니다.'],
+ ['engine','frame','엔진이 프레임 뒤쪽에 방진 마운트로 얹힙니다.'],
+ ['engine','hood','뒷문과 덮개가 엔진과 냉각기를 감쌉니다.'],
+ ['hood','frame','뒷문이 프레임 뒤 기둥에 경첩으로 달립니다.'],
+ ['cab','frame','캐빈이 프레임 위에 얹히고, 정비할 때는 앞으로 젖혀 올립니다.'],
+ ['cab','arm','리프트 암이 캐빈 양옆을 지나갑니다.'],
+ ['arm','frame','리프트 암 뿌리 핀이 프레임 뒤 기둥 꼭대기에 걸립니다.'],
+ ['arm','lcyl','리프트 실린더가 암을 들어 올리고 내립니다.'],
+ ['lcyl','frame','리프트 실린더 뒤끝이 프레임 뒤쪽에 고정됩니다.'],
+ ['arm','tcyl','틸트 실린더 뒤끝이 암 앞쪽에 고정됩니다.'],
+ ['arm','coupler','암 끝 핀에 커플러가 걸립니다.'],
+ ['tcyl','coupler','틸트 실린더 로드 끝이 커플러 위쪽을 밀고 당깁니다.'],
+ ['coupler','bucket','커플러가 버킷 뒷면에 걸리고 잠금 핀으로 고정됩니다.'],
+ ['arm','bucket','버킷은 커플러를 거쳐 암 끝에 달립니다.']
+].forEach(function(r){CONN[ck(r[0],r[1])]=r[2]})}
 
 function highlight(){
   var has=selected.length>0;
@@ -1276,6 +2090,52 @@ var STEPS=EX?[
  {t:'컨트롤 밸브와 조향 실린더',d:'컨트롤 밸브는 리프트·틸트 실린더로 유압유를 나눠 보내고, 좌우 조향 실린더는 서로 반대로 움직여 차체를 꺾습니다.',ids:['valve','stcyl']},
  {t:'프레임과 센터 핀',d:'프런트 프레임과 리어 프레임이 센터 핀 두 개로 이어져 있습니다. 이 핀이 굴절 조향의 회전 중심입니다.',ids:['fframe','rframe','joint']},
  {t:'바퀴',d:'바퀴를 빼면 앞뒤 차축만 남습니다. 앞차축은 프레임에 고정되고, 뒷차축은 좌우로 흔들릴 수 있게 매달립니다.',ids:['fwheel','rwheel']}];
+if(MG)STEPS=[
+ {t:'블레이드',d:'서클 아래 브래킷에서 블레이드(몰드보드)를 떼어 냅니다. 날 끝의 커팅 엣지는 소모품이라 볼트로 갈아 끼웁니다.',ids:['blade']},
+ {t:'서클과 회전 모터',d:'서클은 드로바 아래에서 도는 큰 톱니 고리이고, 모터의 피니언이 이 톱니를 돌려 블레이드 각도를 바꿉니다.',ids:['circle','cmotor']},
+ {t:'드로바와 리프트 실린더',d:'드로바는 앞끝의 볼 조인트에 매달려 블레이드를 끌고, 좌우 리프트 실린더가 높이와 기울기를 정합니다.',ids:['drawbar','lcyl']},
+ {t:'캐빈',d:'블레이드와 앞바퀴가 잘 보이도록 높게 놓인 운전실입니다.',ids:['cab']},
+ {t:'엔진 후드와 엔진',d:'후드를 열면 엔진과 라디에이터가 나옵니다. 엔진은 주행과 유압 동력을 모두 냅니다.',ids:['hood','engine']},
+ {t:'변속기와 유압 장치',d:'변속기는 엔진의 회전을 뒷차축으로 보내고, 펌프와 밸브는 블레이드와 굴절에 쓸 유압을 만들고 나눕니다.',ids:['trans','pump','valve','tank']},
+ {t:'굴절 조인트와 굴절 실린더',d:'수직 핀을 중심으로 좌우 실린더가 차체를 꺾습니다. 앞바퀴 조향과 함께 쓰면 더 작게 돕니다.',ids:['joint','artcyl']},
+ {t:'프레임',d:'길게 뻗은 프런트 프레임과 리어 프레임을 들어내면 앞차축과 탠덤만 남습니다.',ids:['fframe','rframe']},
+ {t:'바퀴',d:'앞 두 바퀴는 방향만 잡고, 뒤 네 바퀴가 구동됩니다.',ids:['fwheel','mwheel','rwheel']}];
+if(DZ)STEPS=[
+ {t:'블레이드와 앵글 실린더',d:'블레이드는 C프레임 앞 가운데의 볼 조인트에 걸려 있고, 좌우 앵글 실린더가 블레이드를 비스듬히 돌립니다.',ids:['blade','acyl']},
+ {t:'C프레임과 리프트 실린더',d:'C프레임은 뿌리 핀을 중심으로 위아래로 돌고, 좌우 리프트 실린더가 블레이드 높이를 정합니다.',ids:['cframe','lcyl']},
+ {t:'리퍼',d:'차체 뒤의 갈고리입니다. 실린더로 내려 땅에 박은 채 전진해서 단단한 땅을 긁어 부숩니다.',ids:['ripper','rcyl']},
+ {t:'캐빈',d:'조종사를 보호하는 구조물입니다. 왼손으로 주행, 오른손으로 블레이드를 조작합니다.',ids:['cab']},
+ {t:'엔진 후드와 엔진',d:'후드를 열면 엔진과 라디에이터가 나옵니다. 엔진은 펌프만 돌리고 트랙과는 직접 이어지지 않습니다.',ids:['hood','engine']},
+ {t:'탱크',d:'캐빈 뒤의 연료 탱크와 유압유 탱크입니다. 뒤쪽에 두어 블레이드 무게와 균형을 맞춥니다.',ids:['tank']},
+ {t:'펌프와 밸브',d:'주행 펌프 두 개가 좌우 주행모터를 따로 돌리고, 작업 펌프와 밸브가 블레이드와 리퍼 실린더를 움직입니다.',ids:['hstat','pump','valve']},
+ {t:'메인 프레임',d:'엔진과 캐빈이 얹히던 차체의 뼈대입니다. 들어내면 트랙 프레임만 남습니다.',ids:['mframe']},
+ {t:'주행모터',d:'좌우에 하나씩 있는 유압모터와 최종 감속기입니다. 두 모터의 속도 차이로 방향을 바꿉니다.',ids:['tmotor']},
+ {t:'롤러·스프로켓·아이들러',d:'하부롤러는 무게를 받치고, 상부롤러는 트랙 윗면을 받칩니다. 스프로켓은 트랙을 당기고, 아이들러는 방향과 장력을 잡습니다.',ids:['uroll','lroll','sprocket','idler']},
+ {t:'트랙',d:'마지막으로 트랙을 벗기면 트랙 프레임만 남습니다. 도저는 넓은 슈로 땅을 움켜쥐어 미는 힘을 냅니다.',ids:['track']}];
+if(DT)STEPS=[
+ {t:'적재함',d:'뒤끝 핀을 빼면 적재함이 통째로 들립니다. 꼬리 쪽이 위로 들린 모양이라 뒷문 없이도 흙이 흘러내리지 않습니다.',ids:['body']},
+ {t:'호이스트 실린더와 밸브',d:'좌우 한 쌍의 호이스트 실린더가 적재함을 밀어 올리고, 밸브가 유압유의 방향을 바꿉니다.',ids:['hoist','valve']},
+ {t:'캐빈',d:'조종사가 앉는 운전실입니다. 핸들로 조향하고 레버로 적재함을 올리고 내립니다.',ids:['cab']},
+ {t:'엔진 후드와 엔진',d:'후드를 열면 엔진과 라디에이터가 나옵니다. 엔진은 주행과 유압 동력을 모두 냅니다.',ids:['hood','engine']},
+ {t:'변속기·펌프·탱크',d:'변속기는 엔진의 회전을 세 차축으로 나눠 보내고, 유압펌프는 덤프와 조향에 쓸 유압을 만듭니다.',ids:['trans','pump','tank']},
+ {t:'조인트와 조향 실린더',d:'수직 핀은 좌우 굴절을, 회전 링은 앞뒤 차의 비틀림을 맡습니다. 좌우 조향 실린더가 차체를 꺾습니다.',ids:['joint','stcyl']},
+ {t:'프레임',d:'프런트 프레임과 리어 프레임을 들어내면 구동축과 차축이 드러납니다.',ids:['fframe','rframe']},
+ {t:'구동축',d:'변속기에서 나온 회전이 조인트를 지나 뒤쪽 두 차축까지 전달됩니다. 여섯 바퀴가 모두 구동됩니다.',ids:['shaft']},
+ {t:'바퀴',d:'바퀴를 빼면 앞차축과 탠덤 차축만 남습니다.',ids:['fwheel','mwheel','rwheel']}];
+if(SL)STEPS=[
+ {t:'버킷',d:'커플러의 잠금 핀을 풀면 버킷이 떨어집니다. 이 자리에 포크나 브레이커 같은 다른 어태치먼트를 끼울 수 있습니다.',ids:['bucket']},
+ {t:'커플러와 틸트 실린더',d:'커플러는 암 끝 핀에 걸려 돌고, 좌우 틸트 실린더가 커플러 위쪽을 밀고 당겨 버킷 각도를 바꿉니다.',ids:['coupler','tcyl']},
+ {t:'리프트 암과 리프트 실린더',d:'좌우 한 쌍의 암이 뒤 기둥의 핀 하나를 중심으로 돕니다. 그래서 버킷은 원호를 그리며 올라갑니다(래디얼 리프트).',ids:['arm','lcyl']},
+ {t:'캐빈',d:'조종사를 보호하는 구조물입니다. 실제 정비에서는 캐빈을 앞으로 젖혀 올려 아래의 유압 장치에 접근합니다.',ids:['cab']},
+ {t:'리어 도어와 엔진',d:'뒷문과 냉각기를 열면 엔진이 나옵니다. 엔진은 펌프만 돌리고 바퀴와는 직접 이어지지 않습니다.',ids:['hood','engine']},
+ {t:'펌프·밸브·탱크',d:'주행 펌프 두 개가 좌우 주행모터를 따로 돌리고, 작업 펌프와 컨트롤 밸브가 리프트·틸트 실린더를 움직입니다.',ids:['hstat','pump','valve','tank']},
+ {t:'주행모터',d:'좌우에 하나씩 있는 유압모터입니다. 두 모터의 속도 차이로 방향을 바꾸고, 서로 반대로 돌리면 제자리에서 돕니다.',ids:['dmotor']},
+ {t:'바퀴와 체인 케이스',d:'체인 케이스 안에서 모터의 스프로켓이 체인으로 앞뒤 바퀴를 함께 돌립니다. 다 떼면 욕조 모양의 프레임만 남습니다.',ids:['fwheel','rwheel','chain']}];
+if(WX)STEPS=STEPS.slice(0,9).concat([
+ {t:'블레이드와 아웃트리거',d:'굴착할 때 땅에 내려 차체를 받치는 장치입니다. 타이어가 눌려 출렁이는 것을 막고 옆으로 넘어가지 않게 합니다.',ids:['blade','outrig']},
+ {t:'주행모터와 구동축',d:'유압 주행모터 하나가 변속기와 구동축을 거쳐 앞뒤 차축을 모두 돌립니다. 트랙마다 모터가 있는 크롤러와 가장 다른 부분입니다.',ids:['tmotor','shaft']},
+ {t:'바퀴',d:'한쪽에 타이어 두 개씩 끼운 복륜입니다. 바퀴를 빼면 섀시와 앞뒤 차축만 남습니다.',ids:['fwheel','rwheel']},
+ {t:'차축',d:'앞차축은 조향이 되고 좌우로 흔들릴 수 있으며, 뒷차축은 섀시에 고정됩니다. 차축까지 떼면 섀시만 남습니다.',ids:['faxle','raxle']}]);
 function guideApply(){
   var rev={},k;guide.t=0;
   for(k=0;k<=guide.i;k++)STEPS[k].ids.forEach(function(id){rev[id]=1});
@@ -1335,6 +2195,33 @@ function chip(id){return '<button class="chip" type="button" data-id="'+id+'"><b
     ['조향','좌우 조향 실린더가 서로 반대로 움직여 차체 가운데를 꺾습니다.',['stcyl','joint']],
     ['복귀','일을 마친 유압유는 밸브를 거쳐 탱크로 돌아와 식고 걸러집니다.',['tank']],
     ['참고: 주행','주행은 유압이 아닙니다. 엔진 → 토크컨버터 → 변속기 → 구동축 → 차축으로 이어지는 기계식 동력 전달입니다.',['trans','shaft','faxle','raxle']]];
+  if(MG)HS=[
+    ['흡입','펌프가 탱크의 유압유를 빨아들입니다.',['tank']],
+    ['가압','엔진의 힘으로 도는 펌프가 유압유에 높은 압력을 겁니다.',['engine','pump']],
+    ['분배','조작 레버에 따라 밸브 묶음의 스풀이 움직여 갈 곳과 양을 정합니다.',['cab','valve']],
+    ['블레이드','좌우 리프트 실린더가 높이와 기울기를, 서클 회전 모터가 블레이드 각도를 정합니다.',['lcyl','cmotor','circle']],
+    ['굴절','좌우 굴절 실린더가 서로 반대로 움직여 차체 가운데를 꺾습니다.',['artcyl','joint']],
+    ['복귀','일을 마친 유압유는 밸브를 거쳐 탱크로 돌아와 식고 걸러집니다.',['tank']],
+    ['참고: 주행','주행은 유압이 아닙니다. 엔진 → 변속기 → 뒷차축 → 탠덤 케이스 체인 → 뒤 네 바퀴로 이어지는 기계식 동력 전달입니다.',['trans','tandem','mwheel','rwheel']]];
+  if(DZ)HS=[
+    ['흡입','작업 펌프와 주행 펌프가 탱크의 유압유를 빨아들입니다.',['tank']],
+    ['작업 회로','작업 펌프가 만든 고압 유압유를 밸브가 리프트·앵글·리퍼 실린더로 나눠 보냅니다.',['pump','valve','lcyl','acyl','rcyl']],
+    ['주행 회로','주행 펌프 두 개가 좌우 주행모터를 각각 돌립니다. 펌프와 모터 사이를 유압유가 맴도는 닫힌 회로입니다.',['hstat','tmotor']],
+    ['구동','모터의 회전이 최종 감속기와 스프로켓을 거쳐 트랙을 돌립니다. 좌우 속도 차이가 곧 조향입니다.',['sprocket','track']],
+    ['복귀','일을 마친 유압유는 밸브를 거쳐 탱크로 돌아와 식고 걸러집니다.',['tank']]];
+  if(DT)HS=[
+    ['흡입','펌프가 탱크의 유압유를 빨아들입니다.',['tank']],
+    ['가압','엔진의 힘으로 도는 펌프가 유압유에 높은 압력을 겁니다.',['engine','pump']],
+    ['덤프','밸브가 호이스트 실린더로 유압유를 보내 적재함을 들어 올립니다. 내릴 때는 적재함 무게로 내려갑니다.',['valve','hoist','body']],
+    ['조향','좌우 조향 실린더가 서로 반대로 움직여 차체 가운데를 꺾습니다.',['stcyl','joint']],
+    ['복귀','일을 마친 유압유는 밸브를 거쳐 탱크로 돌아와 식고 걸러집니다.',['tank']],
+    ['참고: 주행','주행은 유압이 아닙니다. 엔진 → 변속기 → 구동축 → 세 차축으로 이어지는 기계식 6륜 구동입니다.',['trans','shaft','faxle','bogie']]];
+  if(SL)HS=[
+    ['흡입','작업 펌프와 주행 펌프가 탱크의 유압유를 빨아들입니다.',['tank']],
+    ['작업 회로','작업 펌프가 만든 고압 유압유를 밸브가 리프트·틸트 실린더로 나눠 보냅니다.',['pump','valve','lcyl','tcyl']],
+    ['주행 회로','주행 펌프 두 개가 좌우 주행모터를 각각 돌립니다. 펌프와 모터 사이를 유압유가 맴도는 닫힌 회로입니다.',['hstat','dmotor']],
+    ['구동','모터의 회전이 체인으로 앞뒤 바퀴에 전달됩니다. 좌우 속도 차이가 곧 조향입니다.',['chain','fwheel','rwheel']],
+    ['복귀','일을 마친 유압유는 밸브를 거쳐 탱크로 돌아와 걸러집니다.',['tank']]];
   $('hsteps').innerHTML=HS.map(function(s,i){return '<li><span class="sn">'+(i+1)+'</span><div><strong>'+s[0]+'</strong> · <span>'+s[1]+'</span><div class="chips">'+s[2].map(chip).join('')+'</div></div></li>'}).join('');
   showInfo()})();
 function showAll(){select(null);moved=false;focusGoal=null;distGoal=null;resetCam()}
@@ -1406,6 +2293,25 @@ function stepJoy(dt){
   function dz(v){return Math.abs(v)<.12?0:(v-Math.sign(v)*.12)/.88}
   lx=dz(lx);ly=dz(ly);rx=dz(rx);ry=dz(ry);
   pose.b=lastT1;
+  if(MG){
+    pose.b=Math.max(LIM.b[0],Math.min(LIM.b[1],pose.b+ry*.22*dt));
+    pose.a=Math.max(LIM.a[0],Math.min(LIM.a[1],pose.a-rx*.9*dt));
+    swingA=Math.max(-.35,Math.min(.35,swingA-lx*.5*dt));joyV=-ly*3;
+    return lx||ly||rx||ry}
+  if(DZ){
+    pose.b=Math.max(LIM.b[0],Math.min(LIM.b[1],pose.b+ry*.3*dt));
+    pose.a=Math.max(LIM.a[0],Math.min(LIM.a[1],pose.a-rx*.6*dt));
+    swingA-=lx*.8*dt;joyV=-ly*2.5;
+    return lx||ly||rx||ry}
+  if(DT){
+    pose.b=Math.max(LIM.b[0],Math.min(LIM.b[1],pose.b+ry*.45*dt));
+    swingA=Math.max(-.6,Math.min(.6,swingA-lx*.7*dt));joyV=-ly*3;
+    return lx||ly||ry}
+  if(SL){
+    pose.b=Math.max(LIM.b[0],Math.min(LIM.b[1],pose.b+ry*.6*dt));
+    pose.k=Math.max(LIM.k[0],Math.min(LIM.k[1],pose.k-rx*1.0*dt));
+    swingA-=lx*1.2*dt;joyV=-ly*3;
+    return lx||ly||rx||ry}
   if(!EX){
     pose.b=Math.max(LIM.b[0],Math.min(LIM.b[1],pose.b+ry*.5*dt));
     pose.k=Math.max(LIM.k[0],Math.min(Math.min(LIM.k[1],WK.fk(pose.b,9).c),pose.k-rx*.6*dt));
@@ -1422,23 +2328,27 @@ var G={p:2.5,rpm:1000,st:[0,0,0],v:[0,0,0],sw0:0,kp:0,ap:0,dk:0,da:0,dig:false},
 var GB=[$('gb-b'),$('gb-a'),$('gb-k')].map(function(el){return {el:el,i:el.querySelector('.trk i'),o:el.querySelector('output'),c:''}});
 function stepGauges(dt){
   if(EX){cylLens(lastT1,pose.a,pose.k,gL);for(var j=0;j<3;j++)gL[j]=(gL[j]-SR[j][0])/Math.max(SR[j][1]-SR[j][0],1e-3)}
+  else if(MG){gL[0]=(P.lcyl.len-GL[0])/(GL[1]-GL[0]);gL[1]=.5-swingA/.7;gL[2]=.5+pose.a/1.8}
+  else if(DZ){gL[0]=(P.lcyl.len-ZL[0])/(ZL[1]-ZL[0]);gL[1]=(P.rcyl.len-ZR[0])/(ZR[1]-ZR[0]);gL[2]=Math.min(1,(Math.abs(travelV)+Math.abs(swingVel))/3)}
+  else if(DT){gL[0]=(P.hoist.len-DHL[0])/(DHL[1]-DHL[0]);gL[1]=.5-swingA/1.2;gL[2]=load}
+  else if(SL){gL[0]=(P.lcyl.len-SLL[0])/(SLL[1]-SLL[0]);gL[1]=(P.tcyl.len-.62)/.85;gL[2]=Math.min(1,(Math.abs(travelV)+Math.abs(swingVel))/3)}
   else{var ws=WK.fk(lastT1,pose.k);gL[0]=(ws.lift-LIFT0)/(LIFT1-LIFT0);gL[1]=(ws.c-1.3)/.9;gL[2]=.5-swingA/1.2}
   var tot=0;
   for(var i=0;i<3;i++){var s=Math.max(0,Math.min(1,gL[i]));
     var v=(s-G.st[i])/Math.max(dt,1e-3);G.v[i]=G.v[i]*.8+v*.2;G.st[i]=s;tot+=Math.abs(G.v[i])}
   swingVel=(swingA-G.sw0)/Math.max(dt,1e-3);G.sw0=swingA;
   G.dk=G.dk*.8+(pose.k-G.kp)/Math.max(dt,1e-3)*.2;G.da=G.da*.8+(pose.a-G.ap)/Math.max(dt,1e-3)*.2;G.kp=pose.k;G.ap=pose.a;
-  G.dig=contact&&expl<.05&&(EX?(G.dk<-.05||G.da<-.05):(load<1&&(travelV>.3||G.dk>.05)));
-  ACT.sw=EX?Math.abs(swingVel):0;ACT.tr=Math.abs(travelV)>.05?1:0;ACT.any=tot+ACT.sw*.5+ACT.tr;
+  G.dig=MG?(expl<.05&&contact&&travelV>.3):DZ?(expl<.05&&(contact||pose.k>.38)&&travelV>.3):DT?(expl<.05&&G.v[0]>.02&&load>.3):contact&&expl<.05&&(EX?(G.dk<-.05||G.da<-.05):(load<1&&(travelV>.3||G.dk>.05)));
+  ACT.sw=EX?Math.abs(swingVel):MG?Math.abs(G.da):0;ACT.tr=(Math.abs(travelV)>.05||((SL||DZ)&&Math.abs(swingVel)>.05))?1:0;ACT.any=tot+ACT.sw*.5+ACT.tr;
   var target=2.5;
-  if(ACT.any>.02)target=7+Math.min(1,tot)*12+Math.min(1,ACT.sw)*6+(EX?ACT.tr*10:0)+load*4*Math.max(0,G.v[0]);
+  if(ACT.any>.02)target=7+Math.min(1,tot)*12+Math.min(1,ACT.sw)*6+(EX||SL||DZ?ACT.tr*10:0)+load*4*Math.max(0,G.v[0]);
   if(G.dig)target=29+load*4;
   target=Math.min(34.3,target);
   G.p+=(target-G.p)*Math.min(1,dt*4);
   G.rpm+=((ACT.any>.02?1850:1000)-G.rpm)*Math.min(1,dt*2)}
 function fmt(v,d){return v.toFixed(d)}
 function renderGauges(){
-  var p=G.p,hot=p>26,sw=((swingA*180/Math.PI)%360+540)%360-180,kmh=EX?(travelOn?3.4:0):Math.abs(travelV)*4.8;
+  var p=G.p,hot=p>26,sw=((swingA*180/Math.PI)%360+540)%360-180,kmh=EX?(travelOn?(WX?12:3.4):0):Math.abs(travelV)*(SL?3.8:DT||MG?12:DZ?3:4.8);
   $('g-p').innerHTML=fmt(p,1)+'<small> MPa</small>';$('g-p').classList.toggle('hot',hot);
   var pb=$('g-pb');pb.style.width=(p/34.3*100).toFixed(1)+'%';pb.classList.toggle('hot',hot);
   $('g-sw').innerHTML=(sw>0?'+':'')+Math.round(sw)+'<small>°</small>';
@@ -1451,7 +2361,7 @@ function renderGauges(){
   $('gstate').textContent=st;
   $('h-p').innerHTML=fmt(p,1)+'<small> MPa</small>';$('h-p').classList.toggle('hot',hot);
   var act=[];for(var q=0;q<3;q++)if(Math.abs(G.v[q])>.03)act.push(TXT.bn[q]);
-  if(ACT.sw>.02)act.push('선회');if(EX&&travelOn)act.push('주행');
+  if(ACT.sw>.02&&!MG)act.push('선회');if(EX&&travelOn)act.push('주행');
   $('h-act').textContent=act.length?act.join(' · '):'없음';
   $('vtag').textContent='VIEW A · '+TXT.sw+' '+(sw>0?'+':'')+Math.round(sw)+'°'+(load>.02?' · 적재 '+Math.round(load*100)+'%':'')}
 
@@ -1465,7 +2375,7 @@ function setManual(on){
   else{joyV=0;JOY.L.x=JOY.L.y=JOY.R.x=JOY.R.y=0;KEY={};document.querySelectorAll('.knob').forEach(function(k){k.style.transform=''})}
   dirty=true}
 function setAnim(on){if(!on)animV=0;anim=on;setPress($('b-dig'),on);setPress($('b-hdig'),on);if(on){animT=0;if(manual)setManual(false);if(exGoal>.05&&tab!=='explode')setEx(0)}dirty=true}
-var SWAMP=EX?1.1:.6;
+var SWAMP=EX?1.1:SL?1.3:DZ?1.0:MG?.35:.6;
 function setSwing(on){swingOn=on;setPress($('b-swing'),on);if(on){if(manual)setManual(false);swingT=Math.asin(Math.max(-1,Math.min(1,swingA/SWAMP)))/.7}dirty=true}
 function setFlow(on){FLOW=on;setPress($('b-flow'),on);fPts.visible=on;fLines.visible=on;dirty=true}
 $('b-joy').addEventListener('click',function(){setManual(!manual)});
@@ -1525,11 +2435,11 @@ TABS.forEach(function(k,i){
 var KF=[[0,0,0],[-.04,.65,.55],[-.12,.05,.55],[-.12,-.45,-.7],[.32,-.45,-.8],[.28,.4,.6]];
 var CYCLE=10;
 /* 휠로더: [리프트 각, 틸트 실린더 길이, 주행 속도] — 밀고 들어가 담기 → 젖히기 → 후진·상승 → 전진 → 덤프 → 하강 */
-var KW=[[0,1.985,1.7],[0,1.985,1.2],[0,2.07,0],[.35,2.1,-1.6],[.95,2.15,1.3],[.95,1.35,0],[.5,1.9,-1.3]];
+var KW=MG?[[.2,0,0,.5],[-.02,0,1.8,.5],[-.02,0,1.8,.5],[.2,0,0,.5],[.2,0,-2,-.5],[-.02,0,1.8,-.5],[-.02,0,1.8,-.5],[.2,0,-2,.5]]:DZ?[[.25,0,0,0],[-.03,0,1.6,0],[-.03,0,1.6,0],[.25,0,0,0],[.25,0,-1.8,0],[.25,.5,1.4,0],[.25,.5,1.4,0],[.25,0,-1.4,.35],[.25,0,0,.35]]:DT?[[0,0,0],[0,0,0],[0,0,2.4],[0,0,2.4],[0,0,0],[1.15,0,0],[1.15,0,0],[0,0,0],[0,0,-2.2],[0,0,-2.2]]:SL?[[0,0,1.5],[0,0,1.0],[0,.5,0],[.3,.3,-1.4],[1.0,-.45,1.2],[1.0,-1.6,0],[.5,-.5,-1.2]]:[[0,1.985,1.7],[0,1.985,1.2],[0,2.07,0],[.35,2.1,-1.6],[.95,2.15,1.3],[.95,1.35,0],[.5,1.9,-1.3]];
 function animPoseWL(){
   var u=((animT%14)/14)*KW.length,i=Math.floor(u),f=u-i,s=f*f*(3-2*f);
   var A=KW[i%KW.length],B=KW[(i+1)%KW.length];
-  pose.b=A[0]+(B[0]-A[0])*s;pose.k=A[1]+(B[1]-A[1])*s;animV=A[2]+(B[2]-A[2])*s}
+  pose.b=A[0]+(B[0]-A[0])*s;pose.k=A[1]+(B[1]-A[1])*s;animV=A[2]+(B[2]-A[2])*s;if(A.length>3)pose.a=A[3]+(B[3]-A[3])*s}
 function animPose(){
   if(!EX){animPoseWL();return}
   var u=((animT%CYCLE)/CYCLE)*KF.length,i=Math.floor(u),f=u-i,s=f*f*(3-2*f);
@@ -1585,8 +2495,10 @@ function frame(now){
   if(swingOn){swingT+=dt;swingA=Math.sin(swingT*.7)*SWAMP;dirty=true}
   else if(!manual&&Math.abs(swingA)>.002){swingA*=Math.max(0,1-dt*2.5);dirty=true}
   else if(!manual&&swingA!==0){swingA=0;dirty=true}
-  travelV=EX?(travelOn?1.4:0):(travelOn?2.5:0)+(manual?joyV:0)+(anim?animV:0);
-  if(Math.abs(travelV)>.01){travelD+=dt*travelV;if(EX)layTracks(travelD);else rollWheels(travelD);dirty=true}
+  if(DZ&&!anim&&pose.k!==ripGoal){pose.k+=(ripGoal-pose.k)*Math.min(1,dt*2.5);if(Math.abs(ripGoal-pose.k)<.004)pose.k=ripGoal;dirty=true}
+  if(WX){var sgl=travelOn?1:0;if(stow!==sgl){var nv=stow+(sgl-stow)*Math.min(1,dt*(RM?60:3));if(Math.abs(sgl-nv)<.004)nv=sgl;setStow(nv);dirty=true}}
+  travelV=EX?(travelOn?(WX?2.2:1.4):0):(travelOn?2.5:0)+(manual?joyV:0)+(anim?animV:0);
+  if(Math.abs(travelV)>.01){travelD+=dt*travelV;if((EX&&!WX)||DZ)layTracks(travelD);else rollWheels(travelD);dirty=true}
   if(FLOW)dirty=true;
   if(focusGoal){
     dp.copy(focusGoal).sub(controls.target).multiplyScalar(kk);
@@ -1608,6 +2520,7 @@ function frame(now){
     renderer.render(scene,camera);updatePins()}
   else if(sLive){stepSoil(dt);renderer.render(scene,camera)}
   if(now-lastG>100){lastG=now;renderGauges()}}
+if(WX)setStow(0);
 updateScene();resize();highlight();syncPoseUI();setTab('explore');
 requestAnimationFrame(frame);
 return function(){
